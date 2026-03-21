@@ -30,12 +30,14 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.firebase.auth.FirebaseAuth
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var scanner: GmsBarcodeScanner
     private val LOCATION_PERMISSION_REQUEST = 1001
     private lateinit var mMap: GoogleMap
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -289,6 +291,10 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         findViewById<View>(R.id.tvSeeAll).setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
+
+        findViewById<View>(R.id.profileContainer).setOnClickListener {
+            logout()
+        }
     }
 
     private fun fetchRouteFromBackend(fromNode: String, toNode: String) {
@@ -384,5 +390,15 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun Int.dpToPx(): Int {
         return (this * resources.displayMetrics.density).toInt()
+    }
+
+    private fun logout() {
+        FirebaseAuth.getInstance().signOut()
+
+        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
+
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 }

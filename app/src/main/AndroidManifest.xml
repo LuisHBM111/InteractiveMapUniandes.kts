@@ -5,10 +5,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:usesCleartextTraffic="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="InteractiveMapUniandes"
@@ -17,8 +19,9 @@
         android:theme="@style/Theme.InteractiveMapUniandes"
         tools:targetApi="31">
         <activity
-            android:name="interactivemapuniandes.ui.RouteActivity"
-            android:exported="false" />
+            android:name=".ui.RouteActivity"
+            android:exported="false"
+            tools:ignore="MissingClass" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

@@ -1,11 +1,13 @@
 package com.uniandes.interactivemapuniandes.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -15,9 +17,17 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.uniandes.interactivemapuniandes.R
-
+import com.uniandes.interactivemapuniandes.data.remote.RetrofitInstance
+import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    private val LOCATION_PERMISSION_REQUEST = 1001
     private lateinit var mMap: GoogleMap
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
 
@@ -30,6 +40,100 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setupBottomNav()
         setupBottomSheet()
         setupPrototypeClicks()
+        handleRouteFromIntent()
+        setupFilterChips()
+    }
+
+    private fun setupFilterChips() {
+        findViewById<View>(R.id.chipQrCode).setOnClickListener {
+            Toast.makeText(this, "QR Code feature coming soon", Toast.LENGTH_SHORT).show()
+        }
+
+        findViewById<View>(R.id.chipCurrentLocation).setOnClickListener {
+            requestAndShowCurrentLocation()
+        }
+    }
+
+    private fun requestAndShowCurrentLocation() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST
+            )
+            return
+        }
+
+        showCurrentLocation()
+    }
+
+    private fun showCurrentLocation() {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                if (location != null && ::mMap.isInitialized) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+
+                    mMap.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(currentLatLng, 18f)
+                    )
+
+                    mMap.addMarker(
+                        MarkerOptions()
+                            .position(currentLatLng)
+                            .title("Your current location")
+                    )
+
+                    val chipText = findViewById<TextView>(R.id.tvCurrentLocationChip)
+                    chipText.text = "◎ ${"%.4f".format(location.latitude)}, ${"%.4f".format(location.longitude)}"
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Could not get current location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(
+                    this,
+                    "Error getting current location",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showCurrentLocation()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Location permission denied",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     private fun setupMap() {
@@ -42,7 +146,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Uniandes Bogotá (aproximado)
         val uniandes = LatLng(4.6019, -74.0661)
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(uniandes, 17f))
@@ -53,36 +156,32 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 .title("Universidad de los Andes")
         )
 
-        // Configuración básica del mapa
         mMap.uiSettings.isMapToolbarEnabled = false
         mMap.uiSettings.isCompassEnabled = true
         mMap.uiSettings.isZoomControlsEnabled = false
         mMap.uiSettings.isMyLocationButtonEnabled = false
 
-        // Tipo de mapa inicial
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+
+        // Si Home llegó desde RouteActivity con una ruta, la dibujamos aquí
+        drawRouteIfNeeded()
     }
 
     private fun setupBottomSheet() {
-        val bottomSheet = findViewById<androidx.core.widget.NestedScrollView>(R.id.bottomSheet)
-        bottomSheet?.let {
-            bottomSheetBehavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(it)
+        val bottomSheet = findViewById<NestedScrollView>(R.id.bottomSheet)
 
-            val displayMetrics = resources.displayMetrics
-            val screenHeight = displayMetrics.heightPixels
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
 
-            // Configuración para que el límite sea la mitad de la pantalla
-            bottomSheetBehavior.maxHeight = screenHeight / 2
-            bottomSheetBehavior.isFitToContents = true
+        val displayMetrics = resources.displayMetrics
+        val screenHeight = displayMetrics.heightPixels
 
-            // Estado inicial contraído
-            bottomSheetBehavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
-            bottomSheetBehavior.peekHeight = 180.dpToPx()
-
-            // Evitar que se oculte del todo al deslizar hacia abajo
-            bottomSheetBehavior.isHideable = false
-        }
+        bottomSheetBehavior.maxHeight = screenHeight / 2
+        bottomSheetBehavior.isFitToContents = true
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior.peekHeight = 180.dpToPx()
+        bottomSheetBehavior.isHideable = false
     }
+
     private fun setupBottomNav() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNav.selectedItemId = R.id.nav_explore
@@ -112,8 +211,9 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "Search prototype", Toast.LENGTH_SHORT).show()
         }
 
+        // Este pasa a ser el botón de "Next class"
         findViewById<View>(R.id.fabDirections).setOnClickListener {
-            Toast.makeText(this, "Directions prototype", Toast.LENGTH_SHORT).show()
+            fetchRouteFromBackend()
         }
 
         findViewById<View>(R.id.fabLocation).setOnClickListener {
@@ -136,6 +236,105 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         findViewById<View>(R.id.tvSeeAll).setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
+    }
+
+    private fun fetchRouteFromBackend() {
+        // Por ahora fijos; luego esto sale de horario/contexto
+        val fromNode = "ML 2"
+        val toNode = "W 3"
+
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.api.getRoute(fromNode, toNode)
+
+                if (response.isSuccessful) {
+                    val route = response.body()
+
+                    if (route != null) {
+                        val intent = Intent(this@HomeActivity, RouteActivity::class.java).apply {
+                            putExtra("destination", route.to)
+                            putExtra("from", route.from)
+                            putExtra("eta", "${route.total_time} s")
+                            putExtra("distance", "${route.path.size - 1} hops")
+                            putStringArrayListExtra("path", ArrayList(route.path))
+                            putExtra("total_time", route.total_time)
+                        }
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            this@HomeActivity,
+                            "La respuesta del servidor llegó vacía",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@HomeActivity,
+                        "Error del backend: ${response.code()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@HomeActivity,
+                    "Error de red: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun handleRouteFromIntent() {
+        val showRoute = intent.getBooleanExtra("showRoute", false)
+        if (!showRoute) return
+
+        if (::mMap.isInitialized) {
+            drawRouteIfNeeded()
+        }
+    }
+
+    private fun drawRouteIfNeeded() {
+        val showRoute = intent.getBooleanExtra("showRoute", false)
+        if (!showRoute || !::mMap.isInitialized) return
+
+        val path = intent.getStringArrayListExtra("path") ?: return
+
+        // Mapa temporal de nodos -> coordenadas
+        val nodeCoordinates = mapOf(
+            "ML 2" to LatLng(4.6019, -74.0661),
+            "ML 3" to LatLng(4.6020, -74.0659),
+            "ML 4" to LatLng(4.6021, -74.0657),
+            "ML 5" to LatLng(4.6022, -74.0655),
+            "W puente" to LatLng(4.6023, -74.0652),
+            "W 5" to LatLng(4.6024, -74.0650),
+            "W 4" to LatLng(4.6025, -74.0648),
+            "W 3" to LatLng(4.6026, -74.0646)
+        )
+
+        val latLngPath = path.mapNotNull { nodeCoordinates[it] }
+
+        if (latLngPath.isEmpty()) {
+            Toast.makeText(this, "No hay coordenadas para esa ruta", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Limpia marcadores/polylines anteriores
+        mMap.clear()
+
+        // Vuelve a marcar inicio y fin
+        mMap.addMarker(MarkerOptions().position(latLngPath.first()).title("Inicio"))
+        mMap.addMarker(MarkerOptions().position(latLngPath.last()).title("Destino"))
+
+        val polyline = com.google.android.gms.maps.model.PolylineOptions()
+            .addAll(latLngPath)
+            .width(12f)
+            .color(android.graphics.Color.parseColor("#FAD400"))
+
+        mMap.addPolyline(polyline)
+
+        mMap.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(latLngPath.first(), 17f)
+        )
     }
 
     private fun Int.dpToPx(): Int {

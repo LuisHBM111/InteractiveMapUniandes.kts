@@ -122,16 +122,17 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="22dp"
-                    android:text="文 English"
+                    android:text="Language"
                     android:textColor="@color/gray_text"
-                    android:textSize="15sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/chip3dMap"
+                android:id="@+id/chipQrCode"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
+                android:layout_marginEnd="12dp"
                 app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="4dp">
@@ -141,9 +142,29 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="22dp"
-                    android:text="◆ 3D Map"
+                    android:text="QR Code"
                     android:textColor="@color/gray_text"
-                    android:textSize="15sp"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/chipCurrentLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="4dp">
+
+                <TextView
+                    android:id="@+id/tvCurrentLocationChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingHorizontal="22dp"
+                    android:text="Current location"
+                    android:textColor="@color/gray_text"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
         </LinearLayout>

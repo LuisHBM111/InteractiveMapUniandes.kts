@@ -25,8 +25,14 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
+import android.net.Uri
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    private lateinit var scanner: GmsBarcodeScanner
     private val LOCATION_PERMISSION_REQUEST = 1001
     private lateinit var mMap: GoogleMap
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
@@ -42,15 +48,62 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setupPrototypeClicks()
         handleRouteFromIntent()
         setupFilterChips()
+        setupQrScanner()
+    }
+
+    private fun setupQrScanner() {
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .build()
+
+        scanner = GmsBarcodeScanning.getClient(this, options)
     }
 
     private fun setupFilterChips() {
         findViewById<View>(R.id.chipQrCode).setOnClickListener {
-            Toast.makeText(this, "QR Code feature coming soon", Toast.LENGTH_SHORT).show()
+            scanQrCode()
         }
 
         findViewById<View>(R.id.chipCurrentLocation).setOnClickListener {
             requestAndShowCurrentLocation()
+        }
+    }
+
+    private fun scanQrCode() {
+        scanner.startScan()
+            .addOnSuccessListener { barcode ->
+                val rawValue = barcode.rawValue
+
+                if (rawValue.isNullOrBlank()) {
+                    Toast.makeText(this, "QR vacío o inválido", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
+
+                handleQrRoute(rawValue)
+            }
+            .addOnCanceledListener {
+                Toast.makeText(this, "Escaneo cancelado", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error al escanear: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun handleQrRoute(qrContent: String) {
+        try {
+            val uri = Uri.parse(qrContent)
+
+            val fromNode = uri.getQueryParameter("from")
+            val toNode = uri.getQueryParameter("to")
+
+            if (fromNode.isNullOrBlank() || toNode.isNullOrBlank()) {
+                Toast.makeText(this, "El QR no tiene from/to válidos", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            fetchRouteFromBackend(fromNode, toNode)
+        } catch (e: Exception) {
+            Toast.makeText(this, "QR inválido: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -213,7 +266,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Este pasa a ser el botón de "Next class"
         findViewById<View>(R.id.fabDirections).setOnClickListener {
-            fetchRouteFromBackend()
+            fetchRouteFromBackend("ML 2", "W 3")
         }
 
         findViewById<View>(R.id.fabLocation).setOnClickListener {
@@ -238,11 +291,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun fetchRouteFromBackend() {
-        // Por ahora fijos; luego esto sale de horario/contexto
-        val fromNode = "ML 2"
-        val toNode = "W 3"
-
+    private fun fetchRouteFromBackend(fromNode: String, toNode: String) {
         lifecycleScope.launch {
             try {
                 val response = RetrofitInstance.api.getRoute(fromNode, toNode)
@@ -261,11 +310,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                         startActivity(intent)
                     } else {
-                        Toast.makeText(
-                            this@HomeActivity,
-                            "La respuesta del servidor llegó vacía",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@HomeActivity, "Respuesta vacía", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     Toast.makeText(

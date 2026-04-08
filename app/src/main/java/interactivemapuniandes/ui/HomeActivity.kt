@@ -31,6 +31,10 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.firebase.auth.FirebaseAuth
+import interactivemapuniandes.ui.SettingsActivity
+import interactivemapuniandes.utils.setupNavigation
+import kotlin.jvm.java
+
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var scanner: GmsBarcodeScanner
@@ -45,7 +49,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_home)
 
         setupMap()
-        setupBottomNav()
+        val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        nav.setupNavigation(this, "explore")
         setupBottomSheet()
         setupPrototypeClicks()
         handleRouteFromIntent()
@@ -235,30 +240,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         bottomSheetBehavior.peekHeight = 180.dpToPx()
         bottomSheetBehavior.isHideable = false
-    }
-
-    private fun setupBottomNav() {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.selectedItemId = R.id.nav_explore
-
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_explore -> true
-                R.id.nav_schedules -> {
-                    Toast.makeText(this, "Schedules screen prototype", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.nav_alerts -> {
-                    Toast.makeText(this, "Alerts screen prototype", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.nav_settings -> {
-                    Toast.makeText(this, "Settings screen prototype", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else -> false
-            }
-        }
     }
 
     private fun setupPrototypeClicks() {

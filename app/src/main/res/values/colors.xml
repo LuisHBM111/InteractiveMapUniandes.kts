@@ -14,4 +14,18 @@
     <color name="gray_text">#757575</color>
     <color name="input_background">#FFFFFF</color>
     <color name="input_stroke">#E0E0E0</color>
+
+    <color name="icon_background_light_yellow">#FFF9C4</color>
+
+    <color name="settings_title_gray">#5C6B82</color>
+
+    <color name="settings_secondary_text">#7D8A9D</color>
+
+    <color name="settings_text_dark">#101828</color>
+
+    <color name="logout_red">#D92D20</color>
+
+    <color name="logout_button_bg">#F2F4F7</color>
+
+    <color name="divider_color">#F2F4F7</color>
 </resources>

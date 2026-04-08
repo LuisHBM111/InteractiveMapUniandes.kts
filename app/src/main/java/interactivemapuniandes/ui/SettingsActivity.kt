@@ -28,6 +28,7 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
+
         uploadProfileImage()
         val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
         nav.setupNavigation(this, "settings")

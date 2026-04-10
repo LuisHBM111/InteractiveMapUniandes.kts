@@ -137,6 +137,14 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    // To check a switch
+    //switchmaterial.isChecked = true
+
+// To listen for a switch's checked/unchecked state changes
+    //switchmaterial.setOnCheckedChangeListener { buttonView, isChecked
+        // Responds to switch being checked/unchecked
+    }
+
 
 
 }

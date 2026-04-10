@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#DDF4E2"
-    tools:context=".ui.HomeActivity">
+    tools:context="com.uniandes.interactivemapuniandes.ui.HomeActivity">
 
     <!-- Fondo temporal del mapa -->
     <androidx.fragment.app.FragmentContainerView

@@ -1,4 +1,4 @@
-package interactivemapuniandes.utils;
+package com.uniandes.interactivemapuniandes.utils;
 
 public class ImageLoader {
 }

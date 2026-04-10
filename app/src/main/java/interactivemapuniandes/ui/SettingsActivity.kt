@@ -1,18 +1,16 @@
-package interactivemapuniandes.ui
+package com.uniandes.interactivemapuniandes.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import coil3.compose.AsyncImage
 import com.uniandes.interactivemapuniandes.R
 import coil3.load
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -24,10 +22,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
-import com.uniandes.interactivemapuniandes.ui.HomeActivity
-import interactivemapuniandes.utils.setupNavigation
-import java.io.File
-import kotlin.math.log
+import com.uniandes.interactivemapuniandes.utils.setupNavigation
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -60,6 +55,7 @@ class SettingsActivity : AppCompatActivity() {
         nav.setupNavigation(this, "settings")
 
         setupImage()
+        setupLogout()
 
     }
 
@@ -124,5 +120,23 @@ class SettingsActivity : AppCompatActivity() {
             profileImage.load(url)
         }
     }
+
+    private fun logout() {
+        FirebaseAuth.getInstance().signOut()
+
+        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
+
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+    }
+
+    fun setupLogout(){
+        findViewById<View>(R.id.settings_logout).setOnClickListener {
+            logout()
+        }
+    }
+
+
 
 }

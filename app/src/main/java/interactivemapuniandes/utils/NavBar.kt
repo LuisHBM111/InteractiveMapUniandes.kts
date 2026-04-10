@@ -1,12 +1,11 @@
-package interactivemapuniandes.utils
+package com.uniandes.interactivemapuniandes.utils
 
 import android.app.Activity
 import android.content.Intent
-import androidx.core.content.ContextCompat.startActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.ui.HomeActivity
-import interactivemapuniandes.ui.SettingsActivity
+import com.uniandes.interactivemapuniandes.ui.SettingsActivity
 
 fun BottomNavigationView.setupNavigation(activity: Activity, current: String) {
 

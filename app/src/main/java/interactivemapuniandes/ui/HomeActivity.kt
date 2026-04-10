@@ -21,19 +21,19 @@ import com.uniandes.interactivemapuniandes.data.remote.RetrofitInstance
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 import android.net.Uri
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.firebase.auth.FirebaseAuth
-import interactivemapuniandes.ui.SettingsActivity
-import interactivemapuniandes.utils.setupNavigation
-import kotlin.jvm.java
+import com.uniandes.interactivemapuniandes.utils.setupNavigation
 
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -273,9 +273,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
-        findViewById<View>(R.id.profileContainer).setOnClickListener {
-            logout()
-        }
     }
 
     private fun fetchRouteFromBackend(fromNode: String, toNode: String) {
@@ -357,10 +354,10 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.addMarker(MarkerOptions().position(latLngPath.first()).title("Inicio"))
         mMap.addMarker(MarkerOptions().position(latLngPath.last()).title("Destino"))
 
-        val polyline = com.google.android.gms.maps.model.PolylineOptions()
+        val polyline = PolylineOptions()
             .addAll(latLngPath)
             .width(12f)
-            .color(android.graphics.Color.parseColor("#FAD400"))
+            .color(Color.parseColor("#FAD400"))
 
         mMap.addPolyline(polyline)
 
@@ -373,13 +370,4 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         return (this * resources.displayMetrics.density).toInt()
     }
 
-    private fun logout() {
-        FirebaseAuth.getInstance().signOut()
-
-        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
-
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-    }
 }

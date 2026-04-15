@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.InteractiveMapUniandes" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.InteractiveMapUniandes" parent="Theme.Material3.DayNight.NoActionBar">
 
         <item name="materialSwitchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
 
@@ -38,5 +38,20 @@
         <item name="android:statusBarColor">@color/md_theme_light_background</item>
         <item name="android:navigationBarColor">@color/md_theme_light_background</item>
         <item name="android:windowBackground">@color/md_theme_light_background</item>
+
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+
+        <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
+
     </style>
+
+    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalBottomSheetDialog</item>
+    </style>
+
+    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/button_tint</item>
+        <item name="buttonIconTint">@color/button_icon_tint</item>
+    </style>
+
 </resources>

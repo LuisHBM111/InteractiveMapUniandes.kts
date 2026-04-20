@@ -1,4 +1,4 @@
-package com.uniandes.interactivemapuniandes.ui
+package com.uniandes.interactivemapuniandes.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +12,8 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.uniandes.interactivemapuniandes.R
+import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
+import com.uniandes.interactivemapuniandes.viewmodel.LoginViewModel
 
 class LoginActivity : AppCompatActivity() {
 
@@ -21,6 +23,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnLogin: MaterialButton
     private lateinit var tvRegister: TextView
     private lateinit var tvForgotPassword: TextView
+
+    private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
         btnLogin = findViewById(R.id.btnLogin)
         tvRegister = findViewById(R.id.tvRegister)
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
+        loginViewModel = LoginViewModel(AuthRepository(auth))
 
         // Si ya hay sesión activa, entra directo al Home
         if (auth.currentUser != null) {
@@ -48,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnLogin.setOnClickListener {
-            loginUser()
+            loginUserView()
         }
 
         tvRegister.setOnClickListener {
@@ -60,41 +65,31 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun loginUser() {
+    private fun loginUserView() {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
 
-        if (email.isEmpty()) {
-            etEmail.error = "Enter your email"
-            etEmail.requestFocus()
-            return
-        }
+        loginViewModel.loginUser(email, password)
 
-        if (password.isEmpty()) {
-            etPassword.error = "Enter your password"
-            etPassword.requestFocus()
-            return
-        }
+        val state = loginViewModel.uiState
 
         btnLogin.isEnabled = false
         btnLogin.text = "Logging in..."
 
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                btnLogin.isEnabled = true
-                btnLogin.text = "Log In  →"
+        etEmail.error = state.emailError
+        etPassword.error = state.passwordError
 
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                    goToHome()
-                } else {
-                    Toast.makeText(
-                        this,
-                        task.exception?.localizedMessage ?: "Login failed",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
+        if(state.loginSuccess){
+            goToHome()
+        }
+
+        if (state.generalError != null) {
+            Toast.makeText(this, state.generalError, Toast.LENGTH_LONG).show()
+        }
+
+        btnLogin.isEnabled = true
+        btnLogin.text = "Log In  →"
+
     }
 
     private fun sendResetEmail() {

@@ -1,36 +1,41 @@
-package com.uniandes.interactivemapuniandes.ui
+package com.uniandes.interactivemapuniandes.view
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.uniandes.interactivemapuniandes.R
-import com.uniandes.interactivemapuniandes.data.remote.RetrofitInstance
-import kotlinx.coroutines.launch
-import android.Manifest
-import android.content.pm.PackageManager
-import android.widget.TextView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.google.android.gms.location.LocationServices
-import android.net.Uri
+import com.google.firebase.auth.FirebaseAuth
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.firebase.auth.FirebaseAuth
+import com.uniandes.interactivemapuniandes.R
+import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.view.LoginActivity
+import com.uniandes.interactivemapuniandes.view.RouteActivity
+import kotlinx.coroutines.launch
+
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var scanner: GmsBarcodeScanner
@@ -376,10 +381,10 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.addMarker(MarkerOptions().position(latLngPath.first()).title("Inicio"))
         mMap.addMarker(MarkerOptions().position(latLngPath.last()).title("Destino"))
 
-        val polyline = com.google.android.gms.maps.model.PolylineOptions()
+        val polyline = PolylineOptions()
             .addAll(latLngPath)
             .width(12f)
-            .color(android.graphics.Color.parseColor("#FAD400"))
+            .color(Color.parseColor("#FAD400"))
 
         mMap.addPolyline(polyline)
 

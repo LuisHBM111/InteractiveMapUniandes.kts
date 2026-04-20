@@ -9,7 +9,7 @@
     android:paddingTop="20dp"
     android:paddingEnd="20dp"
     android:paddingBottom="20dp"
-    tools:context=".ui.RouteActivity">
+    tools:context=".view.RouteActivity">
 
     <ImageButton
         android:id="@+id/btnBack"

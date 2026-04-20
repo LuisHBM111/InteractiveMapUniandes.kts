@@ -1,6 +1,6 @@
-package com.uniandes.interactivemapuniandes.data.remote
+package com.uniandes.interactivemapuniandes.model.remote
 
-import com.uniandes.interactivemapuniandes.model.RouteResponse
+import com.uniandes.interactivemapuniandes.model.data.RouteResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

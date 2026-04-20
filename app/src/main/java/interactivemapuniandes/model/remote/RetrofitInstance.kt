@@ -1,4 +1,4 @@
-package com.uniandes.interactivemapuniandes.data.remote
+package com.uniandes.interactivemapuniandes.model.remote
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

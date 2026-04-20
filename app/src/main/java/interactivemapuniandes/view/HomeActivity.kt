@@ -1,10 +1,6 @@
-package com.uniandes.interactivemapuniandes.view
+package com.uniandes.interactivemapuniandes.ui
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -27,6 +23,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
 import com.google.mlkit.vision.barcode.common.Barcode
+import com.uniandes.interactivemapuniandes.R
+import com.uniandes.interactivemapuniandes.data.remote.RetrofitInstance
+import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
+import android.net.Uri
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -35,6 +43,10 @@ import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.view.LoginActivity
 import com.uniandes.interactivemapuniandes.view.RouteActivity
 import kotlinx.coroutines.launch
+
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.firebase.auth.FirebaseAuth
+import com.uniandes.interactivemapuniandes.utils.setupNavigation
 
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -50,7 +62,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_home)
 
         setupMap()
-        setupBottomNav()
+        val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        nav.setupNavigation(this, "explore")
         setupBottomSheet()
         setupPrototypeClicks()
         handleRouteFromIntent()
@@ -242,30 +255,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         bottomSheetBehavior.isHideable = false
     }
 
-    private fun setupBottomNav() {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.selectedItemId = R.id.nav_explore
-
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_explore -> true
-                R.id.nav_schedules -> {
-                    Toast.makeText(this, "Schedules screen prototype", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.nav_alerts -> {
-                    Toast.makeText(this, "Alerts screen prototype", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.nav_settings -> {
-                    Toast.makeText(this, "Settings screen prototype", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else -> false
-            }
-        }
-    }
-
     private fun setupPrototypeClicks() {
         findViewById<View>(R.id.cvSearch).setOnClickListener {
             Toast.makeText(this, "Search prototype", Toast.LENGTH_SHORT).show()
@@ -297,9 +286,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
-        findViewById<View>(R.id.profileContainer).setOnClickListener {
-            logout()
-        }
     }
 
     private fun fetchRouteFromBackend(fromNode: String, toNode: String) {
@@ -397,13 +383,4 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         return (this * resources.displayMetrics.density).toInt()
     }
 
-    private fun logout() {
-        FirebaseAuth.getInstance().signOut()
-
-        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
-
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-    }
 }

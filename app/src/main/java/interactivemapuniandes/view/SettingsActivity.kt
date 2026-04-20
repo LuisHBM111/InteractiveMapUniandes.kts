@@ -1,4 +1,4 @@
-package com.uniandes.interactivemapuniandes.ui
+package com.uniandes.interactivemapuniandes.view
 
 import android.app.Activity
 import android.content.Intent
@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -16,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.uniandes.interactivemapuniandes.R
 import coil3.load
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -32,13 +29,12 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
+import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
-import kotlin.math.log
 
 class SettingsActivity : AppCompatActivity() {
 
-    val uid = FirebaseAuth.getInstance().currentUser?.uid
-    private var isUpdatingChildren = false
+    private val uid = FirebaseAuth.getInstance().currentUser?.uid
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
     private lateinit var imageRef: StorageReference
@@ -70,66 +66,53 @@ class SettingsActivity : AppCompatActivity() {
         setupPrivacyPolicies()
         setupNotificationsBottomSheet()
         setupOfflineMaps()
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == 0) {
-            val uri = data?.data ?: return
+        if (resultCode != Activity.RESULT_OK || requestCode != 0) return
 
-            val profileImage = findViewById<ImageView>(R.id.profile_image_settings_change)
-            val uploadTask = imageRef.putFile(uri)
+        val currentUid = uid ?: return
+        val uri = data?.data ?: return
+        val profileImage = findViewById<ImageView>(R.id.profile_image_settings_change)
+        val uploadTask = imageRef.putFile(uri)
 
-            // Register observers to listen for when the download is done or if it fails
-            uploadTask.addOnFailureListener {
-                // Handle unsuccessful uploads
-                e -> Log.e("SettingsActivity ${uri}", "Upload failed", e)
-            }.addOnSuccessListener { taskSnapshot ->
-                // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                // ...
+        uploadTask.addOnFailureListener { e ->
+            Log.e("SettingsActivity", "Upload failed", e)
+        }
+
+        uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let { throw it }
             }
-
-            val urlTask = uploadTask.continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let {
-                        throw it
-                    }
-                }
-                imageRef.downloadUrl
-            }.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val downloadUri = task.result
-                    profileImage.load(downloadUri)
-                    val data = hashMapOf("photoURL" to downloadUri.toString())
-                    db.collection("users").document(uid!!).set(data, SetOptions.merge())
-                } else {
-                    // Handle failures
-                    profileImage.load("https://img.game8.co/4029048/53f27f108863a813ae1ca1d22aa50d40.png/show")
-                }
+            imageRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
+                profileImage.load(downloadUri)
+                val payload = hashMapOf("photoURL" to downloadUri.toString())
+                db.collection("users").document(currentUid).set(payload, SetOptions.merge())
+            } else {
+                profileImage.load("https://img.game8.co/4029048/53f27f108863a813ae1ca1d22aa50d40.png/show")
             }
-
         }
     }
 
-    fun uploadProfileImage(){
-
+    private fun uploadProfileImage() {
         val profileImage = findViewById<ImageView>(R.id.profile_image_settings_change)
 
         profileImage.setOnClickListener {
-
             Intent(Intent.ACTION_GET_CONTENT).also {
                 it.type = "image/*"
                 startActivityForResult(it, 0)
             }
-
         }
-
     }
 
-    fun setupImage(){
+    private fun setupImage() {
+        val currentUid = uid ?: return
         val profileImage = findViewById<ImageView>(R.id.profile_image_settings_change)
-        db.collection("users").document(uid!!).get().addOnSuccessListener {
+        db.collection("users").document(currentUid).get().addOnSuccessListener {
             val url = it.getString("photoURL")
             profileImage.load(url)
         }
@@ -137,7 +120,6 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun logout() {
         FirebaseAuth.getInstance().signOut()
-
         Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
 
         val intent = Intent(this, LoginActivity::class.java)
@@ -145,87 +127,77 @@ class SettingsActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun setupLogout(){
+    private fun setupLogout() {
         findViewById<View>(R.id.settings_logout).setOnClickListener {
             logout()
         }
     }
 
-    //Language Bottom Sheet
-    fun setupLanguageChange(){
+    private fun setupLanguageChange() {
         val standardBottomSheet = findViewById<ConstraintLayout>(R.id.standard_bottom_sheet)
-        Log.e("SettingsActivity", "after findViewById: $standardBottomSheet")
         val standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
-        standardBottomSheetBehavior.setState(STATE_HIDDEN);
+        standardBottomSheetBehavior.state = STATE_HIDDEN
+
         findViewById<ConstraintLayout>(R.id.layout_settings_language).setOnClickListener {
-            standardBottomSheetBehavior.setState(STATE_EXPANDED);
+            standardBottomSheetBehavior.state = STATE_EXPANDED
         }
-        setupLanguageChangeButton(standardBottomSheetBehavior)
+
+        setupLanguageChangeButtons(standardBottomSheetBehavior)
     }
 
-    fun setupLanguageChangeButton(standardBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>){
+    private fun setupLanguageChangeButtons(
+        standardBottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    ) {
         findViewById<Button>(R.id.language_english).setOnClickListener {
-            standardBottomSheetBehavior.setState(STATE_COLLAPSED);
+            standardBottomSheetBehavior.state = STATE_COLLAPSED
         }
         findViewById<Button>(R.id.language_spanish).setOnClickListener {
-            standardBottomSheetBehavior.setState(STATE_COLLAPSED);
+            standardBottomSheetBehavior.state = STATE_COLLAPSED
         }
     }
 
-    //Policies redirection
-    fun setupPrivacyPolicies(){
+    private fun setupPrivacyPolicies() {
         findViewById<View>(R.id.privacy_layout_settings).setOnClickListener {
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
         }
     }
 
-    //Offline Maps redirection
-    fun setupOfflineMaps(){
+    private fun setupOfflineMaps() {
         findViewById<View>(R.id.offline_maps_layout_settings).setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java)
+            val intent = Intent(this, OfflineMapsActivity::class.java)
             startActivity(intent)
         }
     }
 
-    //Notifications Bottom Sheet
-    fun setupNotificationsBottomSheet(){
+    private fun setupNotificationsBottomSheet() {
         val standardBottomSheet = findViewById<ConstraintLayout>(R.id.standard_bottom_sheet_notif)
         val standardBottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
-        standardBottomSheetBehavior.setState(STATE_HIDDEN);
+        standardBottomSheetBehavior.state = STATE_HIDDEN
+
         findViewById<ConstraintLayout>(R.id.push_notifications_layout_settings).setOnClickListener {
-            standardBottomSheetBehavior.setState(STATE_EXPANDED);
+            standardBottomSheetBehavior.state = STATE_EXPANDED
         }
-        setupLanguageChangeButton(standardBottomSheetBehavior)
-        var checkBox1 = findViewById<MaterialCheckBox>(R.id.checkbox_child_1)
-        var checkBox2 = findViewById<MaterialCheckBox>(R.id.checkbox_child_2)
-        var checkBox3 = findViewById<MaterialCheckBox>(R.id.checkbox_child_3)
-        var checkBox4 = findViewById<MaterialCheckBox>(R.id.checkbox_child_4)
-        val childrenCheckBoxes = listOf(checkBox1, checkBox2, checkBox3, checkBox4)
-        setChildrensState(childrenCheckBoxes)
+
+        val childrenCheckBoxes = listOf(
+            findViewById<MaterialCheckBox>(R.id.checkbox_child_1),
+            findViewById<MaterialCheckBox>(R.id.checkbox_child_2),
+            findViewById<MaterialCheckBox>(R.id.checkbox_child_3),
+            findViewById<MaterialCheckBox>(R.id.checkbox_child_4)
+        )
+        setChildrenState(childrenCheckBoxes)
     }
 
-    // Checked state changed listener for each child
-    fun setChildrensState(childrenCheckBoxes : List<MaterialCheckBox>){
+    private fun setChildrenState(childrenCheckBoxes: List<MaterialCheckBox>) {
         for (child in childrenCheckBoxes) {
-            child.addOnCheckedStateChangedListener { materialCheckBox, state ->
-                Log.e("SettingsActivity", "algo: $state")
-                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            child.addOnCheckedStateChangedListener { _, state ->
+                Log.e("SettingsActivity", "Notification state: $state")
+                val builder = AlertDialog.Builder(this)
                 builder
-                    .setMessage("I am the message")
-                    .setTitle("I am the title")
-                val dialog: AlertDialog = builder.create()
-                dialog.show()
+                    .setMessage("Notification preference updated")
+                    .setTitle("Settings")
+                builder.create().show()
             }
         }
     }
-
-            // To check a switch
-            //switchmaterial.isChecked = true
-
-// To listen for a switch's checked/unchecked state changes
-            //switchmaterial.setOnCheckedChangeListener { buttonView, isChecked
-            // Responds to switch being checked/unchecked }
-        }
-
-
+}

@@ -1,4 +1,4 @@
-package interactivemapuniandes.ui
+package com.uniandes.interactivemapuniandes.view
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +12,7 @@ class OfflineMapsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_offline_maps)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)

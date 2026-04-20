@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
@@ -24,15 +23,14 @@
             android:exported="false" />
         <activity
             android:name=".view.RouteActivity"
-            android:exported="false"
-            tools:ignore="MissingClass" />
-
-        <activity
-            android:name=".ui.SettingsActivity"
             android:exported="false" />
 
         <activity
-            android:name="interactivemapuniandes.ui.OfflineMapsActivity"
+            android:name=".view.SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.OfflineMapsActivity"
             android:exported="false" />
 
         <meta-data

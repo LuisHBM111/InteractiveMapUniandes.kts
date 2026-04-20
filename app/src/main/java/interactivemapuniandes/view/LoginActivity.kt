@@ -9,11 +9,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
 import com.uniandes.interactivemapuniandes.viewmodel.LoginViewModel
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
@@ -23,7 +25,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnLogin: MaterialButton
     private lateinit var tvRegister: TextView
     private lateinit var tvForgotPassword: TextView
-
     private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,14 +32,13 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
         auth = FirebaseAuth.getInstance()
-
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
@@ -46,7 +46,8 @@ class LoginActivity : AppCompatActivity() {
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
         loginViewModel = LoginViewModel(AuthRepository(auth))
 
-        // Si ya hay sesión activa, entra directo al Home
+        observeUiState()
+
         if (auth.currentUser != null) {
             goToHome()
             return
@@ -68,28 +69,28 @@ class LoginActivity : AppCompatActivity() {
     private fun loginUserView() {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
-
         loginViewModel.loginUser(email, password)
+    }
 
-        val state = loginViewModel.uiState
+    private fun observeUiState() {
+        lifecycleScope.launch {
+            loginViewModel.uiState.collect { state ->
+                btnLogin.isEnabled = !state.isLoading
+                btnLogin.text = if (state.isLoading) "Logging in..." else "Log In"
 
-        btnLogin.isEnabled = false
-        btnLogin.text = "Logging in..."
+                etEmail.error = state.emailError
+                etPassword.error = state.passwordError
 
-        etEmail.error = state.emailError
-        etPassword.error = state.passwordError
+                if (state.loginSuccess) {
+                    goToHome()
+                }
 
-        if(state.loginSuccess){
-            goToHome()
+                state.generalError?.let {
+                    Toast.makeText(this@LoginActivity, it, Toast.LENGTH_LONG).show()
+                    loginViewModel.clearGeneralError()
+                }
+            }
         }
-
-        if (state.generalError != null) {
-            Toast.makeText(this, state.generalError, Toast.LENGTH_LONG).show()
-        }
-
-        btnLogin.isEnabled = true
-        btnLogin.text = "Log In  →"
-
     }
 
     private fun sendResetEmail() {
@@ -104,11 +105,7 @@ class LoginActivity : AppCompatActivity() {
         auth.sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(
-                        this,
-                        "Password reset email sent",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this, "Password reset email sent", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(
                         this,

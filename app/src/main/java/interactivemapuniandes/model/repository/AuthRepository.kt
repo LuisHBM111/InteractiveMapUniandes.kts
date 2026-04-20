@@ -1,6 +1,5 @@
 package com.uniandes.interactivemapuniandes.model.repository
 
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 
 class AuthRepository(private val auth: FirebaseAuth) {

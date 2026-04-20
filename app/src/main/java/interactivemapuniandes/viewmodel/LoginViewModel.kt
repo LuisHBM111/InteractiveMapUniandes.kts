@@ -1,41 +1,50 @@
 package com.uniandes.interactivemapuniandes.viewmodel
 
-import android.widget.EditText
-import android.widget.Toast
-import com.google.android.material.button.MaterialButton
-import com.google.firebase.auth.FirebaseAuth
 import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
 import com.uniandes.interactivemapuniandes.model.state.LoginUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-class LoginViewModel (private val authRepository: AuthRepository){
+class LoginViewModel(private val authRepository: AuthRepository) {
 
-    var uiState = LoginUiState()
-        private set
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun loginUser(email: String, password: String) {
-
-        uiState = LoginUiState()
+        _uiState.value = LoginUiState()
 
         if (email.isBlank()) {
-            uiState = uiState.copy(emailError = "Enter your email")
+            _uiState.value = _uiState.value.copy(emailError = "Enter your email")
             return
         }
 
         if (password.isBlank()) {
-            uiState = uiState.copy(passwordError = "Enter your password")
+            _uiState.value = _uiState.value.copy(passwordError = "Enter your password")
             return
         }
 
-        uiState = uiState.copy(loginSuccess = true)
+        _uiState.value = _uiState.value.copy(isLoading = true)
 
         authRepository.login(email, password) { success, message ->
-            uiState = if (success){
-                uiState.copy(isLoading = false, loginSuccess = true)
+            _uiState.value = if (success) {
+                _uiState.value.copy(
+                    isLoading = false,
+                    loginSuccess = true,
+                    generalError = null
+                )
             } else {
-                uiState.copy(isLoading = false, generalError = message)
+                _uiState.value.copy(
+                    isLoading = false,
+                    generalError = message
+                )
             }
         }
-
     }
 
+    fun clearGeneralError() {
+        if (_uiState.value.generalError != null) {
+            _uiState.value = _uiState.value.copy(generalError = null)
+        }
+    }
 }

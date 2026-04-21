@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -43,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
         tvRegister = findViewById(R.id.tvRegister)
-        tvForgotPassword = findViewById(R.id.tvForgotPassword)
+        tvForgotPassword = findViewById(R.id.forgotPasswordSend)
         loginViewModel = LoginViewModel(AuthRepository(auth))
 
         observeUiState()
@@ -62,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         tvForgotPassword.setOnClickListener {
-            sendResetEmail()
+            sendResetEmailView()
         }
     }
 
@@ -70,6 +71,11 @@ class LoginActivity : AppCompatActivity() {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
         loginViewModel.loginUser(email, password)
+    }
+
+    private fun sendResetEmailView(){
+        val email = etEmail.text.toString().trim()
+        loginViewModel.sendResetEmail(email)
     }
 
     private fun observeUiState() {
@@ -80,6 +86,19 @@ class LoginActivity : AppCompatActivity() {
 
                 etEmail.error = state.emailError
                 etPassword.error = state.passwordError
+
+                tvForgotPassword.isEnabled = !state.isSendingResetEmail
+                tvForgotPassword.text = if (state.isSendingResetEmail) "Sending..." else "Send email"
+
+                if (state.resetEmailSent) {
+                    Toast.makeText(this@LoginActivity, "Reset email sent", Toast.LENGTH_LONG).show()
+                    loginViewModel.clearResetEmailState()
+                }
+
+                state.resetEmailError?.let {
+                    Toast.makeText(this@LoginActivity, it, Toast.LENGTH_LONG).show()
+                    loginViewModel.clearResetEmailState()
+                }
 
                 if (state.loginSuccess) {
                     goToHome()
@@ -92,30 +111,6 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun sendResetEmail() {
-        val email = etEmail.text.toString().trim()
-
-        if (email.isEmpty()) {
-            etEmail.error = "Enter your email first"
-            etEmail.requestFocus()
-            return
-        }
-
-        auth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Password reset email sent", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(
-                        this,
-                        task.exception?.localizedMessage ?: "Could not send reset email",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-    }
-
     private fun goToHome() {
         val intent = Intent(this, HomeActivity::class.java)
         startActivity(intent)

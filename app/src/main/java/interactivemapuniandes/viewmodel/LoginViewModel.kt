@@ -12,7 +12,13 @@ class LoginViewModel(private val authRepository: AuthRepository) {
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun loginUser(email: String, password: String) {
-        _uiState.value = LoginUiState()
+        _uiState.value = _uiState.value.copy(
+            emailError = null,
+            passwordError = null,
+            generalError = null,
+            isLoading = false,
+            loginSuccess = false
+        )
 
         if (email.isBlank()) {
             _uiState.value = _uiState.value.copy(emailError = "Enter your email")
@@ -42,9 +48,48 @@ class LoginViewModel(private val authRepository: AuthRepository) {
         }
     }
 
+    fun sendResetEmail(email: String) {
+        _uiState.value = _uiState.value.copy(
+            emailError = null,
+            resetEmailSent = false,
+            resetEmailError = null
+        )
+
+        if (email.isBlank()) {
+            _uiState.value = _uiState.value.copy(emailError = "Enter your email")
+            return
+        }
+
+        _uiState.value = _uiState.value.copy(isSendingResetEmail = true)
+
+        authRepository.sendPasswordResetEmail(email) { success, message ->
+            _uiState.value = if (success) {
+                _uiState.value.copy(
+                    isSendingResetEmail = false,
+                    resetEmailSent = true,
+                    resetEmailError = null
+                )
+            } else {
+                _uiState.value.copy(
+                    isSendingResetEmail = false,
+                    resetEmailError = message
+                )
+            }
+        }
+    }
+
     fun clearGeneralError() {
         if (_uiState.value.generalError != null) {
             _uiState.value = _uiState.value.copy(generalError = null)
+        }
+    }
+
+    fun clearResetEmailState() {
+        if (_uiState.value.resetEmailSent || _uiState.value.resetEmailError != null) {
+            _uiState.value = _uiState.value.copy(
+                resetEmailSent = false,
+                resetEmailError = null
+            )
         }
     }
 }

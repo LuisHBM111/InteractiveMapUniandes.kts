@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_color"
     android:fillViewport="true"
-    tools:context="com.uniandes.interactivemapuniandes.ui.LoginActivity">
+    tools:context="com.uniandes.interactivemapuniandes.view.LoginActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,16 +17,6 @@
         android:paddingEnd="24dp"
         android:paddingBottom="24dp">
 
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@string/desc_back"
-            android:src="@android:drawable/ic_media_previous"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/dark_blue" />
-
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
@@ -35,10 +25,9 @@
             android:textColor="@color/dark_blue"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btnBack" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/ivLogo"
@@ -156,18 +145,6 @@
                 app:tint="@color/gray_text" />
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/tvForgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Forgot your password?"
-            android:textColor="@color/gray_text"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/flPassword" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
             android:layout_width="0dp"
@@ -182,7 +159,7 @@
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvForgotPassword" />
+            app:layout_constraintTop_toBottomOf="@id/flPassword" />
 
         <View
             android:id="@+id/dividerLeft"
@@ -218,46 +195,31 @@
             app:layout_constraintTop_toBottomOf="@id/btnLogin" />
 
         <LinearLayout
-            android:id="@+id/llSocialButtons"
-            android:layout_width="0dp"
+            android:id="@+id/tvForgotPassword"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:gravity="center"
+            android:layout_marginTop="26dp"
             android:orientation="horizontal"
-            android:weightSum="2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dividerLeft">
+            app:layout_constraintTop_toBottomOf="@id/tvOr"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGoogle"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:text="Google"
-                android:textAllCaps="false"
-                android:textColor="@color/dark_blue"
-                android:textSize="14sp"
-                app:backgroundTint="@android:color/white"
-                app:cornerRadius="10dp"
-                app:strokeColor="@color/input_stroke"
-                app:strokeWidth="1dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Forgot your password? "
+                android:textColor="@color/gray_text"
+                android:textSize="13sp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnApple"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="Apple"
-                android:textAllCaps="false"
+            <TextView
+                android:id="@+id/forgotPasswordSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send email"
                 android:textColor="@color/dark_blue"
-                android:textSize="14sp"
-                app:backgroundTint="@android:color/white"
-                app:cornerRadius="10dp"
-                app:strokeColor="@color/input_stroke"
-                app:strokeWidth="1dp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -268,7 +230,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/llSocialButtons"
+            app:layout_constraintTop_toBottomOf="@id/tvForgotPassword"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView

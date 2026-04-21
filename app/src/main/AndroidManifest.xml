@@ -4,10 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
+        android:name=".CustomApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,12 +19,19 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ui.SignupActivity"
+            android:name=".view.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.RouteActivity"
-            android:exported="false"
-            tools:ignore="MissingClass" />
+            android:name=".view.RouteActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.OfflineMapsActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -34,10 +41,10 @@
             android:value="barcode_ui" />
 
         <activity
-            android:name=".ui.HomeActivity"
+            android:name=".view.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".view.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

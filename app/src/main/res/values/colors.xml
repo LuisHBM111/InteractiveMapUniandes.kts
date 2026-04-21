@@ -1,5 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="md_theme_light_primary">#FFE11F</color>
+    <color name="md_theme_light_primary_variant">#FFF585</color>
+    <color name="md_theme_light_primary_container">#FFF585</color>
+    <color name="md_theme_light_on_primary">#202020</color>
+    <color name="md_theme_light_on_primary_container">#202020</color>
+    <color name="md_theme_light_secondary">#FFD100</color>
+    <color name="md_theme_light_secondary_variant">#FFF585</color>
+    <color name="md_theme_light_secondary_container">#FFF585</color>
+    <color name="md_theme_light_on_secondary">#202020</color>
+    <color name="md_theme_light_on_secondary_container">#202020</color>
+    <color name="md_theme_light_background">#FFFFFF</color>
+    <color name="md_theme_light_on_background">#202020</color>
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_on_surface">#202020</color>
+    <color name="md_theme_light_surface_variant">#D6D6D6</color>
+    <color name="md_theme_light_on_surface_variant">#202020</color>
+    <color name="md_theme_light_inverse_surface">#202020</color>
+    <color name="md_theme_light_inverse_on_surface">#FFFFFF</color>
+    <color name="md_theme_light_outline">#D6D6D6</color>
+
+    <color name="md_theme_dark_primary">#FFE11F</color>
+    <color name="md_theme_dark_primary_variant">#FFF585</color>
+    <color name="md_theme_dark_primary_container">#FFF585</color>
+    <color name="md_theme_dark_on_primary">#202020</color>
+    <color name="md_theme_dark_on_primary_container">#202020</color>
+    <color name="md_theme_dark_secondary">#FFD100</color>
+    <color name="md_theme_dark_secondary_variant">#FFF585</color>
+    <color name="md_theme_dark_secondary_container">#FFF585</color>
+    <color name="md_theme_dark_on_secondary">#202020</color>
+    <color name="md_theme_dark_on_secondary_container">#202020</color>
+    <color name="md_theme_dark_background">#202020</color>
+    <color name="md_theme_dark_on_background">#FFFFFF</color>
+    <color name="md_theme_dark_surface">#333533</color>
+    <color name="md_theme_dark_on_surface">#FFFFFF</color>
+    <color name="md_theme_dark_surface_variant">#333533</color>
+    <color name="md_theme_dark_on_surface_variant">#FFFFFF</color>
+    <color name="md_theme_dark_inverse_surface">#FFFFFF</color>
+    <color name="md_theme_dark_inverse_on_surface">#202020</color>
+    <color name="md_theme_dark_outline">#D6D6D6</color>
+
+    <color name="md_theme_error">#B3261E</color>
+    <color name="md_theme_on_error">#FFFFFF</color>
+    <color name="md_theme_error_container">#F9DEDC</color>
+    <color name="md_theme_on_error_container">#410E0B</color>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -14,4 +59,18 @@
     <color name="gray_text">#757575</color>
     <color name="input_background">#FFFFFF</color>
     <color name="input_stroke">#E0E0E0</color>
+
+    <color name="icon_background_light_yellow">#FFF9C4</color>
+
+    <color name="settings_title_gray">#5C6B82</color>
+
+    <color name="settings_secondary_text">#7D8A9D</color>
+
+    <color name="settings_text_dark">#101828</color>
+
+    <color name="logout_red">#D92D20</color>
+
+    <color name="logout_button_bg">#F2F4F7</color>
+
+    <color name="divider_color">#F2F4F7</color>
 </resources>

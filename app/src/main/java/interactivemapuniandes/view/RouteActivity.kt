@@ -1,4 +1,4 @@
-package com.uniandes.interactivemapuniandes.ui
+package com.uniandes.interactivemapuniandes.view
 
 import android.content.Intent
 import android.os.Bundle

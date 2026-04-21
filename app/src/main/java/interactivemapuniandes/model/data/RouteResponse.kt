@@ -1,4 +1,4 @@
-package com.uniandes.interactivemapuniandes.model
+package com.uniandes.interactivemapuniandes.model.data
 
 data class RouteResponse(
     val from: String,

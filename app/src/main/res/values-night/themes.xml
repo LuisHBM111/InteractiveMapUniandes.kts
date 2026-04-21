@@ -1,16 +1,42 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Theme.InteractiveMapUniandes" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+
+        <item name="materialSwitchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
+
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorPrimaryVariant">@color/md_theme_dark_primary_variant</item>
+        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
+        <item name="android:colorBackground">@color/md_theme_dark_background</item>
+        <item name="colorError">@color/md_theme_error</item>
+
+        <item name="colorPrimaryDark">@color/md_theme_dark_primary_variant</item>
+        <item name="colorSecondaryVariant">@color/md_theme_dark_secondary_variant</item>
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="colorOnPrimary">@color/md_theme_dark_on_primary</item>
+        <item name="colorOnSecondary">@color/md_theme_dark_on_secondary</item>
+        <item name="colorOnBackground">@color/md_theme_dark_on_background</item>
+        <item name="colorOnSurface">@color/md_theme_dark_on_surface</item>
+        <item name="colorOnError">@color/md_theme_on_error</item>
+
+        <item name="colorPrimaryInverse">@color/md_theme_light_primary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_dark_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_dark_on_primary_container</item>
+        <item name="colorSecondaryContainer">@color/md_theme_dark_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_dark_on_secondary_container</item>
+        <item name="colorTertiary">@color/md_theme_dark_secondary</item>
+        <item name="colorOnTertiary">@color/md_theme_dark_on_secondary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_dark_secondary_container</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_dark_on_secondary_container</item>
+        <item name="colorSurfaceVariant">@color/md_theme_dark_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_dark_on_surface_variant</item>
+        <item name="colorSurfaceInverse">@color/md_theme_dark_inverse_surface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverse_on_surface</item>
+        <item name="colorOutline">@color/md_theme_dark_outline</item>
+        <item name="colorErrorContainer">@color/md_theme_error_container</item>
+        <item name="colorOnErrorContainer">@color/md_theme_on_error_container</item>
+
+        <item name="android:statusBarColor">@color/md_theme_dark_background</item>
+        <item name="android:navigationBarColor">@color/md_theme_dark_background</item>
+        <item name="android:windowBackground">@color/md_theme_dark_background</item>
     </style>
 </resources>

@@ -73,4 +73,9 @@
     <color name="logout_button_bg">#F2F4F7</color>
 
     <color name="divider_color">#F2F4F7</color>
+
+    <color name="route_screen_background">#F4F6FA</color>
+    <color name="route_card_stroke">#E5EAF1</color>
+    <color name="route_preview_background">#ECF6EE</color>
+    <color name="route_soft_text">#5F7088</color>
 </resources>

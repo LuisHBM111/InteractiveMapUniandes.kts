@@ -7,8 +7,12 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import java.util.Locale
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -41,6 +45,19 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private val locationPermissionRequest = 1001
     private lateinit var mMap: GoogleMap
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
+    private lateinit var textToSpeech: TextToSpeech
+
+    private val speechRecognizerLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) { // Check if recognition succeeded
+            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) // Extract spoken text
+            val text = spokenText?.firstOrNull() // Get the first match
+            if (!text.isNullOrBlank()) {
+                translateAndSpeak(text) // Translate and play the text
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +72,56 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         handleRouteFromIntent()
         setupFilterChips()
         setupQrScanner()
+        setupVoiceAssistant()
+    }
+
+    private fun setupVoiceAssistant() { // Initialize voice assistant features
+        textToSpeech = TextToSpeech(this) { status -> // Set up TTS engine
+            if (status == TextToSpeech.SUCCESS) {
+                textToSpeech.language = Locale("es", "ES") // Default TTS language
+            }
+        }
+
+        findViewById<ImageView>(R.id.ivMic).setOnClickListener { // Listen for mic clicks
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply { // Prepare speech intent
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US") // Default listening language.
+                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...") // User prompt
+            }
+            try {
+                speechRecognizerLauncher.launch(intent)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Speech recognition missing", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun translateAndSpeak(text: String) { // Handle translation process
+        lifecycleScope.launch { // Run on a coroutine
+            try {
+                Toast.makeText(this@HomeActivity, "Translating: $text", Toast.LENGTH_SHORT).show() // Notify user
+                val response = RetrofitInstance.translateApi.translateText(text, "es") // Call translation API
+                if (response.isSuccessful) {
+                    val translated = response.body()?.translated // Extract result
+                    if (translated != null) {
+                        textToSpeech.speak(translated, TextToSpeech.QUEUE_FLUSH, null, null) // Speak translation
+                        Toast.makeText(this@HomeActivity, translated, Toast.LENGTH_LONG).show() // Display result
+                    }
+                } else {
+                    Toast.makeText(this@HomeActivity, "Translation error: ${response.code()}", Toast.LENGTH_SHORT).show() // Handle API error
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@HomeActivity, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    override fun onDestroy() { // Clean up resources
+        if (::textToSpeech.isInitialized) {
+            textToSpeech.stop() // Stop TTS
+            textToSpeech.shutdown() // Release TTS resources
+        }
+        super.onDestroy()
     }
 
     private fun setupQrScanner() {

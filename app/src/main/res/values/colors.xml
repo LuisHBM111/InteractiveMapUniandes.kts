@@ -78,4 +78,9 @@
     <color name="route_card_stroke">#E5EAF1</color>
     <color name="route_preview_background">#ECF6EE</color>
     <color name="route_soft_text">#5F7088</color>
+
+    <color name="schedule_chip_background">#F3F4F7</color>
+    <color name="schedule_chip_selected">#FFE11F</color>
+    <color name="schedule_chip_day_text">#6D7483</color>
+    <color name="schedule_chip_selected_text">#101828</color>
 </resources>

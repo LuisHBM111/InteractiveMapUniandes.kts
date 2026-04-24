@@ -6,6 +6,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.view.HomeActivity
 import com.uniandes.interactivemapuniandes.view.SettingsActivity
+import interactivemapuniandes.view.ScheduleActivity
+import kotlin.jvm.java
 
 fun BottomNavigationView.setupNavigation(activity: Activity, current: String) {
 
@@ -20,8 +22,17 @@ fun BottomNavigationView.setupNavigation(activity: Activity, current: String) {
 
     bottomNav.setOnItemSelectedListener { item ->
         when (item.itemId) {
-            R.id.nav_explore,
-            R.id.nav_schedules,
+            R.id.nav_explore -> {
+                val intent = Intent(activity, HomeActivity::class.java)
+                activity.startActivity(intent)
+                true
+            }
+            R.id.nav_schedules -> {
+                val intent = Intent(activity, ScheduleActivity::class.java)
+                activity.startActivity(intent)
+                true
+            }
+
             R.id.nav_alerts -> {
                 val intent = Intent(activity, HomeActivity::class.java)
                 activity.startActivity(intent)

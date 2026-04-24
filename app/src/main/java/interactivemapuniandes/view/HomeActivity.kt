@@ -237,17 +237,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupBottomSheet() {
-        val bottomSheet = findViewById<NestedScrollView>(R.id.bottomSheet)
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-
-        bottomSheetBehavior.maxHeight = screenHeight / 2
-        bottomSheetBehavior.isFitToContents = true
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetBehavior.peekHeight = 180.dpToPx()
-        bottomSheetBehavior.isHideable = false
     }
 
     private fun setupPrototypeClicks() {
@@ -275,10 +264,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     else -> GoogleMap.MAP_TYPE_NORMAL
                 }
             }
-        }
-
-        findViewById<View>(R.id.tvSeeAll).setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         findViewById<View>(R.id.profileContainer).setOnClickListener {

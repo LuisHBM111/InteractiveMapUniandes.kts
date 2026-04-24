@@ -211,7 +211,7 @@ class RouteActivity : AppCompatActivity() {
         etRouteFrom.setText(prefillNodeInput(currentRoute?.from))
         etRouteTo.setText(prefillNodeInput(currentRoute?.to))
 
-        val dialog = MaterialAlertDialogBuilder(this)
+        val dialog = MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog)
             .setTitle("Plan custom route")
             .setView(dialogView)
             .setNegativeButton("Cancel", null)

@@ -46,6 +46,8 @@
         <item name="extendedFloatingActionButtonStyle">@style/Widget.App.ExtendedFloatingActionButton</item>
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
 
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+
     </style>
 
     <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
@@ -69,6 +71,17 @@
     <style name="ThemeOverlay.App.FloatingActionButton" parent="">
         <item name="colorContainer">@color/md_theme_light_surface</item>
         <item name="colorOnContainer">@color/md_theme_light_on_surface</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/route_dialog_title</item>
+        <item name="colorSecondary">@color/route_dialog_title</item>
+        <item name="colorSurface">@color/route_dialog_background</item>
+        <item name="colorOnSurface">@color/route_dialog_title</item>
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
     </style>
 
 </resources>

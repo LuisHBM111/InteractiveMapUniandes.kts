@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/route_screen_background"
+    android:background="@color/background_color"
     android:fillViewport="true"
     tools:context=".view.RouteActivity">
 
@@ -110,30 +110,33 @@
                 android:layout_height="match_parent"
                 android:padding="20dp">
 
-                <View
+                <ImageView
                     android:id="@+id/routeLine"
-                    android:layout_width="4dp"
-                    android:layout_height="0dp"
-                    android:background="@color/primary_yellow"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     app:layout_constraintBottom_toTopOf="@id/endDot"
                     app:layout_constraintStart_toStartOf="@id/startDot"
-                    app:layout_constraintTop_toBottomOf="@id/startDot" />
+                    app:layout_constraintTop_toBottomOf="@id/startDot"
+                    android:src="@drawable/ic_south"
+                    app:tint="@color/black" />
 
-                <View
+                <ImageView
                     android:id="@+id/startDot"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:background="@drawable/route_dot_dark"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/ic_mylocation"
+                    app:tint="@color/black" />
 
-                <View
+                <ImageView
                     android:id="@+id/endDot"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:background="@drawable/route_dot_yellow"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_homework"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:tint="@color/black" />
 
                 <TextView
                     android:id="@+id/tvStartLabel"

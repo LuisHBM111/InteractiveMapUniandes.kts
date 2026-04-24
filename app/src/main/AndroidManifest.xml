@@ -19,16 +19,17 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name="interactivemapuniandes.view.ScheduleActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.SignupActivity"
             android:exported="false" />
         <activity
             android:name=".view.RouteActivity"
             android:exported="false" />
-
         <activity
             android:name=".view.SettingsActivity"
             android:exported="false" />
-
         <activity
             android:name=".view.OfflineMapsActivity"
             android:exported="false" />

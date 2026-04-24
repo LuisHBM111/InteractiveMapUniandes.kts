@@ -23,11 +23,24 @@ class RouteRepository(
     }
 
     suspend fun getRouteToNextClass(from: String): Result<RouteResponse> {
-        return executeAuthorizedRequest { token ->
+        val directResult = executeAuthorizedRequest { token ->
             api.getRouteToNextClass(token.asBearerHeader(), from)
         }.map { body ->
             parseRouteResponse(body, fallbackFrom = from)
         }
+
+        return directResult.fold(
+            onSuccess = { route ->
+                if (route.path.isNotEmpty() || route.from.equals(route.to, ignoreCase = true)) {
+                    Result.success(route)
+                } else {
+                    buildRouteFromNextClassFallback(from)
+                }
+            },
+            onFailure = {
+                buildRouteFromNextClassFallback(from)
+            }
+        )
     }
 
     suspend fun getRouteToClass(classId: String, from: String): Result<RouteResponse> {
@@ -131,6 +144,35 @@ class RouteRepository(
         } catch (error: Exception) {
             Result.failure(error.toRepositoryException())
         }
+    }
+
+    private suspend fun buildRouteFromNextClassFallback(from: String): Result<RouteResponse> {
+        val nextClassResult = getNextClass()
+        return nextClassResult.fold(
+            onSuccess = { nextClassResponse ->
+                if (!nextClassResponse.hasUpcomingClass || nextClassResponse.nextClass == null) {
+                    return Result.failure(IllegalStateException("No upcoming class found"))
+                }
+
+                val nextClass = nextClassResponse.nextClass
+                val routeTarget = nextClass.destination?.routeTarget
+                    ?: nextClass.destination?.building?.code
+                    ?: nextClass.room?.building?.code
+                    ?: return Result.failure(
+                        IllegalStateException("The next class does not have a routable destination")
+                    )
+
+                getGraphPath(from, routeTarget).map { graphRoute ->
+                    graphRoute.copy(
+                        classId = nextClass.id,
+                        classTitle = nextClass.title
+                    )
+                }
+            },
+            onFailure = { error ->
+                Result.failure(error)
+            }
+        )
     }
 
     private fun extractErrorMessage(response: Response<*>): String {

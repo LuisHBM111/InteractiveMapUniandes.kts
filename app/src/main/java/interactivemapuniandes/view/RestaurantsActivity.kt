@@ -17,9 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
+import coil3.load
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.Restaurant
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.launch
 
@@ -30,6 +32,7 @@ class RestaurantsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("restaurants_list")
         enableEdgeToEdge()
         setContentView(R.layout.activity_restaurants)
 
@@ -42,9 +45,13 @@ class RestaurantsActivity : AppCompatActivity() {
         findViewById<BottomNavigationView>(R.id.bottomNav).setupNavigation(this, "explore")
 
         val rv = findViewById<RecyclerView>(R.id.rvRestaurants)
-        adapter = RestaurantAdapter { r -> openDetail(r) }
+        adapter = RestaurantAdapter(
+            onClick = { r -> openDetail(r) },
+            onFavToggle = { r, fav -> toggleFavorite(r.id, fav) }
+        )
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
+        loadFavorites()
 
         findViewById<MaterialButton>(R.id.btnSortRating).setOnClickListener {
             sortByRating = !sortByRating
@@ -90,6 +97,32 @@ class RestaurantsActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadFavorites() {
+        lifecycleScope.launch {
+            runCatching {
+                val resp = RetrofitInstance.favoritesApi.list()
+                if (resp.isSuccessful) {
+                    val ids = resp.body().orEmpty().mapNotNull { it.place?.id }
+                    adapter.setFavorites(ids)
+                }
+            } // Silent if not signed in — toggle handler will show feedback
+        }
+    }
+
+    private fun toggleFavorite(placeId: String, fav: Boolean) {
+        lifecycleScope.launch {
+            try {
+                val resp = if (fav) RetrofitInstance.favoritesApi.add(placeId)
+                           else RetrofitInstance.favoritesApi.remove(placeId)
+                if (resp.code() == 401) {
+                    Toast.makeText(this@RestaurantsActivity, "Inicia sesión para guardar favoritos", Toast.LENGTH_SHORT).show()
+                } else {
+                    Telemetry.event("favorite_toggle", mapOf("placeId" to placeId, "added" to fav))
+                }
+            } catch (_: Exception) { /* network error: leave UI optimistic */ }
+        }
+    }
+
     private fun openDetail(r: Restaurant) {
         val intent = Intent(this, RestaurantDetailActivity::class.java).apply {
             putExtra("id", r.id)
@@ -103,9 +136,11 @@ class RestaurantsActivity : AppCompatActivity() {
 }
 
 class RestaurantAdapter(
-    private val onClick: (Restaurant) -> Unit
+    private val onClick: (Restaurant) -> Unit,
+    private val onFavToggle: (Restaurant, Boolean) -> Unit
 ) : RecyclerView.Adapter<RestaurantAdapter.VH>() {
     private val items = mutableListOf<Restaurant>()
+    private val favorites = mutableSetOf<String>()
 
     fun submit(rows: List<Restaurant>) {
         items.clear(); items.addAll(rows); notifyDataSetChanged()
@@ -124,12 +159,33 @@ class RestaurantAdapter(
         holder.name.text = r.name
         val rating = r.averageRating?.let { " · ⭐ %.1f".format(it) } ?: ""
         holder.details.text = (r.foodCategory ?: "Restaurant") + rating
+        if (!r.photoUrl.isNullOrBlank()) {
+            holder.thumb.visibility = View.VISIBLE
+            holder.emoji.visibility = View.GONE
+            holder.thumb.load(r.photoUrl) // Coil 3
+        } else {
+            holder.thumb.visibility = View.GONE
+            holder.emoji.visibility = View.VISIBLE
+        }
+        holder.fav.text = if (favorites.contains(r.id)) "❤️" else "🤍"
+        holder.fav.setOnClickListener {
+            val newFav = !favorites.contains(r.id)
+            if (newFav) favorites.add(r.id) else favorites.remove(r.id)
+            holder.fav.text = if (newFav) "❤️" else "🤍"
+            onFavToggle(r, newFav)
+        }
         holder.itemView.setOnClickListener { onClick(r) }
+    }
+
+    fun setFavorites(ids: Collection<String>) {
+        favorites.clear(); favorites.addAll(ids); notifyDataSetChanged()
     }
 
     class VH(v: View) : RecyclerView.ViewHolder(v) {
         val emoji: TextView = v.findViewById(R.id.tvEmoji)
+        val thumb: android.widget.ImageView = v.findViewById(R.id.ivThumb)
         val name: TextView = v.findViewById(R.id.tvName)
         val details: TextView = v.findViewById(R.id.tvDetails)
+        val fav: TextView = v.findViewById(R.id.btnFav)
     }
 }

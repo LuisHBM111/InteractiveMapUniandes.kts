@@ -22,6 +22,7 @@ import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.CreateReviewBody
 import com.uniandes.interactivemapuniandes.model.data.Review
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import kotlinx.coroutines.launch
 
 class RestaurantDetailActivity : AppCompatActivity() {
@@ -30,6 +31,7 @@ class RestaurantDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("restaurant_detail")
         enableEdgeToEdge()
         setContentView(R.layout.activity_restaurant_detail)
 
@@ -47,6 +49,7 @@ class RestaurantDetailActivity : AppCompatActivity() {
         intent.getStringExtra("photoUrl")?.takeIf { it.isNotBlank() }?.let { url ->
             findViewById<ImageView>(R.id.ivPhoto).load(url) // Coil 3 view extension
         }
+        wireFavorite(id)
 
         val rv = findViewById<RecyclerView>(R.id.rvReviews)
         adapter = ReviewsAdapter()
@@ -59,6 +62,36 @@ class RestaurantDetailActivity : AppCompatActivity() {
             val starsRaw = findViewById<RatingBar>(R.id.rbInput).rating.toInt().coerceIn(1, 5)
             val comment = findViewById<EditText>(R.id.etComment).text.toString().trim().ifBlank { null }
             submitReview(id, starsRaw, comment)
+        }
+    }
+
+    private fun wireFavorite(placeId: String) {
+        val btn = findViewById<TextView>(R.id.btnFav)
+        var isFav = false
+        lifecycleScope.launch {
+            runCatching {
+                val resp = RetrofitInstance.favoritesApi.list()
+                if (resp.isSuccessful) {
+                    isFav = resp.body().orEmpty().any { it.place?.id == placeId }
+                    btn.text = if (isFav) "❤️" else "🤍"
+                }
+            }
+        }
+        btn.setOnClickListener {
+            val newFav = !isFav
+            isFav = newFav
+            btn.text = if (newFav) "❤️" else "🤍"
+            lifecycleScope.launch {
+                try {
+                    val resp = if (newFav) RetrofitInstance.favoritesApi.add(placeId)
+                               else RetrofitInstance.favoritesApi.remove(placeId)
+                    if (resp.code() == 401) {
+                        Toast.makeText(this@RestaurantDetailActivity, "Inicia sesión para guardar favoritos", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Telemetry.event("favorite_toggle", mapOf("placeId" to placeId, "added" to newFav))
+                    }
+                } catch (_: Exception) { /* keep optimistic UI */ }
+            }
         }
     }
 

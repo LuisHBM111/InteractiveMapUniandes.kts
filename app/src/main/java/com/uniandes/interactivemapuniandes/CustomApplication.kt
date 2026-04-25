@@ -9,6 +9,8 @@ import coil3.SingletonImageLoader
 import coil3.request.crossfade
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.model.repository.PreferencesRepository
+import com.uniandes.interactivemapuniandes.utils.CrashReporter
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -18,6 +20,8 @@ class CustomApplication : Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
         RetrofitInstance.init(this) // OkHttp disk cache needs cacheDir
+        CrashReporter.install(this) // Save uncaught crashes; flush previous on launch
+        Telemetry.event("app_launch")
         applySavedPrefs() // Pull dark mode + language from DataStore on startup
     }
 

@@ -9,11 +9,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.uniandes.interactivemapuniandes.R
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 
 class RouteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("route_view")
         enableEdgeToEdge()
         setContentView(R.layout.activity_route)
 

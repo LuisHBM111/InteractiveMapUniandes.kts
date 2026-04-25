@@ -21,6 +21,7 @@ import com.google.android.material.button.MaterialButton
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.ScheduledClass
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +45,7 @@ class SchedulesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("schedules")
         enableEdgeToEdge()
         setContentView(R.layout.activity_schedules)
 

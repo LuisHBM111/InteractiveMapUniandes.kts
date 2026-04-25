@@ -36,6 +36,7 @@ import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.UpdatePreferencesBody
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.model.repository.PreferencesRepository
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -56,6 +57,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("settings")
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
 

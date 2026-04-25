@@ -37,6 +37,8 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.uniandes.interactivemapuniandes.BuildConfig
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.utils.NextClassNotifier
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.launch
 
@@ -53,6 +55,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("home_map")
         enableEdgeToEdge()
         setContentView(R.layout.activity_home)
 
@@ -72,6 +75,53 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setupServiceChips() // Cafes / Libraries / Study Spaces chips
         requestLocationIfNeeded() // Ask up-front so routing isn't blocked later
         showOfflineBannerIfNeeded() // Red banner when no internet
+        renderRecents() // Top 5 frequent routes (BQ #2)
+        renderOfflineRouteCard() // Restore last route if there is one
+    }
+
+    private fun renderRecents() {
+        val store = com.uniandes.interactivemapuniandes.model.repository.RouteHistoryStore(this)
+        val rows = store.topFive()
+        val card = findViewById<androidx.cardview.widget.CardView>(R.id.cvRecents)
+        val container = findViewById<android.widget.LinearLayout>(R.id.recentsContainer)
+        container.removeAllViews()
+        if (rows.isEmpty()) { card.visibility = View.GONE; return }
+        card.visibility = View.VISIBLE
+        rows.forEach { r ->
+            val row = android.widget.TextView(this).apply {
+                text = "${r.from} → ${r.to}  · ${r.count}x"
+                textSize = 14f
+                setPadding(0, 8, 0, 8)
+                setTextColor(android.graphics.Color.parseColor("#101828"))
+                setOnClickListener {
+                    Telemetry.event("recents_tap", mapOf("from" to r.from, "to" to r.to))
+                    fetchRouteFromBackend(r.from, r.to) // Replay with same labels
+                }
+            }
+            container.addView(row)
+        }
+    }
+
+    private fun renderOfflineRouteCard() {
+        val cache = com.uniandes.interactivemapuniandes.model.repository.OfflineRouteCache(this)
+        val cached = cache.load() ?: return
+        val card = findViewById<androidx.cardview.widget.CardView>(R.id.cvOfflineRoute)
+        val tv = findViewById<android.widget.TextView>(R.id.tvOfflineRouteSummary)
+        tv.text = "${cached.from} → ${cached.to}"
+        card.visibility = View.VISIBLE
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnRestoreRoute)
+            .setOnClickListener {
+                Telemetry.event("offline_route_restore")
+                val intent = Intent(this, RouteActivity::class.java).apply {
+                    putExtra("destination", cached.to)
+                    putExtra("from", cached.from)
+                    putStringArrayListExtra("path", ArrayList(cached.labels))
+                    putExtra("total_time", cached.totalTimeSeconds)
+                    putExtra("pathLats", cached.lats)
+                    putExtra("pathLngs", cached.lngs)
+                }
+                startActivity(intent)
+            }
     }
 
     private fun showOfflineBannerIfNeeded() {
@@ -125,7 +175,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                             name = r.name,
                             subtitle = r.foodCategory ?: "Restaurant",
                             emoji = "🍽️",
-                            target = r.name // No routeTarget on restaurants yet, name is best
+                            target = r.name, // No routeTarget on restaurants yet, name is best
+                            photoUrl = r.photoUrl
                         ))
                     }
                 }
@@ -137,7 +188,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                                 name = b.name,
                                 subtitle = b.gridReference?.let { "Grid $it" } ?: "Edificio",
                                 emoji = buildingEmoji(b.code),
-                                target = b.code
+                                target = b.code,
+                                photoUrl = b.photoUrl
                             ))
                         }
                     }
@@ -207,11 +259,13 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                             ?: klass.room?.roomCode
                             ?: klass.rawLocation
                         if (!target.isNullOrBlank()) {
+                            Telemetry.event("route_to_next_class", mapOf("classId" to klass.id, "target" to target))
                             routeFromCurrentLocationTo(target) // Real user origin
                         } else {
                             Toast.makeText(this@HomeActivity, "No location", Toast.LENGTH_SHORT).show()
                         }
                     }
+                NextClassNotifier.scheduleFor(this@HomeActivity, klass) // Local 15-min reminder
             } catch (_: Exception) {
                 // Silent — card stays hidden, user can still use map
             }
@@ -404,6 +458,31 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
         enableMyLocationLayerIfAllowed() // Shows blue dot on user location
         drawRouteIfNeeded()
+        loadAlertMarkers() // Pin closures/maintenance on the map (wiki: route closure mgmt)
+    }
+
+    private fun loadAlertMarkers() {
+        if (!::mMap.isInitialized) return
+        lifecycleScope.launch {
+            try {
+                val resp = RetrofitInstance.alertsApi.list()
+                if (!resp.isSuccessful) return@launch
+                resp.body().orEmpty().forEach { a ->
+                    val lat = a.place?.latitude
+                    val lng = a.place?.longitude
+                    if (lat != null && lng != null) {
+                        mMap.addMarker(
+                            MarkerOptions()
+                                .position(LatLng(lat, lng))
+                                .title(a.title)
+                                .snippet(a.body ?: a.type)
+                                .icon(com.google.android.gms.maps.model.BitmapDescriptorFactory
+                                    .defaultMarker(com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED))
+                        )
+                    }
+                }
+            } catch (_: Exception) { /* silent — banner already covers offline */ }
+        }
     }
 
     private fun enableMyLocationLayerIfAllowed() {
@@ -438,6 +517,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             if (loc != null && ::mMap.isInitialized) {
                 val here = LatLng(loc.latitude, loc.longitude)
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(here, 18f))
+                Telemetry.lunchPing(this, loc.latitude, loc.longitude, loc.accuracy) // BQ #11/#12
             } else {
                 Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show()
             }
@@ -476,6 +556,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 fetchRouteFromBackend("ML 2", destination) // Last-resort fallback
                 return@addOnSuccessListener
             }
+            Telemetry.lunchPing(this, loc.latitude, loc.longitude, loc.accuracy) // BQ #11/#12
             resolveNearestNodeAndRoute(loc.latitude, loc.longitude, destination)
         }.addOnFailureListener {
             Toast.makeText(this, "Could not get location", Toast.LENGTH_SHORT).show()
@@ -556,6 +637,22 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                         val labels = route.path.map { it.label }
                         val lats = route.path.map { it.latitude ?: 0.0 } // Real coords from BE
                         val lngs = route.path.map { it.longitude ?: 0.0 }
+                        com.uniandes.interactivemapuniandes.model.repository.OfflineRouteCache(this@HomeActivity)
+                            .save(
+                                com.uniandes.interactivemapuniandes.model.repository.CachedRoute(
+                                    from = route.from,
+                                    to = route.to,
+                                    labels = labels,
+                                    lats = lats.toDoubleArray(),
+                                    lngs = lngs.toDoubleArray(),
+                                    totalTimeSeconds = route.totalTimeSeconds,
+                                    savedAtMillis = System.currentTimeMillis()
+                                )
+                            ) // Resilience: replay last route if app is killed or offline
+                        Telemetry.event("route_computed", mapOf(
+                            "from" to route.from, "to" to route.to,
+                            "hops" to labels.size, "totalTimeSec" to route.totalTimeSeconds
+                        ))
                         val intent = Intent(this@HomeActivity, RouteActivity::class.java).apply {
                             putExtra("destination", route.to)
                             putExtra("from", route.from)

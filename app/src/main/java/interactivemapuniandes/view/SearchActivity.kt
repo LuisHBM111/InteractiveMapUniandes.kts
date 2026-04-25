@@ -24,6 +24,7 @@ import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.Building
 import com.uniandes.interactivemapuniandes.model.data.Room
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,6 +37,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("search")
         enableEdgeToEdge()
         setContentView(R.layout.activity_search)
 
@@ -49,14 +51,21 @@ class SearchActivity : AppCompatActivity() {
         nav.setupNavigation(this, "alerts") // "alerts" slot hosts Search for now
 
         val rv = findViewById<RecyclerView>(R.id.rvResults)
-        adapter = PlacesAdapter { target -> // Tap a row to route from current location
-            val intent = Intent(this, HomeActivity::class.java).apply {
-                putExtra("autoFetchRoute", true)
-                putExtra("routeTo", target)
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        adapter = PlacesAdapter(
+            onClick = { target ->
+                val intent = Intent(this, HomeActivity::class.java).apply {
+                    putExtra("autoFetchRoute", true)
+                    putExtra("routeTo", target)
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                startActivity(intent)
+            },
+            onOpenBuilding = { buildingId -> // Long-press opens detail screen
+                val intent = Intent(this, BuildingDetailActivity::class.java)
+                    .putExtra("id", buildingId)
+                startActivity(intent)
             }
-            startActivity(intent)
-        }
+        )
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
 
@@ -129,7 +138,8 @@ sealed class PlaceRow {
 }
 
 class PlacesAdapter(
-    private val onClick: (String) -> Unit // Receives the route target (building code or room code)
+    private val onClick: (String) -> Unit, // Receives the route target (building code or room code)
+    private val onOpenBuilding: (String) -> Unit = {}
 ) : RecyclerView.Adapter<PlacesAdapter.VH>() {
     private val items = mutableListOf<PlaceRow>()
 
@@ -166,6 +176,10 @@ class PlacesAdapter(
             }
         }
         holder.itemView.setOnClickListener { onClick(target) }
+        holder.itemView.setOnLongClickListener {
+            placeId?.let { onOpenBuilding(it) }
+            true
+        }
         holder.fav.setOnClickListener {
             val pid = placeId ?: return@setOnClickListener
             kotlinx.coroutines.GlobalScope.launch {

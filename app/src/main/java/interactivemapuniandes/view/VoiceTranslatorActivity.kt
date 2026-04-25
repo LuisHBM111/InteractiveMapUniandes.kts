@@ -17,6 +17,7 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.launch
 
@@ -37,6 +38,7 @@ class VoiceTranslatorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("voice_translator")
         enableEdgeToEdge()
         setContentView(R.layout.activity_translator)
 

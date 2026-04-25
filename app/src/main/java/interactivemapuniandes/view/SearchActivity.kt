@@ -48,7 +48,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        nav.setupNavigation(this, "alerts") // "alerts" slot hosts Search for now
+        nav.setupNavigation(this)
 
         val rv = findViewById<RecyclerView>(R.id.rvResults)
         adapter = PlacesAdapter(

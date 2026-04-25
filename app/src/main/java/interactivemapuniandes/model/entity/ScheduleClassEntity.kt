@@ -22,6 +22,8 @@ data class ScheduleClassEntity(
     val buildingName: String?,
     val buildingCode: String?,
     val instructorName: String?,
+    val recurrenceDays: String?,
+    val recurrenceUntilDate: String?,
     @ColumnInfo(defaultValue = "0")
     val syncVersion: Long = 0L
 )

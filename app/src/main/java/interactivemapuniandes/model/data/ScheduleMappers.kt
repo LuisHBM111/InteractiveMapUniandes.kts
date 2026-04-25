@@ -33,6 +33,8 @@ fun ScheduleClassDto.toEntity(scheduleId: String): ScheduleClassEntity {
         roomCode = room?.roomCode,
         buildingName = room?.building?.name,
         buildingCode = room?.building?.code,
-        instructorName = instructors.firstOrNull()?.fullName
+        instructorName = instructors.firstOrNull()?.fullName,
+        recurrenceDays = recurrenceRule?.byDay?.joinToString(","),
+        recurrenceUntilDate = recurrenceRule?.untilDate
     )
 }

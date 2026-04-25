@@ -38,6 +38,18 @@ interface ScheduleDAO {
     @Query("DELETE FROM schedule_classes WHERE scheduleId = :scheduleId")
     suspend fun deleteClassesForSchedule(scheduleId: String)
 
+    @Query("DELETE FROM schedule_classes")
+    suspend fun clearAllClasses()
+
+    @Query("DELETE FROM schedules")
+    suspend fun clearAllSchedules()
+
+    @Transaction
+    suspend fun clearScheduleCache() {
+        clearAllClasses()
+        clearAllSchedules()
+    }
+
     @Transaction
     suspend fun replaceCurrentSchedule(
         schedule: ScheduleEntity,

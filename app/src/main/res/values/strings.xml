@@ -2,35 +2,35 @@
     <string name="app_name">InteractiveMapUniandes</string>
 
     <!-- Login -->
-    <string name="title_login">Iniciar Sesión</string>
+    <string name="title_login">Iniciar Sesion</string>
     <string name="app_display_name">Campus Digital</string>
     <string name="subtitle_login">Accede a tu cuenta institucional para explorar el campus.</string>
     <string name="label_email">Correo institucional</string>
     <string name="hint_email">usuario@universidad.edu</string>
-    <string name="label_password">Contraseña</string>
-    <string name="hint_password">••••••••</string>
-    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
-    <string name="no_account">¿No tienes cuenta? </string>
-    <string name="register">Regístrate</string>
+    <string name="label_password">Contrasena</string>
+    <string name="hint_password">********</string>
+    <string name="forgot_password">Olvidaste tu contrasena?</string>
+    <string name="no_account">No tienes cuenta? </string>
+    <string name="register">Registrate</string>
     <string name="desc_back">Regresar</string>
     <string name="desc_logo">Logo de Campus Digital</string>
-    <string name="desc_show_password">Mostrar contraseña</string>
+    <string name="desc_show_password">Mostrar contrasena</string>
 
     <!-- Home -->
-    <string name="home_search_hint">¿A dónde vas?</string>
+    <string name="home_search_hint">A donde vas?</string>
     <string name="home_nearby_title">Servicios cerca</string>
     <string name="home_see_all">Ver todo</string>
-    <string name="home_chip_cafes">☕ Cafés</string>
-    <string name="home_chip_libraries">📖 Bibliotecas</string>
-    <string name="home_chip_study">🪑 Estudio</string>
-    <string name="home_next_class_label">Tu próxima clase</string>
-    <string name="home_route_me">Llévame allí</string>
+    <string name="home_chip_cafes">Cafes</string>
+    <string name="home_chip_libraries">Bibliotecas</string>
+    <string name="home_chip_study">Estudio</string>
+    <string name="home_next_class_label">Tu proxima clase</string>
+    <string name="home_route_me">Llevame alli</string>
 
     <!-- Schedules -->
     <string name="schedule_title">Mi horario</string>
     <string name="schedule_import">Importar .ics</string>
     <string name="schedule_add_manual">Agregar clase</string>
-    <string name="schedule_empty">No hay clases.\nImporta tu .ics o agrégalas a mano.</string>
+    <string name="schedule_empty">No hay clases.\nImporta tu .ics o agregalas a mano.</string>
     <string name="schedule_route_btn">Ruta</string>
 
     <!-- Search -->
@@ -48,9 +48,9 @@
     <string name="settings_language">Idioma</string>
     <string name="settings_units">Unidades</string>
     <string name="settings_offline_maps">Mapas offline</string>
-    <string name="settings_app_version">Versión de la app</string>
-    <string name="settings_privacy">Política de privacidad</string>
-    <string name="settings_logout">Cerrar sesión</string>
+    <string name="settings_app_version">Version de la app</string>
+    <string name="settings_privacy">Politica de privacidad</string>
+    <string name="settings_logout">Cerrar sesion</string>
 
     <!-- Notifications screen -->
     <string name="notif_title">Notificaciones</string>
@@ -62,10 +62,10 @@
 
     <!-- Voice Translator -->
     <string name="translator_title">Traductor de voz</string>
-    <string name="translator_listening">Escuchando…</string>
-    <string name="translator_tap_to_speak">Pulsa el micrófono y habla</string>
+    <string name="translator_listening">Escuchando...</string>
+    <string name="translator_tap_to_speak">Pulsa el microfono y habla</string>
     <string name="translator_swap">Cambiar idiomas</string>
-    <string name="translator_use_in_search">Usar en búsqueda</string>
+    <string name="translator_use_in_search">Usar en busqueda</string>
 
     <!-- Bottom nav -->
     <string name="nav_explore">Explorar</string>
@@ -73,7 +73,7 @@
     <string name="nav_alerts">Alertas</string>
     <string name="nav_settings">Ajustes</string>
 
-    <!-- Legacy preference fragment (unused but referenced by root_preferences.xml) -->
+    <!-- Legacy preference fragment -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
     <string name="signature_title">Your signature</string>
@@ -82,10 +82,12 @@
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments</string>
     <string name="attachment_summary_off">Only download attachments when asked</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="element_text">no se todavia</string>
 
     <!-- Common -->
-    <string name="common_loading">Cargando…</string>
-    <string name="common_offline_banner">Sin conexión — mostrando datos locales</string>
+    <string name="common_loading">Cargando...</string>
+    <string name="common_offline_banner">Sin conexion - mostrando datos locales</string>
     <string name="common_retry">Reintentar</string>
     <string name="common_cancel">Cancelar</string>
     <string name="common_save">Guardar</string>

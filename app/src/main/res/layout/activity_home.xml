@@ -62,8 +62,8 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:contentDescription="Search icon"
-                    android:src="@android:drawable/ic_menu_search"
-                    app:tint="@color/gray_text" />
+                    android:src="@drawable/ic_searchh"
+                    app:tint="@color/md_theme_light_on_surface" />
 
                 <!-- Displays "Where to?" or dictated text. Not editable; tapping anywhere opens SearchActivity -->
                 <TextView
@@ -84,8 +84,8 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:contentDescription="Voice search"
-                    android:src="@android:drawable/ic_btn_speak_now"
-                    app:tint="@color/gray_text" />
+                    android:src="@drawable/ic_micc"
+                    app:tint="@color/md_theme_light_on_surface" />
 
                 <View
                     android:layout_width="1dp"
@@ -128,17 +128,8 @@
                 android:layout_marginEnd="12dp"
                 app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="4dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:paddingHorizontal="22dp"
-                    android:text="Language"
-                    android:textColor="@color/gray_text"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                app:cardElevation="4dp"
+                >
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -155,7 +146,8 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingHorizontal="22dp"
-                    android:text="QR Code"
+                    android:drawableStart="@drawable/ic_qr"
+                    android:drawableTint="@color/md_theme_light_on_surface"
                     android:textColor="@color/gray_text"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -165,7 +157,7 @@
                 android:id="@+id/chipCurrentLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
-                app:cardBackgroundColor="@android:color/white"
+                app:cardBackgroundColor="@color/background_color"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="4dp">
 
@@ -176,59 +168,55 @@
                     android:gravity="center"
                     android:paddingHorizontal="22dp"
                     android:text="Current location"
-                    android:textColor="@color/gray_text"
+                    android:textColor="@color/md_theme_light_on_surface"
                     android:textSize="12sp"
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
         </LinearLayout>
 
+        <!-- Botones de la derecha -->
         <LinearLayout
             android:id="@+id/llFloatingButtons"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="18dp"
-            android:layout_marginBottom="220dp"
+            android:layout_height="250dp"
+            android:layout_marginEnd="16dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                style="@style/Widget.App.FloatingActionButton"
                 android:id="@+id/fabLayers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
                 android:contentDescription="Layers"
-                android:src="@drawable/ic_layers"
-                app:backgroundTint="@android:color/white"
-                app:elevation="6dp"
-                app:fabCustomSize="54dp"
-                app:maxImageSize="24dp"
-                app:tint="@color/gray_text" />
+                app:srcCompat="@drawable/ic_layers"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                style="@style/Widget.App.FloatingActionButton"
                 android:id="@+id/fabLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
                 android:contentDescription="My location"
-                android:src="@drawable/ic_my_location"
-                app:backgroundTint="@android:color/white"
-                app:elevation="6dp"
-                app:fabCustomSize="54dp"
-                app:maxImageSize="24dp"
-                app:tint="@color/gray_text" />
+                app:srcCompat="@drawable/ic_my_location"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                style="?attr/floatingActionButtonMediumStyle"
                 android:id="@+id/fabDirections"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
                 android:contentDescription="Directions"
-                android:src="@android:drawable/ic_menu_directions"
                 app:backgroundTint="@color/primary_yellow"
-                app:elevation="8dp"
-                app:fabCustomSize="66dp"
-                app:maxImageSize="28dp"
-                app:tint="@color/dark_blue" />
+                app:srcCompat="@drawable/ic_route"/>
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

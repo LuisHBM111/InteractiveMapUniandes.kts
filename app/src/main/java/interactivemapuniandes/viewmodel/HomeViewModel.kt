@@ -1,38 +1,78 @@
 package com.uniandes.interactivemapuniandes.viewmodel
 
-import com.uniandes.interactivemapuniandes.model.data.NextClass
-import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
+import com.uniandes.interactivemapuniandes.model.state.HomeUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class HomeUiState(
-    val nextClass: NextClass? = null,
-    val isLoadingNext: Boolean = false,
-    val error: String? = null
-)
+class HomeViewModel(
+    private val routeRepository: RouteRepository
+) {
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-class HomeViewModel {
-    private val _state = MutableStateFlow(HomeUiState())
-    val state: StateFlow<HomeUiState> = _state.asStateFlow()
+    suspend fun loadRouteToNextClass(from: String) {
+        _uiState.value = _uiState.value.copy(
+            isRouteLoading = true,
+            route = null,
+            routeError = null
+        )
 
-    suspend fun refreshNextClass() { // Called from an Activity coroutine
-        _state.value = _state.value.copy(isLoadingNext = true, error = null)
-        try {
-            val resp = RetrofitInstance.meApi.getNextClass()
-            if (resp.isSuccessful) {
-                _state.value = _state.value.copy(
-                    nextClass = resp.body(),
-                    isLoadingNext = false
+        val result = routeRepository.getRouteToNextClass(from)
+        _uiState.value = result.fold(
+            onSuccess = { route ->
+                _uiState.value.copy(
+                    isRouteLoading = false,
+                    route = route,
+                    routeError = null
                 )
-            } else {
-                _state.value = _state.value.copy(
-                    isLoadingNext = false,
-                    error = "Backend ${resp.code()}"
+            },
+            onFailure = { error ->
+                _uiState.value.copy(
+                    isRouteLoading = false,
+                    route = null,
+                    routeError = error.message ?: "Could not load route"
                 )
             }
-        } catch (e: Exception) {
-            _state.value = _state.value.copy(isLoadingNext = false, error = e.message)
+        )
+    }
+
+    suspend fun loadRouteToClass(classId: String, from: String) {
+        _uiState.value = _uiState.value.copy(
+            isRouteLoading = true,
+            route = null,
+            routeError = null
+        )
+
+        val result = routeRepository.getRouteToClass(classId, from)
+        _uiState.value = result.fold(
+            onSuccess = { route ->
+                _uiState.value.copy(
+                    isRouteLoading = false,
+                    route = route,
+                    routeError = null
+                )
+            },
+            onFailure = { error ->
+                _uiState.value.copy(
+                    isRouteLoading = false,
+                    route = null,
+                    routeError = error.message ?: "Could not load route"
+                )
+            }
+        )
+    }
+
+    fun clearRoute() {
+        if (_uiState.value.route != null) {
+            _uiState.value = _uiState.value.copy(route = null)
+        }
+    }
+
+    fun clearRouteError() {
+        if (_uiState.value.routeError != null) {
+            _uiState.value = _uiState.value.copy(routeError = null)
         }
     }
 }

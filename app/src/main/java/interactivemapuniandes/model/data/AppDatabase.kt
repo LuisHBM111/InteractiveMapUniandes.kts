@@ -20,6 +20,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun scheduleDao(): ScheduleDAO
 
     companion object {
+        //Sincronizacion entre threads
         @Volatile
         private var INSTANCE: AppDatabase? = null
 

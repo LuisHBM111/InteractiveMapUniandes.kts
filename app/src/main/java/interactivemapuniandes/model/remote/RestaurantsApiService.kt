@@ -8,10 +8,16 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface RestaurantsApiService {
     @GET("api/v1/restaurants")
-    suspend fun list(): Response<List<Restaurant>>
+    suspend fun list(
+        @Query("foodCategory") foodCategory: String? = null,
+        @Query("minRating") minRating: Double? = null,
+        @Query("maxPrice") maxPrice: Int? = null,
+        @Query("sortBy") sortBy: String? = null
+    ): Response<List<Restaurant>>
 
     @GET("api/v1/restaurants/{id}")
     suspend fun getOne(@Path("id") id: String): Response<Restaurant>

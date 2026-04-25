@@ -5,7 +5,7 @@
     android:id="@+id/homeRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DDF4E2"
+    android:background="@color/md_theme_light_background"
     tools:context=".view.HomeActivity">
 
     <!-- Fondo temporal del mapa -->
@@ -14,6 +14,20 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <!-- Offline banner shows up only when there's no internet -->
+    <TextView
+        android:id="@+id/tvOfflineBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#D92D20"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/common_offline_banner"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <!-- Capa superior -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,19 +65,18 @@
                     android:src="@android:drawable/ic_menu_search"
                     app:tint="@color/gray_text" />
 
-                <EditText
+                <!-- Displays "Where to?" or dictated text. Not editable; tapping anywhere opens SearchActivity -->
+                <TextView
                     android:id="@+id/etSearch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@null"
-                    android:hint="Where to?"
-                    android:importantForAutofill="no"
-                    android:inputType="text"
+                    android:clickable="false"
+                    android:focusable="false"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
-                    android:textColor="@color/dark_blue"
-                    android:textColorHint="@color/gray_text"
+                    android:text="Where to?"
+                    android:textColor="@color/gray_text"
                     android:textSize="18sp" />
 
                 <ImageView
@@ -247,6 +260,58 @@
                 android:layout_marginBottom="22dp"
                 android:background="#D1D1D1" />
 
+            <!-- Next class card (hidden by default, filled by HomeActivity when /me/classes/next returns) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvNextClass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#FFF8D8"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvNextClassLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your next class"
+                        android:textColor="#9A7400"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvNextClassTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="#101828"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvNextClassWhen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="#344054"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRouteToNext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Route me there" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -326,63 +391,24 @@
                 </LinearLayout>
             </HorizontalScrollView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardService1"
+            <!-- Real restaurant list (populated from /api/v1/restaurants) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvServices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
-                app:cardBackgroundColor="#F7F7F7"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
+                android:layout_marginTop="18dp"
+                android:nestedScrollingEnabled="false" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="14dp">
-
-                    <ImageView
-                        android:id="@+id/ivService1"
-                        android:layout_width="90dp"
-                        android:layout_height="90dp"
-                        android:background="#DCDCDC"
-                        android:contentDescription="Service image"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_launcher_background" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Starbucks (Student Union)"
-                            android:textColor="@color/black"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="🕒 Until 8:00 PM • 3 min walk"
-                            android:textColor="@color/gray_text"
-                            android:textSize="13sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="⭐⭐⭐⭐⭐ (248)"
-                            android:textColor="#D4AF37"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/tvServicesEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:padding="24dp"
+                android:text="No services nearby yet.\nCheck again later or tap a chip to search."
+                android:textAlignment="center"
+                android:textColor="#7C8594"
+                android:visibility="gone" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

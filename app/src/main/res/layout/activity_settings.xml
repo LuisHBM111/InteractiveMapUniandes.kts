@@ -110,17 +110,19 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:id="@+id/tv_profile_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Luis Bobadilla"
+                        android:text="—"
                         android:textColor="@color/settings_text_dark"
                         android:textSize="17sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tv_profile_program"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Computer Science"
+                        android:text="—"
                         android:textColor="@color/settings_secondary_text"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -176,9 +178,10 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/tv_profile_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="test@uniandes.com"
+                    android:text="—"
                     android:textColor="@color/settings_secondary_text"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -244,9 +247,9 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_dark_mode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"/>
@@ -296,7 +299,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="English (US) >"
+                    android:id="@+id/tv_language_value"
+                    android:text="—"
                     android:textColor="@color/settings_secondary_text"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -469,6 +473,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/tv_units_value"
                     android:text="Metric (km) >"
                     android:textColor="@color/settings_secondary_text"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -530,7 +535,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="v1.9 (build 009)"
+                    android:id="@+id/tv_app_version"
+                    android:text="v1.0"
                     android:textColor="@color/settings_secondary_text"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

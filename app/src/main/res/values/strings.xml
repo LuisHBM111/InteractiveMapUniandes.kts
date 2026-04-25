@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">InteractiveMapUniandes</string>
+
+    <!-- Login -->
     <string name="title_login">Iniciar Sesión</string>
     <string name="app_display_name">Campus Digital</string>
     <string name="subtitle_login">Accede a tu cuenta institucional para explorar el campus.</string>
@@ -13,22 +15,78 @@
     <string name="desc_back">Regresar</string>
     <string name="desc_logo">Logo de Campus Digital</string>
     <string name="desc_show_password">Mostrar contraseña</string>
-    <string name="title_activity_settings2">SettingsActivity2</string>
 
-    <!-- Preference Titles -->
+    <!-- Home -->
+    <string name="home_search_hint">¿A dónde vas?</string>
+    <string name="home_nearby_title">Servicios cerca</string>
+    <string name="home_see_all">Ver todo</string>
+    <string name="home_chip_cafes">☕ Cafés</string>
+    <string name="home_chip_libraries">📖 Bibliotecas</string>
+    <string name="home_chip_study">🪑 Estudio</string>
+    <string name="home_next_class_label">Tu próxima clase</string>
+    <string name="home_route_me">Llévame allí</string>
+
+    <!-- Schedules -->
+    <string name="schedule_title">Mi horario</string>
+    <string name="schedule_import">Importar .ics</string>
+    <string name="schedule_add_manual">Agregar clase</string>
+    <string name="schedule_empty">No hay clases.\nImporta tu .ics o agrégalas a mano.</string>
+    <string name="schedule_route_btn">Ruta</string>
+
+    <!-- Search -->
+    <string name="search_hint">Busca edificios o salones</string>
+    <string name="search_empty_initial">Escribe para buscar el campus</string>
+    <string name="search_no_results">Sin resultados</string>
+
+    <!-- Settings sections -->
+    <string name="settings_section_account">Cuenta</string>
+    <string name="settings_section_prefs">Preferencias</string>
+    <string name="settings_section_notif">Notificaciones</string>
+    <string name="settings_section_map">Mapa</string>
+    <string name="settings_section_about">Acerca de</string>
+    <string name="settings_dark_mode">Modo oscuro</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_units">Unidades</string>
+    <string name="settings_offline_maps">Mapas offline</string>
+    <string name="settings_app_version">Versión de la app</string>
+    <string name="settings_privacy">Política de privacidad</string>
+    <string name="settings_logout">Cerrar sesión</string>
+
+    <!-- Notifications screen -->
+    <string name="notif_title">Notificaciones</string>
+    <string name="notif_empty">No tienes notificaciones</string>
+
+    <!-- Alerts screen -->
+    <string name="alerts_title">Alertas</string>
+    <string name="alerts_empty">No hay alertas activas</string>
+
+    <!-- Voice Translator -->
+    <string name="translator_title">Traductor de voz</string>
+    <string name="translator_listening">Escuchando…</string>
+    <string name="translator_tap_to_speak">Pulsa el micrófono y habla</string>
+    <string name="translator_swap">Cambiar idiomas</string>
+    <string name="translator_use_in_search">Usar en búsqueda</string>
+
+    <!-- Bottom nav -->
+    <string name="nav_explore">Explorar</string>
+    <string name="nav_schedules">Horario</string>
+    <string name="nav_alerts">Alertas</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <!-- Legacy preference fragment (unused but referenced by root_preferences.xml) -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>
     <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="attachment_summary_on">Automatically download attachments</string>
+    <string name="attachment_summary_off">Only download attachments when asked</string>
+
+    <!-- Common -->
+    <string name="common_loading">Cargando…</string>
+    <string name="common_offline_banner">Sin conexión — mostrando datos locales</string>
+    <string name="common_retry">Reintentar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_save">Guardar</string>
 </resources>

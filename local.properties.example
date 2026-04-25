@@ -1,0 +1,49 @@
+## Copy this file to local.properties and edit the values for your machine.
+## local.properties is gitignored — never commit your personal config.
+
+## Path to your Android SDK. Android Studio usually writes this automatically
+## the first time you open the project; if it didn't, point it at your SDK.
+# Windows:
+sdk.dir=C:\\Users\\YOU\\AppData\\Local\\Android\\Sdk
+# macOS:
+#sdk.dir=/Users/you/Library/Android/sdk
+# Linux:
+#sdk.dir=/home/you/Android/Sdk
+
+## -----------------------------------------------------------------------------
+##  BACKEND_BASE_URL  —  the base URL the app hits for /api/v1/* endpoints.
+##  MUST end with a trailing slash. Exposed to code as BuildConfig.BACKEND_BASE_URL.
+## -----------------------------------------------------------------------------
+
+## Vercel production (what the app ships against by default):
+BACKEND_BASE_URL=https://interactivemap-backend.vercel.app/
+
+## Local dev alternatives — pick one and comment out the Vercel line above:
+##
+## Android emulator  →  10.0.2.2 is the emulator's shortcut to your host:
+#BACKEND_BASE_URL=http://10.0.2.2:3000/
+##
+## Physical device on same WiFi  →  put your laptop's LAN IP (from `ipconfig`):
+#BACKEND_BASE_URL=http://192.168.1.100:3000/
+##
+## Running on the same machine (desktop emulator, bare metal):
+#BACKEND_BASE_URL=http://localhost:3000/
+##
+## Preview branch on Vercel (replace with actual preview URL shown on the PR):
+#BACKEND_BASE_URL=https://interactivemap-backend-git-feature-xxx.vercel.app/
+
+## -----------------------------------------------------------------------------
+##  TRANSLATE_SOURCE_LANG / TRANSLATE_TARGET_LANG
+##  Used by the mic-to-speak translator flow. MUST be different from each other
+##  (MyMemory rejects same-to-same with "please select two distinct languages").
+##  Values follow BCP-47: "en-US", "es-ES", "fr-FR", "de-DE", "pt-BR", etc.
+##  The speech recognizer uses the full tag; the /translate backend uses just
+##  the primary subtag (so "en-US" -> "en").
+##  Defaults if left unset: en-US -> es-ES.
+## -----------------------------------------------------------------------------
+TRANSLATE_SOURCE_LANG=en-US
+TRANSLATE_TARGET_LANG=es-ES
+
+## Flip the direction (listen in Spanish, hear English):
+#TRANSLATE_SOURCE_LANG=es-ES
+#TRANSLATE_TARGET_LANG=en-US

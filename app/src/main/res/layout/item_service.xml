@@ -15,14 +15,27 @@
         android:orientation="horizontal"
         android:padding="14dp">
 
-        <TextView
-            android:id="@+id/tvEmoji"
+        <FrameLayout
             android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="#FFF8D8"
-            android:gravity="center"
-            android:text="📍"
-            android:textSize="28sp" />
+            android:layout_height="60dp">
+
+            <TextView
+                android:id="@+id/tvEmoji"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFF8D8"
+                android:gravity="center"
+                android:text="📍"
+                android:textSize="28sp" />
+
+            <ImageView
+                android:id="@+id/ivThumb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Foto del lugar"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -50,5 +63,15 @@
                 android:textSize="13sp"
                 tools:text="Café · ⭐ 4.5" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnFav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="Marcar como favorito"
+            android:padding="6dp"
+            android:text="🤍"
+            android:textSize="22sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

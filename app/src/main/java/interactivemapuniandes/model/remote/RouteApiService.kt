@@ -2,6 +2,7 @@ package com.uniandes.interactivemapuniandes.model.remote
 
 import com.google.gson.JsonObject
 import com.uniandes.interactivemapuniandes.model.data.NextClassResponseDto
+import interactivemapuniandes.model.data.ScheduleDTO
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -38,4 +39,9 @@ interface RouteApiService {
     suspend fun importDefaultSchedule(
         @Header("Authorization") authorization: String
     ): Response<JsonObject>
+
+    @GET("api/v1/me/schedules/current")
+    suspend fun getCurrentSchedule(
+        @Header("Authorization") authorization: String
+    ): Response<ScheduleDTO>
 }

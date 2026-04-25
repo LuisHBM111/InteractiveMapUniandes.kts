@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import com.google.android.material.button.MaterialButton
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.CreateReviewBody
@@ -42,6 +44,9 @@ class RestaurantDetailActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvCategory).text = intent.getStringExtra("category") ?: ""
         val rating = intent.getDoubleExtra("rating", 0.0)
         findViewById<TextView>(R.id.tvRating).text = if (rating > 0) "⭐ %.1f".format(rating) else "No ratings yet"
+        intent.getStringExtra("photoUrl")?.takeIf { it.isNotBlank() }?.let { url ->
+            findViewById<ImageView>(R.id.ivPhoto).load(url) // Coil 3 view extension
+        }
 
         val rv = findViewById<RecyclerView>(R.id.rvReviews)
         adapter = ReviewsAdapter()

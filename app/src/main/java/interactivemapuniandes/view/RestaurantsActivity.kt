@@ -96,6 +96,7 @@ class RestaurantsActivity : AppCompatActivity() {
             putExtra("name", r.name)
             putExtra("category", r.foodCategory ?: "")
             putExtra("rating", r.averageRating ?: 0.0)
+            putExtra("photoUrl", r.photoUrl ?: "")
         }
         startActivity(intent)
     }

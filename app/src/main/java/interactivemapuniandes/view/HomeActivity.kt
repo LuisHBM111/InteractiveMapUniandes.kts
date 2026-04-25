@@ -31,8 +31,12 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.uniandes.interactivemapuniandes.R
+import com.uniandes.interactivemapuniandes.model.data.RouteResponse
+import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
+import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
+import com.uniandes.interactivemapuniandes.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -41,11 +45,18 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private val locationPermissionRequest = 1001
     private lateinit var mMap: GoogleMap
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var btnDirections: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_home)
+
+        val authRepository = AuthRepository(FirebaseAuth.getInstance())
+        val routeRepository = RouteRepository(RetrofitInstance.api, authRepository)
+        homeViewModel = HomeViewModel(routeRepository)
+        observeUiState()
 
         setupMap()
         val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
@@ -99,14 +110,27 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         try {
             val uri = Uri.parse(qrContent)
             val fromNode = uri.getQueryParameter("from")
+            val classId = uri.getQueryParameter("classId")
             val toNode = uri.getQueryParameter("to")
 
-            if (fromNode.isNullOrBlank() || toNode.isNullOrBlank()) {
-                Toast.makeText(this, "El QR no tiene from/to validos", Toast.LENGTH_SHORT).show()
-                return
+            when {
+                fromNode.isNullOrBlank() -> {
+                    Toast.makeText(this, "El QR no tiene un nodo de origen valido", Toast.LENGTH_SHORT).show()
+                }
+                !classId.isNullOrBlank() -> {
+                    requestRouteToClass(classId, fromNode)
+                }
+                !toNode.isNullOrBlank() -> {
+                    Toast.makeText(
+                        this,
+                        "Este QR usa el formato viejo. Falta classId para el backend nuevo.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> {
+                    requestRouteToNextClass(fromNode)
+                }
             }
-
-            fetchRouteFromBackend(fromNode, toNode)
         } catch (e: Exception) {
             Toast.makeText(this, "QR invalido: ${e.message}", Toast.LENGTH_SHORT).show()
         }
@@ -213,17 +237,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupBottomSheet() {
-        val bottomSheet = findViewById<NestedScrollView>(R.id.bottomSheet)
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-
-        bottomSheetBehavior.maxHeight = screenHeight / 2
-        bottomSheetBehavior.isFitToContents = true
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetBehavior.peekHeight = 180.dpToPx()
-        bottomSheetBehavior.isHideable = false
     }
 
     private fun setupPrototypeClicks() {
@@ -231,8 +244,9 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "Search prototype", Toast.LENGTH_SHORT).show()
         }
 
-        findViewById<View>(R.id.fabDirections).setOnClickListener {
-            fetchRouteFromBackend("ML 2", "W 3")
+        btnDirections = findViewById(R.id.fabDirections)
+        btnDirections.setOnClickListener {
+            openNavigationScreen("ML")
         }
 
         findViewById<View>(R.id.fabLocation).setOnClickListener {
@@ -252,51 +266,60 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        findViewById<View>(R.id.tvSeeAll).setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-        }
-
         findViewById<View>(R.id.profileContainer).setOnClickListener {
             logout()
         }
     }
 
-    private fun fetchRouteFromBackend(fromNode: String, toNode: String) {
+    private fun requestRouteToNextClass(fromNode: String) {
         lifecycleScope.launch {
-            try {
-                val response = RetrofitInstance.api.getRoute(fromNode, toNode)
+            homeViewModel.loadRouteToNextClass(fromNode)
+        }
+    }
 
-                if (response.isSuccessful) {
-                    val route = response.body()
+    private fun requestRouteToClass(classId: String, fromNode: String) {
+        lifecycleScope.launch {
+            homeViewModel.loadRouteToClass(classId, fromNode)
+        }
+    }
 
-                    if (route != null) {
-                        val intent = Intent(this@HomeActivity, RouteActivity::class.java).apply {
-                            putExtra("destination", route.to)
-                            putExtra("from", route.from)
-                            putExtra("eta", "${route.total_time} s")
-                            putExtra("distance", "${route.path.size - 1} hops")
-                            putStringArrayListExtra("path", ArrayList(route.path))
-                            putExtra("total_time", route.total_time)
-                        }
-                        startActivity(intent)
-                    } else {
-                        Toast.makeText(this@HomeActivity, "Respuesta vacia", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(
-                        this@HomeActivity,
-                        "Error del backend: ${response.code()}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+    private fun observeUiState() {
+        lifecycleScope.launch {
+            homeViewModel.uiState.collect { state ->
+                if (::btnDirections.isInitialized) {
+                    btnDirections.isEnabled = !state.isRouteLoading
                 }
-            } catch (e: Exception) {
-                Toast.makeText(
-                    this@HomeActivity,
-                    "Error de red: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+
+                state.route?.let { route ->
+                    openRouteDetails(route)
+                    homeViewModel.clearRoute()
+                }
+
+                state.routeError?.let { error ->
+                    Toast.makeText(this@HomeActivity, error, Toast.LENGTH_LONG).show()
+                    homeViewModel.clearRouteError()
+                }
             }
         }
+    }
+
+    private fun openRouteDetails(route: RouteResponse) {
+        val intent = Intent(this, RouteActivity::class.java).apply {
+            putExtra("destination", route.to)
+            putExtra("from", route.from)
+            putExtra("eta", route.totalTime.toEtaLabel())
+            putExtra("distance", "${(route.path.size - 1).coerceAtLeast(0)} hops")
+            putStringArrayListExtra("path", ArrayList(route.path))
+            putExtra("total_time", route.totalTime)
+        }
+        startActivity(intent)
+    }
+
+    private fun openNavigationScreen(defaultFrom: String) {
+        val intent = Intent(this, RouteActivity::class.java).apply {
+            putExtra("from", defaultFrom)
+        }
+        startActivity(intent)
     }
 
     private fun handleRouteFromIntent() {
@@ -356,5 +379,14 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun Int.dpToPx(): Int {
         return (this * resources.displayMetrics.density).toInt()
+    }
+
+    private fun Int.toEtaLabel(): String {
+        return if (this >= 60) {
+            val minutes = this / 60
+            "$minutes min"
+        } else {
+            "$this s"
+        }
     }
 }

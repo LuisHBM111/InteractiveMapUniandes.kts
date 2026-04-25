@@ -1,6 +1,9 @@
 package com.uniandes.interactivemapuniandes.model.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class AuthRepository(private val auth: FirebaseAuth) {
 
@@ -27,4 +30,21 @@ class AuthRepository(private val auth: FirebaseAuth) {
 
     }
 
+    suspend fun getIdToken(forceRefresh: Boolean = false): String? =
+        suspendCancellableCoroutine { continuation ->
+            val currentUser = auth.currentUser
+
+            if (currentUser == null) {
+                continuation.resume(null)
+                return@suspendCancellableCoroutine
+            }
+
+            currentUser.getIdToken(forceRefresh)
+                .addOnSuccessListener { result ->
+                    continuation.resume(result.token)
+                }
+                .addOnFailureListener { error ->
+                    continuation.resumeWithException(error)
+                }
+        }
 }

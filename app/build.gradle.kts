@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+    id("com.google.devtools.ksp")
 }
 
 val localProps: Properties = Properties().apply {
@@ -18,7 +19,7 @@ fun localPropOrDefault(key: String, default: String): String =
 
 val backendBaseUrl: String = localPropOrDefault(
     "BACKEND_BASE_URL",
-    "https://interactivemap-backend.vercel.app/",
+    "https://interactive-map-uniandes-backend-1008290497746.us-central1.run.app/",
 )
 val translateSourceLang: String = localPropOrDefault("TRANSLATE_SOURCE_LANG", "es-ES")
 val translateTargetLang: String = localPropOrDefault("TRANSLATE_TARGET_LANG", "en-US")
@@ -68,6 +69,12 @@ kotlin {
 }
 
 dependencies {
+    val room_version = "2.8.4"
+
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:${room_version}")
+    implementation("androidx.room:room-guava:${room_version}")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -92,7 +99,6 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation(platform("androidx.compose:compose-bom:2026.03.00"))
     implementation("androidx.compose.material3:material3")
-    implementation("com.google.android.material:material:1.13.0")
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.preference)

@@ -34,6 +34,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.uniandes.interactivemapuniandes.BuildConfig
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
@@ -47,17 +48,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
     private lateinit var textToSpeech: TextToSpeech
 
-    private val speechRecognizerLauncher = registerForActivityResult(
-        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) { // Check if recognition succeeded
-            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) // Extract spoken text
-            val text = spokenText?.firstOrNull() // Get the first match
-            if (!text.isNullOrBlank()) {
-                translateAndSpeak(text) // Translate and play the text
-            }
-        }
-    }
+    // Voice flow moved to VoiceTranslatorActivity — kept this empty hook in case
+    // someone re-attaches inline mic later.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,48 +65,182 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setupFilterChips()
         setupQrScanner()
         setupVoiceAssistant()
+        handleDeepLink() // interactivemap://route?from=&to=
+        handleAutoFetchRoute() // Triggered by SchedulesActivity
+        loadNextClass() // Fills the next-class card if user is signed in
+        loadNearbyServices() // Populates the bottom-sheet list from /restaurants
+        setupServiceChips() // Cafes / Libraries / Study Spaces chips
+        requestLocationIfNeeded() // Ask up-front so routing isn't blocked later
+        showOfflineBannerIfNeeded() // Red banner when no internet
     }
 
-    private fun setupVoiceAssistant() { // Initialize voice assistant features
-        textToSpeech = TextToSpeech(this) { status -> // Set up TTS engine
-            if (status == TextToSpeech.SUCCESS) {
-                textToSpeech.language = Locale("es", "ES") // Default TTS language
-            }
-        }
+    private fun showOfflineBannerIfNeeded() {
+        val online = com.uniandes.interactivemapuniandes.utils.NetworkMonitor.isOnline(this)
+        findViewById<android.widget.TextView>(R.id.tvOfflineBanner).visibility =
+            if (online) View.GONE else View.VISIBLE
+    }
 
-        findViewById<ImageView>(R.id.ivMic).setOnClickListener { // Listen for mic clicks
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply { // Prepare speech intent
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US") // Default listening language.
-                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...") // User prompt
-            }
-            try {
-                speechRecognizerLauncher.launch(intent)
-            } catch (e: Exception) {
-                Toast.makeText(this, "Speech recognition missing", Toast.LENGTH_SHORT).show()
-            }
+    private fun requestLocationIfNeeded() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationPermissionRequest
+            )
         }
     }
 
-    private fun translateAndSpeak(text: String) { // Handle translation process
-        lifecycleScope.launch { // Run on a coroutine
+    private fun setupServiceChips() { // Each chip just opens Search with a pre-term
+        findViewById<View>(R.id.btnCafes).setOnClickListener { openSearchWith("café") }
+        findViewById<View>(R.id.btnLibraries).setOnClickListener { openSearchWith("biblioteca") }
+        findViewById<View>(R.id.btnStudySpaces).setOnClickListener { openSearchWith("sala") }
+    }
+
+    private fun openSearchWith(term: String) {
+        val intent = Intent(this, SearchActivity::class.java).apply {
+            putExtra("prefill", term)
+        }
+        startActivity(intent)
+    }
+
+    private fun loadNearbyServices() {
+        val rv = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvServices)
+        val empty = findViewById<android.widget.TextView>(R.id.tvServicesEmpty)
+        rv.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        val adapter = ServicesAdapter { item -> routeFromCurrentLocationTo(item.target) } // Tap a row → route there
+        rv.adapter = adapter
+
+        lifecycleScope.launch {
             try {
-                Toast.makeText(this@HomeActivity, "Translating: $text", Toast.LENGTH_SHORT).show() // Notify user
-                val response = RetrofitInstance.translateApi.translateText(text, "es") // Call translation API
-                if (response.isSuccessful) {
-                    val translated = response.body()?.translated // Extract result
-                    if (translated != null) {
-                        textToSpeech.speak(translated, TextToSpeech.QUEUE_FLUSH, null, null) // Speak translation
-                        Toast.makeText(this@HomeActivity, translated, Toast.LENGTH_LONG).show() // Display result
+                // Try restaurants first; fall back to buildings so the section is never empty on campus.
+                val rows = mutableListOf<ServiceItem>()
+                val restResp = RetrofitInstance.restaurantsApi.list()
+                if (restResp.isSuccessful) {
+                    restResp.body()?.forEach { r ->
+                        rows.add(ServiceItem(
+                            name = r.name,
+                            subtitle = r.foodCategory ?: "Restaurant",
+                            emoji = "🍽️",
+                            target = r.name // No routeTarget on restaurants yet, name is best
+                        ))
                     }
-                } else {
-                    Toast.makeText(this@HomeActivity, "Translation error: ${response.code()}", Toast.LENGTH_SHORT).show() // Handle API error
                 }
+                if (rows.isEmpty()) { // No restaurants seeded, show buildings
+                    val bResp = RetrofitInstance.placesApi.listBuildings(null)
+                    if (bResp.isSuccessful) {
+                        bResp.body()?.take(10)?.forEach { b ->
+                            rows.add(ServiceItem(
+                                name = b.name,
+                                subtitle = b.gridReference?.let { "Grid $it" } ?: "Edificio",
+                                emoji = buildingEmoji(b.code),
+                                target = b.code
+                            ))
+                        }
+                    }
+                }
+                adapter.submit(rows)
+                empty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
+                rv.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
             } catch (e: Exception) {
-                Toast.makeText(this@HomeActivity, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
+                rv.visibility = View.GONE
+                empty.text = "Couldn't load services"
+                empty.visibility = View.VISIBLE
             }
         }
     }
+
+    private fun buildingEmoji(code: String): String = when (code.uppercase()) {
+        "ML" -> "🏛️"
+        "W" -> "🏢"
+        "N" -> "☕"
+        "O" -> "📚"
+        "RGD", "CENTRO CIVICO" -> "🏛️"
+        "X" -> "🍽️"
+        else -> "📍"
+    }
+
+    private fun handleDeepLink() {
+        val data = intent.data ?: return // Only set when launched via URI
+        val from = data.getQueryParameter("from")
+        val to = data.getQueryParameter("to")
+        if (to.isNullOrBlank()) return
+        if (!from.isNullOrBlank()) {
+            fetchRouteFromBackend(from, to)
+        } else {
+            routeFromCurrentLocationTo(to) // QR may just specify destination
+        }
+    }
+
+    private fun handleAutoFetchRoute() {
+        if (!intent.getBooleanExtra("autoFetchRoute", false)) return
+        val to = intent.getStringExtra("routeTo") ?: return
+        val from = intent.getStringExtra("routeFrom")
+        if (from.isNullOrBlank()) {
+            routeFromCurrentLocationTo(to) // Resolve origin via GPS
+        } else {
+            fetchRouteFromBackend(from, to)
+        }
+    }
+
+    private fun loadNextClass() {
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return // Card only for logged in
+        lifecycleScope.launch {
+            try {
+                val resp = RetrofitInstance.meApi.getNextClass()
+                if (!resp.isSuccessful) return@launch
+                val body = resp.body() ?: return@launch
+                val klass = body.scheduledClass ?: return@launch
+                if (!body.hasUpcomingClass) return@launch
+
+                val card = findViewById<androidx.cardview.widget.CardView>(R.id.cvNextClass)
+                findViewById<android.widget.TextView>(R.id.tvNextClassTitle).text = klass.title
+                findViewById<android.widget.TextView>(R.id.tvNextClassWhen).text = formatWhen(klass.startsAt)
+                card.visibility = android.view.View.VISIBLE
+
+                findViewById<com.google.android.material.button.MaterialButton>(R.id.btnRouteToNext)
+                    .setOnClickListener {
+                        val target = klass.destination?.routeTarget
+                            ?: klass.room?.roomCode
+                            ?: klass.rawLocation
+                        if (!target.isNullOrBlank()) {
+                            routeFromCurrentLocationTo(target) // Real user origin
+                        } else {
+                            Toast.makeText(this@HomeActivity, "No location", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            } catch (_: Exception) {
+                // Silent — card stays hidden, user can still use map
+            }
+        }
+    }
+
+    private fun formatWhen(iso: String): String { // Short "at HH:mm" format
+        return try {
+            val inFmt = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault())
+            val outFmt = java.text.SimpleDateFormat("EEE d MMM, HH:mm", Locale.getDefault())
+            val date = inFmt.parse(iso) ?: return iso
+            "at ${outFmt.format(date)}"
+        } catch (e: Exception) {
+            iso
+        }
+    }
+
+    private fun setupVoiceAssistant() { // Mic icon now opens the dedicated translator screen
+        textToSpeech = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                textToSpeech.language = Locale.forLanguageTag(BuildConfig.TRANSLATE_TARGET_LANG)
+            }
+        }
+        findViewById<ImageView>(R.id.ivMic).setOnClickListener {
+            startActivity(Intent(this, VoiceTranslatorActivity::class.java))
+        }
+    }
+
+    // Voice translation now lives in VoiceTranslatorActivity.
 
     override fun onDestroy() { // Clean up resources
         if (::textToSpeech.isInitialized) {
@@ -243,7 +369,14 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (requestCode == locationPermissionRequest) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showCurrentLocation()
+                enableMyLocationLayerIfAllowed() // Turn on blue dot now we have perm
+                val retryDest = pendingRouteDestination
+                pendingRouteDestination = null
+                if (retryDest != null) {
+                    routeFromCurrentLocationTo(retryDest) // Continue the flow that triggered the request
+                } else {
+                    showCurrentLocation()
+                }
             } else {
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
             }
@@ -261,22 +394,105 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         val uniandes = LatLng(4.6019, -74.0661)
-
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(uniandes, 17f))
-
-        mMap.addMarker(
-            MarkerOptions()
-                .position(uniandes)
-                .title("Universidad de los Andes")
-        )
 
         mMap.uiSettings.isMapToolbarEnabled = false
         mMap.uiSettings.isCompassEnabled = true
         mMap.uiSettings.isZoomControlsEnabled = false
-        mMap.uiSettings.isMyLocationButtonEnabled = false
+        mMap.uiSettings.isMyLocationButtonEnabled = true // Native blue dot button
         mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
 
+        enableMyLocationLayerIfAllowed() // Shows blue dot on user location
         drawRouteIfNeeded()
+    }
+
+    private fun enableMyLocationLayerIfAllowed() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            try {
+                mMap.isMyLocationEnabled = true // Google Maps draws the blue dot
+            } catch (_: SecurityException) {
+                // Perm revoked mid-session, ignore
+            }
+        }
+    }
+
+    private fun centerOnCurrentLocation() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationPermissionRequest
+            )
+            return
+        }
+        val client = LocationServices.getFusedLocationProviderClient(this)
+        client.lastLocation.addOnSuccessListener { loc ->
+            if (loc != null && ::mMap.isInitialized) {
+                val here = LatLng(loc.latitude, loc.longitude)
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(here, 18f))
+            } else {
+                Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Fetch nearest campus node from the backend, then route to the destination.
+    // Uses getCurrentLocation so we always get a fresh reading (lastLocation can
+    // be null when the app hasn't asked for location recently).
+    private var pendingRouteDestination: String? = null // If we need to wait for permission
+
+    private fun routeFromCurrentLocationTo(destination: String) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            pendingRouteDestination = destination // Retry once user grants
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationPermissionRequest
+            )
+            return
+        }
+
+        Toast.makeText(this, "Getting your location…", Toast.LENGTH_SHORT).show()
+        val client = LocationServices.getFusedLocationProviderClient(this)
+        val tokenSource = com.google.android.gms.tasks.CancellationTokenSource()
+        client.getCurrentLocation(
+            com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+            tokenSource.token
+        ).addOnSuccessListener { loc ->
+            if (loc == null) {
+                Toast.makeText(this, "Location unavailable — using campus center", Toast.LENGTH_SHORT).show()
+                fetchRouteFromBackend("ML 2", destination) // Last-resort fallback
+                return@addOnSuccessListener
+            }
+            resolveNearestNodeAndRoute(loc.latitude, loc.longitude, destination)
+        }.addOnFailureListener {
+            Toast.makeText(this, "Could not get location", Toast.LENGTH_SHORT).show()
+            fetchRouteFromBackend("ML 2", destination)
+        }
+    }
+
+    private fun resolveNearestNodeAndRoute(lat: Double, lng: Double, destination: String) {
+        lifecycleScope.launch {
+            try {
+                val resp = RetrofitInstance.api.findNearest(lat, lng)
+                val from = if (resp.isSuccessful) resp.body()?.node?.label ?: "ML 2" else "ML 2"
+                fetchRouteFromBackend(from, destination)
+            } catch (_: Exception) {
+                fetchRouteFromBackend("ML 2", destination)
+            }
+        }
     }
 
     private fun setupBottomSheet() {
@@ -295,18 +511,16 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun setupPrototypeClicks() {
         findViewById<View>(R.id.cvSearch).setOnClickListener {
-            Toast.makeText(this, "Search prototype", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, SearchActivity::class.java)) // Real screen now
         }
 
         findViewById<View>(R.id.fabDirections).setOnClickListener {
-            fetchRouteFromBackend("ML 2", "W 3")
+            Toast.makeText(this, "Tap a building on search to route", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, SearchActivity::class.java)) // Directions flow starts with picking a destination
         }
 
         findViewById<View>(R.id.fabLocation).setOnClickListener {
-            if (::mMap.isInitialized) {
-                val uniandes = LatLng(4.6019, -74.0661)
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(uniandes, 18f))
-            }
+            centerOnCurrentLocation() // Jumps to user's real position
         }
 
         findViewById<View>(R.id.fabLayers).setOnClickListener {
@@ -320,7 +534,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         findViewById<View>(R.id.tvSeeAll).setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            startActivity(Intent(this, SearchActivity::class.java)) // Jump to full search
         }
 
         findViewById<View>(R.id.profileContainer).setOnClickListener {
@@ -337,13 +551,20 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     val route = response.body()
 
                     if (route != null) {
+                        com.uniandes.interactivemapuniandes.model.repository.RouteHistoryStore(this@HomeActivity)
+                            .record(route.from, route.to) // Track for "5 most common"
+                        val labels = route.path.map { it.label }
+                        val lats = route.path.map { it.latitude ?: 0.0 } // Real coords from BE
+                        val lngs = route.path.map { it.longitude ?: 0.0 }
                         val intent = Intent(this@HomeActivity, RouteActivity::class.java).apply {
                             putExtra("destination", route.to)
                             putExtra("from", route.from)
-                            putExtra("eta", "${route.total_time} s")
-                            putExtra("distance", "${route.path.size - 1} hops")
-                            putStringArrayListExtra("path", ArrayList(route.path))
-                            putExtra("total_time", route.total_time)
+                            putExtra("eta", "${route.totalTimeSeconds} s")
+                            putExtra("distance", "${(labels.size - 1).coerceAtLeast(0)} hops")
+                            putStringArrayListExtra("path", ArrayList(labels))
+                            putExtra("total_time", route.totalTimeSeconds)
+                            putExtra("pathLats", lats.toDoubleArray()) // Carry coords through
+                            putExtra("pathLngs", lngs.toDoubleArray())
                         }
                         startActivity(intent)
                     } else {
@@ -379,20 +600,15 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         val showRoute = intent.getBooleanExtra("showRoute", false)
         if (!showRoute || !::mMap.isInitialized) return
 
-        val path = intent.getStringArrayListExtra("path") ?: return
+        val lats = intent.getDoubleArrayExtra("pathLats")
+        val lngs = intent.getDoubleArrayExtra("pathLngs")
+        val labels = intent.getStringArrayListExtra("path") ?: return
 
-        val nodeCoordinates = mapOf(
-            "ML 2" to LatLng(4.6019, -74.0661),
-            "ML 3" to LatLng(4.6020, -74.0659),
-            "ML 4" to LatLng(4.6021, -74.0657),
-            "ML 5" to LatLng(4.6022, -74.0655),
-            "W puente" to LatLng(4.6023, -74.0652),
-            "W 5" to LatLng(4.6024, -74.0650),
-            "W 4" to LatLng(4.6025, -74.0648),
-            "W 3" to LatLng(4.6026, -74.0646)
-        )
-
-        val latLngPath = path.mapNotNull { nodeCoordinates[it] }
+        val latLngPath: List<LatLng> = if (lats != null && lngs != null && lats.size == lngs.size && lats.isNotEmpty()) {
+            lats.indices.map { LatLng(lats[it], lngs[it]) } // Use real backend coords
+        } else {
+            emptyList() // Old-style intent without coords, skip polyline
+        }
 
         if (latLngPath.isEmpty()) {
             Toast.makeText(this, "No hay coordenadas para esa ruta", Toast.LENGTH_SHORT).show()
@@ -400,8 +616,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         mMap.clear()
-        mMap.addMarker(MarkerOptions().position(latLngPath.first()).title("Inicio"))
-        mMap.addMarker(MarkerOptions().position(latLngPath.last()).title("Destino"))
+        mMap.addMarker(MarkerOptions().position(latLngPath.first()).title("Inicio: ${labels.firstOrNull() ?: ""}"))
+        mMap.addMarker(MarkerOptions().position(latLngPath.last()).title("Destino: ${labels.lastOrNull() ?: ""}"))
 
         val polyline = PolylineOptions()
             .addAll(latLngPath)

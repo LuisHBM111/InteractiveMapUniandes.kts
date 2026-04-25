@@ -54,4 +54,11 @@
         <item name="buttonIconTint">@color/button_icon_tint</item>
     </style>
 
+    <!-- Splash screen (API 31+ uses this natively, older APIs get a simple fallback) -->
+    <style name="Theme.InteractiveMapUniandes.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FFF8D8</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
+        <item name="postSplashScreenTheme">@style/Theme.InteractiveMapUniandes</item>
+    </style>
+
 </resources>

@@ -9,6 +9,7 @@ interface TranslateApiService {
     @GET("api/v1/translate")
     suspend fun translateText(
         @Query("text") text: String,
-        @Query("targetLang") targetLang: String
+        @Query("targetLang") targetLang: String,
+        @Query("sourceLang") sourceLang: String? = null
     ): Response<TranslateResponse>
 }

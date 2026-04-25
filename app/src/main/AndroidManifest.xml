@@ -33,6 +33,38 @@
             android:name=".view.OfflineMapsActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".view.SearchActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.SchedulesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.NotificationsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.AlertsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.VoiceTranslatorActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.FavoritesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.RestaurantsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.RestaurantDetailActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB3B7xTmHuYdyzcIHr0mcALIEmLZDa-3yg" />
@@ -42,10 +74,20 @@
 
         <activity
             android:name=".view.HomeActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="interactivemap"
+                    android:host="route" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".view.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.InteractiveMapUniandes.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

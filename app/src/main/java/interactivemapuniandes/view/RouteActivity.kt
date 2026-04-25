@@ -65,6 +65,8 @@ class RouteActivity : AppCompatActivity() {
                 putExtra("from", from)
                 putExtra("to", destination)
                 putExtra("total_time", totalTime)
+                getIntent().getDoubleArrayExtra("pathLats")?.let { putExtra("pathLats", it) } // Pass coords through
+                getIntent().getDoubleArrayExtra("pathLngs")?.let { putExtra("pathLngs", it) }
             }
             startActivity(intent)
             finish()

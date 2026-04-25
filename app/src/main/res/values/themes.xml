@@ -1,6 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.InteractiveMapUniandes" parent="Theme.Material3Expressive.DayNight.NoActionBar">
-
         <item name="materialSwitchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
 
         <item name="colorPrimary">@color/md_theme_light_primary</item>
@@ -40,18 +39,19 @@
         <item name="android:windowBackground">@color/md_theme_light_background</item>
 
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
-
         <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
-
         <item name="extendedFloatingActionButtonStyle">@style/Widget.App.ExtendedFloatingActionButton</item>
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
-
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-
         <item name="snackbarStyle">@style/Widget.App.Snackbar</item>
         <item name="snackbarTextViewStyle">@style/Widget.App.Snackbar.TextView</item>
         <item name="snackbarButtonStyle">@style/Widget.App.Snackbar.Action</item>
+    </style>
 
+    <style name="Theme.InteractiveMapUniandes.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FFF8D8</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
+        <item name="postSplashScreenTheme">@style/Theme.InteractiveMapUniandes</item>
     </style>
 
     <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
@@ -62,7 +62,6 @@
         <item name="buttonTint">@color/button_tint</item>
         <item name="buttonIconTint">@color/button_icon_tint</item>
     </style>
-
 
     <style name="Widget.App.ExtendedFloatingActionButton" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
@@ -87,5 +86,4 @@
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
     </style>
-
 </resources>

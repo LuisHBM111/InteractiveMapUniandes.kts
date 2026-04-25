@@ -18,6 +18,7 @@
         android:theme="@style/Theme.InteractiveMapUniandes"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name="interactivemapuniandes.view.ScheduleActivity"
             android:exported="false"
@@ -38,6 +39,42 @@
             android:name=".view.OfflineMapsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.SearchActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.SchedulesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.NotificationsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.AlertsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.VoiceTranslatorActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.FavoritesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.RestaurantsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.RestaurantDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.BuildingDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -48,18 +85,35 @@
 
         <activity
             android:name=".view.HomeActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="route"
+                    android:scheme="interactivemap" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".view.LoginActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.InteractiveMapUniandes.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name="com.uniandes.interactivemapuniandes.utils.NextClassReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

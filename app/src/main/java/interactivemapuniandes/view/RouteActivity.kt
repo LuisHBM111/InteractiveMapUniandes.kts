@@ -2,6 +2,7 @@ package com.uniandes.interactivemapuniandes.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -14,14 +15,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.RouteResponse
+import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
 import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
-import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.utils.Telemetry
+import interactivemapuniandes.view.ScheduleActivity
 import kotlinx.coroutines.launch
-import android.widget.EditText
 
 class RouteActivity : AppCompatActivity() {
-
     private lateinit var routeRepository: RouteRepository
     private lateinit var tvDestinationLabel: TextView
     private lateinit var tvDestinationTitle: TextView
@@ -42,6 +43,7 @@ class RouteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("route_view")
         enableEdgeToEdge()
         setContentView(R.layout.activity_route)
 
@@ -82,6 +84,8 @@ class RouteActivity : AppCompatActivity() {
         val from = intent.getStringExtra("from") ?: defaultFromNode
         val path = intent.getStringArrayListExtra("path")
         val totalTime = intent.getIntExtra("total_time", 0)
+        val pathLatitudes = intent.getDoubleArrayExtra("pathLats")
+        val pathLongitudes = intent.getDoubleArrayExtra("pathLngs")
 
         val hasRoutePayload = !destination.isNullOrBlank() || !path.isNullOrEmpty() || totalTime > 0
         if (!hasRoutePayload) {
@@ -92,7 +96,9 @@ class RouteActivity : AppCompatActivity() {
             from = from,
             to = destination ?: "Unknown",
             path = path ?: arrayListOf(),
-            totalTime = totalTime
+            totalTime = totalTime,
+            pathLatitudes = pathLatitudes,
+            pathLongitudes = pathLongitudes
         )
     }
 
@@ -108,7 +114,7 @@ class RouteActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (!canRenderOnPrototypeMap(route.path)) {
+            if (!canRenderOnMap(route)) {
                 Toast.makeText(this, "Map preview is not available for this route yet", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -119,6 +125,8 @@ class RouteActivity : AppCompatActivity() {
                 putExtra("from", route.from)
                 putExtra("to", route.to)
                 putExtra("total_time", route.totalTime)
+                route.pathLatitudes?.let { putExtra("pathLats", it) }
+                route.pathLongitudes?.let { putExtra("pathLngs", it) }
             }
             startActivity(intent)
             finish()
@@ -128,8 +136,9 @@ class RouteActivity : AppCompatActivity() {
             showCustomRouteDialog()
         }
 
+        btnCalendar.text = "Open schedule"
         btnCalendar.setOnClickListener {
-            Toast.makeText(this, "Open schedule (prototype)", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ScheduleActivity::class.java))
         }
     }
 
@@ -155,7 +164,7 @@ class RouteActivity : AppCompatActivity() {
 
         val stepCount = (route.path.size - 1).coerceAtLeast(0)
         val isSamePlace = route.from.equals(route.to, ignoreCase = true)
-        val canRenderOnMap = canRenderOnPrototypeMap(route.path)
+        val canRenderOnMap = canRenderOnMap(route)
 
         tvDestinationLabel.text = if (route.classId != null) "Next class route" else "Custom route"
         tvDestinationTitle.text = "Route to ${route.to}"
@@ -165,7 +174,7 @@ class RouteActivity : AppCompatActivity() {
         tvEndLabel.text = route.to
         tvEndSub.text = if (isSamePlace) "You are already here" else "Destination node"
         tvEta.text = route.totalTime.toEtaLabel()
-        tvDistance.text = if (stepCount == 1) "1 step" else "$stepCount steps"
+        tvDistance.text = formatDistance(route.pathLatitudes, route.pathLongitudes, route.path.size)
         tvRouteSteps.text = when {
             isSamePlace -> "You are already at your destination."
             route.path.isNotEmpty() -> route.path.joinToString(separator = "\n->\n")
@@ -296,6 +305,14 @@ class RouteActivity : AppCompatActivity() {
         return if (shortCode.length in 2..6) shortCode.uppercase() else trimmed
     }
 
+    private fun canRenderOnMap(route: RouteResponse): Boolean {
+        return hasCoordinatePath(route.pathLatitudes, route.pathLongitudes) || canRenderOnPrototypeMap(route.path)
+    }
+
+    private fun hasCoordinatePath(lats: DoubleArray?, lngs: DoubleArray?): Boolean {
+        return lats != null && lngs != null && lats.size == lngs.size && lats.isNotEmpty()
+    }
+
     private fun canRenderOnPrototypeMap(path: List<String>): Boolean {
         if (path.isEmpty()) {
             return false
@@ -315,12 +332,44 @@ class RouteActivity : AppCompatActivity() {
         return path.all { node -> supportedNodes.contains(node) }
     }
 
-    private fun Int.toEtaLabel(): String {
-        return if (this >= 60) {
-            val minutes = this / 60
-            "$minutes min"
-        } else {
-            "$this s"
+    private fun formatEta(seconds: Int): String {
+        if (seconds <= 0) return "--"
+        val minutes = seconds / 60
+        val remainingSeconds = seconds % 60
+        return when {
+            minutes == 0 -> "${remainingSeconds}s"
+            remainingSeconds == 0 -> "$minutes min"
+            else -> "$minutes min ${remainingSeconds}s"
         }
     }
+
+    private fun formatDistance(lats: DoubleArray?, lngs: DoubleArray?, fallbackHops: Int): String {
+        if (!hasCoordinatePath(lats, lngs) || lats == null || lngs == null) {
+            val hops = (fallbackHops - 1).coerceAtLeast(0)
+            return if (hops == 1) "1 step" else "$hops steps"
+        }
+
+        var meters = 0.0
+        for (index in 1 until lats.size) {
+            meters += haversineMeters(lats[index - 1], lngs[index - 1], lats[index], lngs[index])
+        }
+
+        return if (meters >= 1000) {
+            "%.1f km".format(meters / 1000.0)
+        } else {
+            "${meters.toInt()} m"
+        }
+    }
+
+    private fun haversineMeters(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val earthRadius = 6371000.0
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = Math.sin(dLat / 2).let { it * it } +
+            Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+            Math.sin(dLon / 2).let { it * it }
+        return 2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    }
+
+    private fun Int.toEtaLabel(): String = formatEta(this)
 }

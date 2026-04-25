@@ -214,6 +214,9 @@ class RouteRepository(
             )
             ?: emptyList()
 
+        val pathLatitudes = routeObject.getDoubleListFromObjects("path", "latitude", "lat")
+        val pathLongitudes = routeObject.getDoubleListFromObjects("path", "longitude", "lng", "lon")
+
         val destination = routeObject.getString(
             "to",
             "destination",
@@ -255,7 +258,9 @@ class RouteRepository(
             path = path,
             totalTime = totalTime,
             classId = classId,
-            classTitle = classTitle
+            classTitle = classTitle,
+            pathLatitudes = pathLatitudes?.toDoubleArray(),
+            pathLongitudes = pathLongitudes?.toDoubleArray()
         )
     }
 
@@ -335,6 +340,33 @@ class RouteRepository(
                 val fieldElement = item.asJsonObject.get(field)
                 if (fieldElement != null && !fieldElement.isJsonNull && fieldElement.isJsonPrimitive) {
                     fieldElement.asString
+                } else {
+                    null
+                }
+            }
+        }
+
+        return values.ifEmpty { null }
+    }
+
+    private fun JsonObject.getDoubleListFromObjects(
+        arrayKey: String,
+        vararg fieldCandidates: String
+    ): List<Double>? {
+        val arrayElement = get(arrayKey)
+        if (arrayElement == null || !arrayElement.isJsonArray) {
+            return null
+        }
+
+        val values = arrayElement.asJsonArray.mapNotNull { item ->
+            if (!item.isJsonObject) {
+                return@mapNotNull null
+            }
+
+            fieldCandidates.firstNotNullOfOrNull { field ->
+                val fieldElement = item.asJsonObject.get(field)
+                if (fieldElement != null && !fieldElement.isJsonNull && fieldElement.isJsonPrimitive) {
+                    runCatching { fieldElement.asDouble }.getOrNull()
                 } else {
                     null
                 }

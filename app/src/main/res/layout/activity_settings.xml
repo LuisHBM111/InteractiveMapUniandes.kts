@@ -20,6 +20,7 @@
             android:id="@+id/flecha_settings"
             android:layout_width="32dp"
             android:layout_height="32dp"
+            android:contentDescription="Volver"
             android:padding="4dp"
             android:src="@drawable/arrow_back_25dp_e3e3e3_fill0_wght400_grad0_opsz24"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -94,6 +95,7 @@
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:layout_gravity="center"
+                        android:contentDescription="Subir foto de perfil"
                         android:src="@drawable/ic_plus"
                         app:tint="@color/black" />
 
@@ -160,6 +162,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
+                        android:importantForAccessibility="no"
                         android:src="@drawable/ic_mail"
                         app:tint="@color/black" />
 
@@ -222,6 +225,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
+                        android:importantForAccessibility="no"
                         android:src="@drawable/ic_dark_mode"
                         app:tint="@color/black" />
 
@@ -279,6 +283,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
+                        android:importantForAccessibility="no"
                         android:src="@drawable/ic_globe"
                         app:tint="@color/black" />
 
@@ -342,6 +347,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
+                        android:importantForAccessibility="no"
                         android:src="@drawable/ic_notif"
                         app:tint="@color/black" />
 
@@ -404,6 +410,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
+                        android:importantForAccessibility="no"
                         android:src="@drawable/ic_offmap"
                         app:tint="@color/black" />
 
@@ -453,6 +460,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
+                        android:importantForAccessibility="no"
                         android:src="@drawable/ic_ruler"
                         app:tint="@color/black" />
 
@@ -515,6 +523,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
+                        android:importantForAccessibility="no"
                         android:src="@drawable/ic_app"
                         app:tint="@color/black" />
 
@@ -566,6 +575,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
+                        android:importantForAccessibility="no"
                         android:src="@drawable/ic_privacy"
                         app:tint="@color/black" />
 

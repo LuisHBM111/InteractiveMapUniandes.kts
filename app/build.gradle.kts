@@ -86,6 +86,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("io.coil-kt.coil3:coil-compose:3.4.0")
+    implementation("io.coil-kt.coil3:coil:3.4.0") // imageView.load() extension for views-based layouts
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.4.0")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-firestore")

@@ -9,6 +9,7 @@ data class Building(
     val latitude: Double? = null,
     val longitude: Double? = null,
     val description: String? = null,
+    val photoUrl: String? = null,
     val rooms: List<Room>? = null
 )
 
@@ -28,7 +29,8 @@ data class Restaurant(
     val foodCategory: String? = null,
     val openingHours: String? = null,
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val photoUrl: String? = null
 )
 
 data class Review(

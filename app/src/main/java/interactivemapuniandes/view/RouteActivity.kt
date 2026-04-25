@@ -29,23 +29,21 @@ class RouteActivity : AppCompatActivity() {
 
         val destination = intent.getStringExtra("destination") ?: "Unknown"
         val from = intent.getStringExtra("from") ?: "Current location"
-        val eta = intent.getStringExtra("eta") ?: "--"
         val path = intent.getStringArrayListExtra("path") ?: arrayListOf()
         val totalTime = intent.getIntExtra("total_time", 0)
+        val lats = intent.getDoubleArrayExtra("pathLats")
+        val lngs = intent.getDoubleArrayExtra("pathLngs")
 
-        tvDestinationTitle.text = "Route to $destination"
-        tvFromLocation.text = "From $from"
-        tvEta.text = eta
-
-        // Dato corto para la card derecha
-        val stepsCount = if (path.isNotEmpty()) path.size - 1 else 0
-        tvDistance.text = "$stepsCount steps"
+        tvDestinationTitle.text = "Ruta a $destination"
+        tvFromLocation.text = "Desde $from"
+        tvEta.text = formatEta(totalTime)
+        tvDistance.text = formatDistance(lats, lngs, path.size)
 
         // Ruta completa, multilínea
         tvRouteSteps.text = if (path.isNotEmpty()) {
             path.joinToString(separator = "\n↓\n")
         } else {
-            "No route available"
+            "No hay ruta disponible"
         }
 
         btnBack.setOnClickListener {
@@ -72,9 +70,42 @@ class RouteActivity : AppCompatActivity() {
             finish()
         }
 
-        btnCalendar.text = "Open schedule"
+        btnCalendar.text = "Abrir horario"
         btnCalendar.setOnClickListener {
-            Toast.makeText(this, "Open schedule (prototype)", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, SchedulesActivity::class.java))
         }
+    }
+
+    private fun formatEta(seconds: Int): String {
+        if (seconds <= 0) return "--"
+        val m = seconds / 60
+        val s = seconds % 60
+        return when {
+            m == 0 -> "${s}s"
+            s == 0 -> "${m} min"
+            else -> "${m} min ${s}s"
+        }
+    }
+
+    private fun formatDistance(lats: DoubleArray?, lngs: DoubleArray?, fallbackHops: Int): String {
+        if (lats == null || lngs == null || lats.size < 2 || lats.size != lngs.size) {
+            val hops = (fallbackHops - 1).coerceAtLeast(0)
+            return "$hops tramos"
+        }
+        var meters = 0.0
+        for (i in 1 until lats.size) {
+            meters += haversineMeters(lats[i - 1], lngs[i - 1], lats[i], lngs[i])
+        }
+        return if (meters >= 1000) "%.1f km".format(meters / 1000.0) else "${meters.toInt()} m"
+    }
+
+    private fun haversineMeters(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val r = 6371000.0
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = Math.sin(dLat / 2).let { it * it } +
+            Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+            Math.sin(dLon / 2).let { it * it }
+        return 2 * r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
     }
 }

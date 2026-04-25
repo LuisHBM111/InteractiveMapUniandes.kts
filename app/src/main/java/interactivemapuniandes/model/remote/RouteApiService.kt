@@ -1,7 +1,9 @@
 package com.uniandes.interactivemapuniandes.model.remote
 
 import com.google.gson.JsonObject
+import com.uniandes.interactivemapuniandes.model.data.NearestNodeResponse
 import com.uniandes.interactivemapuniandes.model.data.NextClassResponseDto
+import com.uniandes.interactivemapuniandes.model.data.RouteGraphResponseDto
 import interactivemapuniandes.model.data.ScheduleDTO
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -16,10 +18,22 @@ import retrofit2.http.Query
 
 interface RouteApiService {
     @GET("api/v1/routes/graph/path")
+    suspend fun getRoute(
+        @Query("from") from: String,
+        @Query("to") to: String
+    ): Response<RouteGraphResponseDto>
+
+    @GET("api/v1/routes/graph/path")
     suspend fun getGraphPath(
         @Query("from") from: String,
         @Query("to") to: String
     ): Response<JsonObject>
+
+    @GET("api/v1/routes/graph/nearest")
+    suspend fun findNearest(
+        @Query("lat") lat: Double,
+        @Query("lng") lng: Double
+    ): Response<NearestNodeResponse>
 
     @GET("api/v1/me/routes/to-next-class")
     suspend fun getRouteToNextClass(

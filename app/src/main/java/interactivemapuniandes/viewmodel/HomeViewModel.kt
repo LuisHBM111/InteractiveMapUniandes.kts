@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.asStateFlow
 class HomeViewModel(
     private val routeRepository: RouteRepository
 ) {
-
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 

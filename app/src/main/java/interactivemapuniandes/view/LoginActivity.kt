@@ -8,6 +8,7 @@ import android.widget.Toast
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +16,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 import com.uniandes.interactivemapuniandes.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -29,7 +31,9 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen() // Must run before super on Android 12+
         super.onCreate(savedInstanceState)
+        Telemetry.screen("login")
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
 

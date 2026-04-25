@@ -12,6 +12,7 @@ class LoginViewModel(private val authRepository: AuthRepository) {
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun loginUser(email: String, password: String) {
+        if (_uiState.value.isLoading) return // Drop double-taps, prevents race on isLoading flag
         _uiState.value = _uiState.value.copy(
             emailError = null,
             passwordError = null,

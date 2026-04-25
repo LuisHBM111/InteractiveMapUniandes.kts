@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.Restaurant
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
@@ -50,18 +51,39 @@ class RestaurantsActivity : AppCompatActivity() {
             load()
         }
 
+        listOf(R.id.chipCafe, R.id.chipComidaRapida, R.id.chipRestaurante, R.id.chipCheap, R.id.chipMid).forEach { id ->
+            findViewById<Chip>(id).setOnCheckedChangeListener { _, _ -> load() } // Reload on any toggle
+        }
+
         load()
+    }
+
+    private fun selectedFoodCategory(): String? {
+        if (findViewById<Chip>(R.id.chipCafe).isChecked) return "Café"
+        if (findViewById<Chip>(R.id.chipComidaRapida).isChecked) return "Comida rápida"
+        if (findViewById<Chip>(R.id.chipRestaurante).isChecked) return "Restaurante"
+        return null
+    }
+
+    private fun selectedMaxPrice(): Int? {
+        if (findViewById<Chip>(R.id.chipCheap).isChecked) return 1 // $
+        if (findViewById<Chip>(R.id.chipMid).isChecked) return 2 // $$
+        return null
     }
 
     private fun load() {
         val empty = findViewById<TextView>(R.id.tvEmpty)
         lifecycleScope.launch {
             try {
-                val resp = RetrofitInstance.restaurantsApi.list() // Sort done client-side via toggle
+                val sortBy = if (sortByRating) "rating" else null
+                val resp = RetrofitInstance.restaurantsApi.list(
+                    foodCategory = selectedFoodCategory(),
+                    maxPrice = selectedMaxPrice(),
+                    sortBy = sortBy
+                )
                 val list = if (resp.isSuccessful) resp.body().orEmpty() else emptyList()
-                val sorted = if (sortByRating) list.sortedByDescending { it.averageRating ?: 0.0 } else list
-                adapter.submit(sorted)
-                empty.visibility = if (sorted.isEmpty()) View.VISIBLE else View.GONE
+                adapter.submit(list)
+                empty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             } catch (e: Exception) {
                 Toast.makeText(this@RestaurantsActivity, e.message ?: "Network error", Toast.LENGTH_SHORT).show()
             }

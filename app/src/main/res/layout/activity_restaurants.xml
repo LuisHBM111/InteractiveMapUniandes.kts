@@ -50,11 +50,60 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipFilters"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cvHeader"
+            app:singleLine="true"
+            app:singleSelection="false">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipCafe"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Café" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipComidaRapida"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Comida rápida" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipRestaurante"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Restaurante" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipCheap"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMid"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$$" />
+        </com.google.android.material.chip.ChipGroup>
+
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="96dp"
             app:cardBackgroundColor="@android:color/white"
@@ -63,7 +112,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cvHeader">
+            app:layout_constraintTop_toBottomOf="@id/chipFilters">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRestaurants"

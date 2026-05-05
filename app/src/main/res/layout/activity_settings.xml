@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
-    tools:context="com.uniandes.interactivemapuniandes.view.SettingsActivity">
+    tools:context="com.uniandes.interactivemapuniandes.ui.settings.SettingsActivity">
 
     <!-- Settings Header -->
     <androidx.constraintlayout.widget.ConstraintLayout

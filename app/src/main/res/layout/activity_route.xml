@@ -6,13 +6,13 @@
     android:layout_height="match_parent"
     android:background="@color/background_color"
     android:fillViewport="true"
-    tools:context=".view.RouteActivity">
+    tools:context=".ui.routing.RouteActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="24dp"
-        android:paddingTop="24dp"
+        android:paddingTop="40dp"
         android:paddingEnd="24dp"
         android:paddingBottom="20dp">
 

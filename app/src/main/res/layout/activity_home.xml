@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_theme_light_background"
-    tools:context=".view.HomeActivity">
+    tools:context=".ui.home.HomeActivity">
 
     <!-- Fondo temporal del mapa -->
     <androidx.fragment.app.FragmentContainerView
@@ -40,7 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="72dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="40dp"
             android:layout_marginEnd="16dp"
             app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="36dp"
@@ -178,7 +178,7 @@
         <LinearLayout
             android:id="@+id/llFloatingButtons"
             android:layout_width="wrap_content"
-            android:layout_height="250dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -233,6 +233,7 @@
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <LinearLayout
+            android:id="@+id/layoutBottomSheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

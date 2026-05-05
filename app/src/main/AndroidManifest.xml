@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:name=".CustomApplication"
+        android:name=".app.CustomApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,59 +20,55 @@
         tools:targetApi="31">
 
         <activity
-            android:name="interactivemapuniandes.view.ScheduleActivity"
+            android:name=".ui.schedule.ScheduleActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.SignupActivity"
+            android:name=".ui.auth.SignupActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.RouteActivity"
+            android:name=".ui.routing.RouteActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.OfflineMapsActivity"
+            android:name=".ui.search.OfflineMapsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.SearchActivity"
+            android:name=".ui.search.SearchActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.SchedulesActivity"
+            android:name=".ui.alerts.NotificationsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.NotificationsActivity"
+            android:name=".ui.alerts.AlertsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.AlertsActivity"
+            android:name=".ui.translator.VoiceTranslatorActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.VoiceTranslatorActivity"
+            android:name=".ui.favorites.FavoritesActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.FavoritesActivity"
+            android:name=".ui.restaurants.RestaurantsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.RestaurantsActivity"
+            android:name=".ui.restaurants.RestaurantDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.RestaurantDetailActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".view.BuildingDetailActivity"
+            android:name=".ui.search.BuildingDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
@@ -84,7 +80,7 @@
             android:value="barcode_ui" />
 
         <activity
-            android:name=".view.HomeActivity"
+            android:name=".ui.home.HomeActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter android:autoVerify="false">
@@ -100,7 +96,7 @@
         </activity>
 
         <activity
-            android:name=".view.LoginActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.InteractiveMapUniandes.Splash">
@@ -112,7 +108,7 @@
         </activity>
 
         <receiver
-            android:name="com.uniandes.interactivemapuniandes.utils.NextClassReceiver"
+            android:name="com.uniandes.interactivemapuniandes.core.common.NextClassReceiver"
             android:exported="false" />
     </application>
 

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
-    tools:context="interactivemapuniandes.view.ScheduleActivity">
+    tools:context="com.uniandes.interactivemapuniandes.ui.schedule.ScheduleActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/contentContainer"
@@ -43,6 +43,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:text="First Semester 2026"
                 android:textColor="@color/settings_secondary_text"
                 app:layout_constraintStart_toStartOf="parent"

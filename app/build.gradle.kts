@@ -66,7 +66,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-firestore")
     implementation(platform("androidx.compose:compose-bom:2026.03.00"))
-    implementation("androidx.compose.material3:material3")
+    implementation("com.google.android.material:material:1.14.0-beta01")
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.preference)

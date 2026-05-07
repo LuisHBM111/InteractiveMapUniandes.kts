@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,374 +8,196 @@
     android:fillViewport="true"
     tools:context=".view.RouteActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="24dp"
-        android:paddingTop="24dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="20dp">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/coordinatorLayout"
+        >
 
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_route_icon_button"
-            android:contentDescription="Back"
-            android:elevation="0dp"
-            android:padding="12dp"
-            android:src="@drawable/arrow_back_25dp_e3e3e3_fill0_wght400_grad0_opsz24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/dark_blue" />
-
-        <TextView
-            android:id="@+id/tvHeaderTitle"
-            android:layout_width="wrap_content"
+        <!-- App bar -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbarlayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Navigation"
-            android:textColor="@color/dark_blue"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/btnBack"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btnBack" />
+            android:fitsSystemWindows="true">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardDestination"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnBack"
-            app:strokeColor="@color/route_card_stroke"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                style="?attr/collapsingToolbarLayoutMediumStyle"
+                android:id="@+id/collapsingtoolbarlayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+                app:expandedTitleGravity="bottom|center_horizontal"
+                app:collapsedTitleTextColor="@color/black"
+                app:expandedTitleTextColor="@color/black"
+                app:collapsedSubtitleTextColor="@color/black"
+                app:expandedSubtitleTextColor="@color/black"
+                android:background="@color/background_color"
+                >
 
-                <TextView
-                    android:id="@+id/tvDestinationLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Destination"
-                    android:textColor="@color/route_soft_text"
-                    android:textSize="13sp" />
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/toolbar"
+                    style="@style/Widget.Material3.Toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:elevation="0dp"
+                    app:layout_collapseMode="pin"
+                    app:title="Navigation"
+                    app:subtitle="Plan your Uniandes route"
+                    app:navigationIcon="@drawable/arrow_back_25dp_e3e3e3_fill0_wght400_grad0_opsz24"
+                    app:navigationIconTint="@color/black"
+                    android:background="@color/background_color"
+                    app:titleTextColor="@color/black"
+                    />
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-                <TextView
-                    android:id="@+id/tvDestinationTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Route to Building B"
-                    android:textColor="@color/dark_blue"
-                    android:textSize="27sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvFromLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="From Current location"
-                    android:textColor="@color/route_soft_text"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardRoutePreview"
-            android:layout_width="0dp"
-            android:layout_height="154dp"
-            android:layout_marginTop="18dp"
-            app:cardBackgroundColor="@color/route_preview_background"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardDestination"
-            app:strokeColor="@android:color/transparent"
-            app:strokeWidth="0dp">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="20dp">
-
-                <ImageView
-                    android:id="@+id/routeLine"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    app:layout_constraintBottom_toTopOf="@id/endDot"
-                    app:layout_constraintStart_toStartOf="@id/startDot"
-                    app:layout_constraintTop_toBottomOf="@id/startDot"
-                    android:src="@drawable/ic_south"
-                    app:tint="@color/black" />
-
-                <ImageView
-                    android:id="@+id/startDot"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:src="@drawable/ic_mylocation"
-                    app:tint="@color/black" />
-
-                <ImageView
-                    android:id="@+id/endDot"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:src="@drawable/ic_homework"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:tint="@color/black" />
-
-                <TextView
-                    android:id="@+id/tvStartLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Current location"
-                    android:textColor="@color/dark_blue"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/startDot"
-                    app:layout_constraintTop_toTopOf="@id/startDot" />
-
-                <TextView
-                    android:id="@+id/tvStartSub"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="4dp"
-                    android:text="Starting point"
-                    android:textColor="@color/route_soft_text"
-                    android:textSize="13sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/startDot"
-                    app:layout_constraintTop_toBottomOf="@id/tvStartLabel" />
-
-                <TextView
-                    android:id="@+id/tvEndLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Destination"
-                    android:textColor="@color/dark_blue"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@id/tvEndSub"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/endDot" />
-
-                <TextView
-                    android:id="@+id/tvEndSub"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Campus route preview"
-                    android:textColor="@color/route_soft_text"
-                    android:textSize="13sp"
-                    app:layout_constraintBottom_toBottomOf="@id/endDot"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/endDot" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
+    <!-- From to search -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/where_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/coordinatorLayout"
+        >
 
         <LinearLayout
-            android:id="@+id/llInfoCards"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardRoutePreview">
+            android:orientation="vertical">
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:strokeColor="@color/route_card_stroke"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Estimated time"
-                        android:textColor="@color/route_soft_text"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/tvEta"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="8 min"
-                        android:textColor="@color/dark_blue"
-                        android:textSize="26sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="112dp"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Where are we going?"
                 android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:strokeColor="@color/route_card_stroke"
-                app:strokeWidth="1dp">
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:textStyle="bold"
+                android:textSize="24dp"
+                android:textColor="@color/black"
+                />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Route size"
-                        android:textColor="@color/route_soft_text"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/tvDistance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="7 steps"
-                        android:textColor="@color/dark_blue"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardRouteSteps"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/llInfoCards"
-            app:strokeColor="@color/route_card_stroke"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
+            <!-- From -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlinedTextField_from"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:hint="From">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Route steps"
-                    android:textColor="@color/route_soft_text"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Follow the route sequence below."
-                    android:textColor="@color/route_soft_text"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/tvRouteSteps"
+                <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:lineSpacingExtra="6dp"
-                    android:text="ML 2\n->\nML 3\n->\nML 4"
-                    android:textColor="@color/dark_blue"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/outlinedTextField_to"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:hint="To">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Buttons Inside From to -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="Search"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    style="?attr/borderlessButtonStyle"
+                    />
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Swap"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    style="?attr/borderlessButtonStyle"
+                    />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnStartNavigation"
-            android:layout_width="0dp"
-            android:layout_height="54dp"
-            android:layout_marginTop="18dp"
-            android:text="View on map"
-            android:textAllCaps="false"
-            android:textColor="@color/dark_blue"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            app:backgroundTint="@color/primary_yellow"
-            app:cornerRadius="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardRouteSteps" />
+    <!-- Buttons -->
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCustomRoute"
-            android:layout_width="0dp"
-            android:layout_height="54dp"
-            android:layout_marginTop="10dp"
-            android:text="Plan custom route"
-            android:textAllCaps="false"
-            android:textColor="@color/dark_blue"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:backgroundTint="@android:color/white"
-            app:cornerRadius="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnStartNavigation"
-            app:strokeColor="@color/route_card_stroke"
-            app:strokeWidth="1dp" />
+    <com.google.android.material.button.MaterialButtonGroup
+        android:id="@+id/buttonGroup_classes"
+        style="@style/Widget.Material3.MaterialButtonGroup.Connected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/where_card"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        >
+        <Button
+            style="@style/Widget.App.Button.OutlinedButton"
+            android:id="@+id/previous_class"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Previous Class"
+            />
+        <Button
+            style="@style/Widget.App.Button.OutlinedButton"
+            android:id="@+id/random_class"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Random"
+            />
+        <Button
+            style="@style/Widget.App.Button.OutlinedButton"
+            android:id="@+id/next_class"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next Class"
+            />
+    </com.google.android.material.button.MaterialButtonGroup>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCalendar"
-            android:layout_width="0dp"
-            android:layout_height="54dp"
-            android:layout_marginTop="10dp"
-            android:text="Open schedule"
-            android:textAllCaps="false"
-            android:textColor="@color/dark_blue"
-            android:textSize="16sp"
-            app:backgroundTint="@android:color/white"
-            app:cornerRadius="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnCustomRoute"
-            app:strokeColor="@color/route_card_stroke"
-            app:strokeWidth="1dp" />
+    <!-- Route steps -->
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/buttonGroup_classes"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

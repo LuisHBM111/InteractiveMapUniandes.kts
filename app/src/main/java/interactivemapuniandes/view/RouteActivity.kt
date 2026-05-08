@@ -14,6 +14,8 @@ import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.listitem.ListItemViewHolder
+import interactivemapuniandes.model.data.RouteDTO
+import interactivemapuniandes.utils.ListsAdapter
 
 class RouteActivity : AppCompatActivity() {
 
@@ -25,7 +27,7 @@ class RouteActivity : AppCompatActivity() {
         setContentView(R.layout.activity_route)
 
 
-        val dataset: MutableList<RouteStepUi> = mutableListOf()
+        val dataset: MutableList<RouteDTO> = mutableListOf()
         val drawable: Drawable = getDrawable(R.drawable.ic_homework)!!
         val hola = RouteStepUi("hola", drawable)
         val hola2 = RouteStepUi("hola", drawable)
@@ -43,35 +45,5 @@ class RouteActivity : AppCompatActivity() {
         var name: String,
         var icon: Drawable?,
     )
-
-    class ListsAdapter(private val items: List<RouteStepUi>) :
-        RecyclerView.Adapter<ListItemViewHolder>() {
-
-        /**
-         * Provide a reference to the type of views that you are using
-         * (custom ViewHolder)
-         */
-
-        // Create new views (invoked by the layout manager)
-        override fun onCreateViewHolder(parent: ViewGroup, position: Int): ListItemViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_viewholder, parent, false)
-            return ListItemViewHolder(view)
-        }
-
-        // Replace the contents of a view (invoked by the layout manager)
-        override fun onBindViewHolder(viewHolder: ListItemViewHolder, position: Int) {
-            viewHolder.bind(position)
-            viewHolder.itemView.findViewById<TextView>(R.id.list_item_text)?.let { textView ->
-                textView.text = items[position].name
-            }
-            viewHolder.itemView.findViewById<ImageView>(R.id.icon)?.let { imageView ->
-                imageView.setImageDrawable(items[position].icon)
-            }
-        }
-
-        // Return the size of your dataset (invoked by the layout manager)
-        override fun getItemCount() = items.size
-
-    }
 
 }

@@ -2,6 +2,7 @@ package com.uniandes.interactivemapuniandes.model.remote
 
 import com.google.gson.JsonObject
 import com.uniandes.interactivemapuniandes.model.data.NextClassResponseDto
+import interactivemapuniandes.model.data.RouteDTO
 import interactivemapuniandes.model.data.ScheduleDTO
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -32,7 +33,7 @@ interface RouteApiService {
         @Header("Authorization") authorization: String,
         @Path("classId") classId: String,
         @Query("from") from: String
-    ): Response<JsonObject>
+    ): Response<RouteDTO>
 
     @GET("api/v1/me/classes/next")
     suspend fun getNextClass(

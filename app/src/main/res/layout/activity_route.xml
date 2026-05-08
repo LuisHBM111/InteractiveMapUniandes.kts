@@ -125,7 +125,7 @@
                     android:text="Search"
                     android:textSize="16dp"
                     android:textStyle="bold"
-                    style="?attr/borderlessButtonStyle"
+                    style="?attr/materialButtonOutlinedStyle"
                     />
                 <com.google.android.material.button.MaterialButton
                     android:layout_width="wrap_content"
@@ -133,7 +133,7 @@
                     android:text="Swap"
                     android:textSize="16dp"
                     android:textStyle="bold"
-                    style="?attr/borderlessButtonStyle"
+                    style="?attr/materialButtonOutlinedStyle"
                     />
             </LinearLayout>
         </LinearLayout>
@@ -198,6 +198,17 @@
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <Button
+        android:id="@+id/view_on_map_button"
+        style="@style/Widget.App.Button.Primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View on map"
+        app:layout_constraintTop_toBottomOf="@+id/card"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:checkable="true"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

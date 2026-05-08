@@ -1,0 +1,91 @@
+{
+  "hasUpcomingClass": true,
+  "class": {
+    "id": "cddc2324-dbe2-4295-9ad8-100ebe622e27",
+    "createdAt": "2026-04-19T09:24:24.076Z",
+    "updatedAt": "2026-04-19T09:24:24.076Z",
+    "title": "PROGRAMACION CON TECNOLOGIAS WEB",
+    "courseCode": "ISIS 3710",
+    "section": "4",
+    "nrc": "78793",
+    "startsAt": "2026-01-20T22:00:00.000Z",
+    "endsAt": "2026-01-20T23:20:00.000Z",
+    "timezone": "America/Bogota",
+    "externalUid": "20260419T072912Z-Ellucian",
+    "rawLocation": "Campus: CAMPUS PRINCIPAL Edificio: Edif. Mario Laserna (ML) Salón: ML_511",
+    "rawDescription": "NRC: 78793\nHoras crédito: 3.0\nNivel: PREGRADO\nInstructor: GARCIA GARCIA, JUAN (Principal)",
+    "room": {
+      "id": "02bb4e0e-3d77-4226-9ae4-323ab410f9a9",
+      "createdAt": "2026-04-19T09:24:24.076Z",
+      "updatedAt": "2026-04-19T09:24:24.076Z",
+      "name": "ML 511",
+      "latitude": null,
+      "longitude": null,
+      "gridReference": null,
+      "category": "room",
+      "roomCode": "ML_511",
+      "floor": null,
+      "building": {
+        "id": "985dd5ab-701d-4c8a-97b6-1e26f61024ae",
+        "createdAt": "2026-04-19T09:13:50.155Z",
+        "updatedAt": "2026-04-19T09:13:50.155Z",
+        "name": "Edificio Mario Laserna",
+        "latitude": null,
+        "longitude": null,
+        "gridReference": "C-7",
+        "category": "building",
+        "code": "ML",
+        "aliases": [
+          "ML",
+          "EDIF MARIO LASERNA",
+          "EDIFICIO MARIO LASERNA",
+          "MARIO LASERNA"
+        ],
+        "description": null
+      }
+    },
+    "instructors": [
+      {
+        "id": "840aeee9-05a3-444b-b17d-1ad4d144ca00",
+        "createdAt": "2026-04-19T09:24:24.076Z",
+        "updatedAt": "2026-04-19T09:24:24.076Z",
+        "fullName": "GARCIA GARCIA, JUAN",
+        "email": null,
+        "department": null
+      }
+    ],
+    "recurrenceRule": {
+      "id": "51204503-ff92-458a-addd-bfbf7551d4b5",
+      "createdAt": "2026-04-19T09:24:24.076Z",
+      "updatedAt": "2026-04-19T09:24:24.076Z",
+      "frequency": "weekly",
+      "interval": 1,
+      "byDay": [
+        "TU",
+        "TH"
+      ],
+      "untilDate": "2026-05-24T03:59:00.000Z",
+      "timezone": "America/Bogota"
+    },
+    "occurrence": {
+      "startsAt": "2026-05-07T22:00:00.000Z",
+      "endsAt": "2026-05-07T23:20:00.000Z",
+      "isRecurring": true
+    },
+    "destination": {
+      "room": {
+        "id": "02bb4e0e-3d77-4226-9ae4-323ab410f9a9",
+        "name": "ML 511",
+        "roomCode": "ML_511"
+      },
+      "building": {
+        "id": "985dd5ab-701d-4c8a-97b6-1e26f61024ae",
+        "code": "ML",
+        "name": "Edificio Mario Laserna"
+      },
+      "routeTarget": "ML",
+      "routeTargetType": "building",
+      "isResolved": true
+    }
+  }
+}

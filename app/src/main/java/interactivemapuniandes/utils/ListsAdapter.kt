@@ -2,15 +2,18 @@ package interactivemapuniandes.utils
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.listitem.ListItemViewHolder
 import com.uniandes.interactivemapuniandes.R
 import interactivemapuniandes.model.data.dtos.Path3
+import interactivemapuniandes.model.data.mappers.RouteStepType
+import interactivemapuniandes.model.data.mappers.RouteStepUi
 import kotlin.let
 
 
-class ListsAdapter(private val items: List<Path3>) :
+class ListsAdapter(private var items: List<RouteStepUi>) :
     RecyclerView.Adapter<ListItemViewHolder>() {
 
     /**
@@ -30,12 +33,24 @@ class ListsAdapter(private val items: List<Path3>) :
         viewHolder.itemView.findViewById<TextView>(R.id.list_item_text)?.let { textView ->
             textView.text = items[position].label
         }
-        /*
         viewHolder.itemView.findViewById<ImageView>(R.id.icon)?.let { imageView ->
-            imageView.setImageDrawable(items[position].icon)
+            when(items[position].type) {
+                RouteStepType.START -> {
+                    imageView.setImageResource(R.drawable.ic_homework)
+                }
+                RouteStepType.MIDDLE -> {
+                    imageView.setImageResource(R.drawable.ic_my_location)
+                }
+                RouteStepType.END -> {
+                    imageView.setImageResource(R.drawable.ic_mylocation)
+                }
+            }
         }
+    }
 
-         */
+    fun updateList(newList: List<RouteStepUi>) {
+        items = newList
+        notifyDataSetChanged()
     }
 
     // Return the size of your dataset (invoked by the layout manager)

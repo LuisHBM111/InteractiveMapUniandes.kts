@@ -55,7 +55,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_home)
 
         val authRepository = AuthRepository(FirebaseAuth.getInstance())
-        val routeRepository = RouteRepository(RetrofitInstance.api, authRepository, RetrofitInstance.getInstance().create(ApiService::class.java))
+        val routeRepository = RouteRepository(authRepository, RetrofitInstance.getInstance().create(ApiService::class.java))
         homeViewModel = HomeViewModel(routeRepository)
         observeUiState()
 

@@ -623,7 +623,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="24dp"
-                android:text="University Campus Map • © 2024"
+                android:text="University Campus Map • © 2026"
                 android:textColor="@color/settings_secondary_text"
                 android:textSize="12sp" />
 

@@ -180,7 +180,7 @@
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/buttonGroup_classes"
         >
 
@@ -195,6 +195,25 @@
                 android:layout_height="match_parent"
                 />
 
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/scheduleLoadingIndicator"
+                style="@style/Widget.Material3Expressive.CircularProgressIndicator.Wavy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                app:indicatorColor="@color/primary_yellow"
+                app:indicatorSize="52dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:trackColor="@color/schedule_chip_background"
+                app:trackCornerRadius="4dp"
+                app:trackThickness="8dp"
+                tools:visibility="visible" />
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
@@ -203,6 +222,7 @@
         android:id="@+id/view_on_map_button"
         style="@style/Widget.App.Button.Primary"
         android:layout_width="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_height="wrap_content"
         android:text="View on map"
         app:layout_constraintTop_toBottomOf="@+id/card"

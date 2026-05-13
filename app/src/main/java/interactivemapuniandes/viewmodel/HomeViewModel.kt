@@ -12,7 +12,7 @@ class HomeViewModel(
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
+/*
     suspend fun loadRouteToNextClass(from: String) {
         _uiState.value = _uiState.value.copy(
             isRouteLoading = true,
@@ -39,6 +39,9 @@ class HomeViewModel(
         )
     }
 
+ */
+
+    /*
     suspend fun loadRouteToClass(classId: String, from: String) {
         _uiState.value = _uiState.value.copy(
             isRouteLoading = true,
@@ -64,6 +67,8 @@ class HomeViewModel(
             }
         )
     }
+
+     */
 
     fun clearRoute() {
         if (_uiState.value.route != null) {

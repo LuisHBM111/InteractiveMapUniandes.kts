@@ -1,32 +1,41 @@
 package com.uniandes.interactivemapuniandes.view
 
-import android.graphics.drawable.Drawable
+import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
+import android.util.Log
+import android.view.Window
+import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.uniandes.interactivemapuniandes.R
-import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.listitem.ListItemViewHolder
-import interactivemapuniandes.model.data.RouteDTO
+import com.google.firebase.auth.FirebaseAuth
+import com.uniandes.interactivemapuniandes.R
+import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
+import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
+import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
+import interactivemapuniandes.model.remote.ApiService
 import interactivemapuniandes.utils.ListsAdapter
-
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 class RouteActivity : AppCompatActivity() {
 
     private lateinit var routeRepository: RouteRepository
 
+    private lateinit var apiService: ApiService
+
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_route)
 
 
+        /*
         val dataset: MutableList<RouteDTO> = mutableListOf()
         val drawable: Drawable = getDrawable(R.drawable.ic_homework)!!
         val hola = RouteStepUi("hola", drawable)
@@ -39,11 +48,42 @@ class RouteActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = customAdapter
 
+         */
+
+
+        val authRepository = AuthRepository(FirebaseAuth.getInstance())
+        routeRepository = RouteRepository(RetrofitInstance.api, authRepository, getApiService())
+
+        setupNextClass()
+
     }
 
-    data class RouteStepUi(
-        var name: String,
-        var icon: Drawable?,
-    )
+    private fun getApiService(): ApiService {
+        apiService = RetrofitInstance.getInstance().create(ApiService::class.java)
+        return apiService
+    }
+
+    private fun setupNextClass(){
+        val nextClassButton = findViewById<Button>(R.id.next_class)
+        nextClassButton.setOnClickListener {
+            NextClass()
+        }
+    }
+
+    private fun NextClass(){
+        MainScope().launch {
+            val result = routeRepository.getNextClass()
+            if (result.isSuccess) {
+                Log.e("RouteActivity", "${result.isSuccess}")
+                val steps = result.getOrNull()?.path?.path?.path
+                val customAdapter = ListsAdapter(steps ?: emptyList())
+                val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
+                recyclerView.layoutManager = LinearLayoutManager(this@RouteActivity)
+                recyclerView.adapter = customAdapter
+            } else {
+                Log.e("RouteActivity", "Error loading next class", result.exceptionOrNull())
+            }
+        }
+    }
 
 }

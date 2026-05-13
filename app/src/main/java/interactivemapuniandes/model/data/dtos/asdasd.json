@@ -1,0 +1,165 @@
+{
+  "hasUpcomingClass": true,
+  "class": {
+    "id": "f34178c2-16e6-48b9-8dfe-6c18b6657bc7",
+    "createdAt": "2026-04-19T09:24:24.076Z",
+    "updatedAt": "2026-04-19T09:24:24.076Z",
+    "title": "CONSTR. APLICACIONES MÓVILES (Tipo E)(Inglés)",
+    "courseCode": "ISIS 3510",
+    "section": "4",
+    "nrc": "41886",
+    "startsAt": "2026-01-19T16:00:00.000Z",
+    "endsAt": "2026-01-19T17:20:00.000Z",
+    "timezone": "America/Bogota",
+    "externalUid": "20260419T072909Z-Ellucian",
+    "rawLocation": "Campus: CAMPUS PRINCIPAL Edificio: centro cívico Salón: RGD_110-11",
+    "rawDescription": "NRC: 41886\nHoras crédito: 3.0\nNivel: PREGRADO\nInstructor: LINARES VASQUEZ, MARIO (Principal) LINARES VASQUEZ, MARIO",
+    "room": {
+      "id": "6ef90e30-3e45-4829-bf0f-73282c650056",
+      "createdAt": "2026-04-19T09:24:24.076Z",
+      "updatedAt": "2026-04-19T09:24:24.076Z",
+      "name": "RGD 110 11",
+      "latitude": null,
+      "longitude": null,
+      "gridReference": null,
+      "category": "room",
+      "roomCode": "RGD_110-11",
+      "floor": null,
+      "building": {
+        "id": "9f63cebb-f9bf-43a7-b249-6160e90064b2",
+        "createdAt": "2026-04-19T09:13:50.155Z",
+        "updatedAt": "2026-04-19T09:13:50.155Z",
+        "name": "Centro Civico",
+        "latitude": null,
+        "longitude": null,
+        "gridReference": null,
+        "category": "building",
+        "code": "RGD",
+        "aliases": [
+          "RGD",
+          "CENTRO CIVICO",
+          "CENTRO CÍVICO"
+        ],
+        "description": null
+      }
+    },
+    "instructors": [
+      {
+        "id": "5260bbff-acd5-4081-93c4-97be25417eda",
+        "createdAt": "2026-04-19T09:24:24.076Z",
+        "updatedAt": "2026-04-19T09:24:24.076Z",
+        "fullName": "LINARES VASQUEZ, MARIO LINARES VASQUEZ",
+        "email": null,
+        "department": null
+      }
+    ],
+    "recurrenceRule": {
+      "id": "28b8b288-1c9a-4f1c-8a09-cccba43e6a8e",
+      "createdAt": "2026-04-19T09:24:24.076Z",
+      "updatedAt": "2026-04-19T09:24:24.076Z",
+      "frequency": "weekly",
+      "interval": 1,
+      "byDay": [
+        "MO"
+      ],
+      "untilDate": "2026-05-24T03:59:00.000Z",
+      "timezone": "America/Bogota"
+    },
+    "occurrence": {
+      "startsAt": "2026-05-11T16:00:00.000Z",
+      "endsAt": "2026-05-11T17:20:00.000Z",
+      "isRecurring": true
+    },
+    "destination": {
+      "room": {
+        "id": "6ef90e30-3e45-4829-bf0f-73282c650056",
+        "name": "RGD 110 11",
+        "roomCode": "RGD_110-11"
+      },
+      "building": {
+        "id": "9f63cebb-f9bf-43a7-b249-6160e90064b2",
+        "code": "RGD",
+        "name": "Centro Civico"
+      },
+      "routeTarget": "RGD",
+      "routeTargetType": "building",
+      "isResolved": true
+    }
+  },
+  "path": {
+    "class": {
+      "id": "f34178c2-16e6-48b9-8dfe-6c18b6657bc7",
+      "title": "CONSTR. APLICACIONES MÓVILES (Tipo E)(Inglés)",
+      "startsAt": "2026-01-19T16:00:00.000Z",
+      "endsAt": "2026-01-19T17:20:00.000Z"
+    },
+    "destination": {
+      "room": {
+        "id": "6ef90e30-3e45-4829-bf0f-73282c650056",
+        "name": "RGD 110 11",
+        "roomCode": "RGD_110-11"
+      },
+      "building": {
+        "id": "9f63cebb-f9bf-43a7-b249-6160e90064b2",
+        "code": "RGD",
+        "name": "Centro Civico"
+      },
+      "routeTarget": "RGD",
+      "routeTargetType": "building",
+      "isResolved": true
+    },
+    "path": {
+      "from": "ML entrada",
+      "to": "RGD entrada inferior",
+      "totalTimeSeconds": 105,
+      "totalTimeMinutes": 1.75,
+      "path": [
+        {
+          "id": "7ee1ec7b-3659-40a6-806f-109248fb2551",
+          "label": "ML entrada",
+          "latitude": null,
+          "longitude": null,
+          "place": null
+        },
+        {
+          "id": "f4ebd6b0-101a-4935-844b-a13b0ec30921",
+          "label": "Parque espinoza alto",
+          "latitude": null,
+          "longitude": null,
+          "place": null
+        },
+        {
+          "id": "3a6d3d31-2e26-4076-842c-5d2dcb2bf4e8",
+          "label": "Parque espinoza bajo",
+          "latitude": null,
+          "longitude": null,
+          "place": null
+        },
+        {
+          "id": "b51cb0ea-f9ae-4bbe-8c69-e425371c5aef",
+          "label": "RGD entrada inferior",
+          "latitude": null,
+          "longitude": null,
+          "place": null
+        }
+      ],
+      "traversedEdges": [
+        {
+          "from": "ML entrada",
+          "to": "Parque espinoza alto",
+          "travelTimeSeconds": 15
+        },
+        {
+          "from": "Parque espinoza alto",
+          "to": "Parque espinoza bajo",
+          "travelTimeSeconds": 60
+        },
+        {
+          "from": "Parque espinoza bajo",
+          "to": "RGD entrada inferior",
+          "travelTimeSeconds": 30
+        }
+      ]
+    }
+  }
+}

@@ -6,6 +6,59 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
+
+    fun getInstance(): Retrofit{
+        return Retrofit.Builder()
+            .baseUrl(BackendConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     val api: RouteApiService by lazy {
         val httpClient = OkHttpClient.Builder()
             .connectTimeout(20, TimeUnit.SECONDS)

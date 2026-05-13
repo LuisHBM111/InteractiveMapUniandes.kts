@@ -37,6 +37,7 @@ import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import com.uniandes.interactivemapuniandes.viewmodel.HomeViewModel
+import interactivemapuniandes.model.remote.ApiService
 import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -54,7 +55,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_home)
 
         val authRepository = AuthRepository(FirebaseAuth.getInstance())
-        val routeRepository = RouteRepository(RetrofitInstance.api, authRepository)
+        val routeRepository = RouteRepository(RetrofitInstance.api, authRepository, RetrofitInstance.getInstance().create(ApiService::class.java))
         homeViewModel = HomeViewModel(routeRepository)
         observeUiState()
 
@@ -96,7 +97,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     return@addOnSuccessListener
                 }
 
-                handleQrRoute(rawValue)
+               // handleQrRoute(rawValue)
             }
             .addOnCanceledListener {
                 Toast.makeText(this, "Escaneo cancelado", Toast.LENGTH_SHORT).show()
@@ -105,7 +106,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this, "Error al escanear: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
-
+/*
     private fun handleQrRoute(qrContent: String) {
         try {
             val uri = Uri.parse(qrContent)
@@ -135,6 +136,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "QR invalido: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
+ */
 
     private fun requestAndShowCurrentLocation() {
         if (ContextCompat.checkSelfPermission(
@@ -270,7 +273,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             logout()
         }
     }
-
+/*
     private fun requestRouteToNextClass(fromNode: String) {
         lifecycleScope.launch {
             homeViewModel.loadRouteToNextClass(fromNode)
@@ -283,6 +286,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+
+ */
     private fun observeUiState() {
         lifecycleScope.launch {
             homeViewModel.uiState.collect { state ->

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.uniandes.interactivemapuniandes.model.data.NextClassResponseDto
 import interactivemapuniandes.model.data.RouteDTO
 import interactivemapuniandes.model.data.ScheduleDTO
+import interactivemapuniandes.model.data.dtos.NextClassDTO
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -34,11 +35,6 @@ interface RouteApiService {
         @Path("classId") classId: String,
         @Query("from") from: String
     ): Response<RouteDTO>
-
-    @GET("api/v1/me/classes/next")
-    suspend fun getNextClass(
-        @Header("Authorization") authorization: String
-    ): Response<NextClassResponseDto>
 
     @POST("api/v1/me/schedules/import/default")
     suspend fun importDefaultSchedule(

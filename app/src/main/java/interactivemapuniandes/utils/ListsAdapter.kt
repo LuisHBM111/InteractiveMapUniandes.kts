@@ -44,6 +44,7 @@ class ListsAdapter(private var items: List<RouteStepUi>) :
                 RouteStepType.END -> {
                     imageView.setImageResource(R.drawable.ic_mylocation)
                 }
+
             }
         }
     }

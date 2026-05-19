@@ -60,6 +60,7 @@ class RouteActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_route)
 
+        Log.d("RouteDebug", "RouteActivity onCreate")
 
         setupButtons()
         setupToolbar()
@@ -95,6 +96,7 @@ class RouteActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         outlinedTextField_from = findViewById(R.id.outlinedTextField_from)
         outlinedTextField_to = findViewById(R.id.outlinedTextField_to)
+        Log.d("RouteDebug", "RouteActivity views initialized")
     }
 
     private fun setupToolbar(){
@@ -120,22 +122,26 @@ class RouteActivity : AppCompatActivity() {
     }
     private fun getApiService() {
         apiService = RetrofitInstance.getInstance().create(ApiService::class.java)
+        Log.d("RouteDebug", "ApiService created")
     }
 
     private fun setupNextClass(){
         button_next_class.setOnClickListener {
+            Log.d("RouteDebug", "Next Class button clicked")
             routeViewModel.getNextClass()
         }
     }
 
     private fun setupPreviousClass(){
         button_previous_class.setOnClickListener {
+            Log.d("RouteDebug", "Previous Class button clicked")
             routeViewModel.getPreviousClass()
         }
     }
 
     private fun setupRandomClass(){
         button_random_class.setOnClickListener {
+            Log.d("RouteDebug", "Random button clicked")
             routeViewModel.getRandomClass()
         }
     }
@@ -151,6 +157,7 @@ class RouteActivity : AppCompatActivity() {
         button_search.setOnClickListener {
             val from = outlinedTextField_from.editText?.text.toString()
             val to = outlinedTextField_to.editText?.text.toString()
+            Log.d("RouteDebug", "Search button clicked from=$from to=$to")
             routeViewModel.getSearchClass(from, to)
         }
     }
@@ -158,8 +165,13 @@ class RouteActivity : AppCompatActivity() {
     private fun observeRouteState(){
         lifecycleScope.launch {
             routeViewModel.uiState.collect { state ->
+                Log.d(
+                    "RouteDebug",
+                    "Activity observed state loading=${state.isRouteLoading} hasRoute=${state.routeData != null} steps=${state.routeData?.steps?.size} error=${state.errorMessage}"
+                )
                 if (!state.isRouteLoading && state.routeData != null) {
                     val steps = state.routeData.steps
+                    Log.d("RouteDebug", "Updating adapter with ${steps.size} steps")
                     nextClassAdapter.updateList(steps)
                 }
                 if (!state.isRouteLoading && state.errorMessage != null) {

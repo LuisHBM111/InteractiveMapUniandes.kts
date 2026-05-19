@@ -12,9 +12,14 @@ data class SearchClassDTO(
 data class PathSearch(
     val id: String,
     val label: String,
-    val latitude: Double,
-    val longitude: Double,
-    val place: String,
+    val latitude: Double?,
+    val longitude: Double?,
+    val place: SearchPlace?,
+)
+
+data class SearchPlace(
+    val id: String?,
+    val name: String?,
 )
 
 data class TraversedEdge(

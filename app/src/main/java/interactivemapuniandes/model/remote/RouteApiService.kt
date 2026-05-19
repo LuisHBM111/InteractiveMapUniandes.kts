@@ -17,7 +17,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RouteApiService {
-    @GET("api/v1/routes/graph/path")
+    @GET("api/v1/routes/path")
     suspend fun getGraphPath(
         @Query("from") from: String,
         @Query("to") to: String

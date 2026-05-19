@@ -2,6 +2,7 @@ package interactivemapuniandes.utils
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -23,12 +24,14 @@ class ListsAdapter(private var items: List<RouteStepUi>) :
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ListItemViewHolder {
+        Log.d("RouteDebug", "Adapter onCreateViewHolder viewType=$position")
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_viewholder, parent, false)
         return ListItemViewHolder(view)
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ListItemViewHolder, position: Int) {
+        Log.d("RouteDebug", "Adapter onBind position=$position itemCount=${items.size} label=${items.getOrNull(position)?.label}")
         viewHolder.bind(position, items.size)
         viewHolder.itemView.findViewById<TextView>(R.id.list_item_text)?.let { textView ->
             textView.text = items[position].label
@@ -50,6 +53,7 @@ class ListsAdapter(private var items: List<RouteStepUi>) :
     }
 
     fun updateList(newList: List<RouteStepUi>) {
+        Log.d("RouteDebug", "Adapter updateList old=${items.size} new=${newList.size}")
         items = newList
         notifyDataSetChanged()
     }

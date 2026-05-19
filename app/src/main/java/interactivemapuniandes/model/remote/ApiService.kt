@@ -1,6 +1,7 @@
 package interactivemapuniandes.model.remote
 
 import interactivemapuniandes.model.data.dtos.NextClassDTO
+import interactivemapuniandes.model.data.dtos.NextClassInfoDTO
 import interactivemapuniandes.model.data.dtos.PreviousClassDTO
 import interactivemapuniandes.model.data.dtos.SearchClassDTO
 import retrofit2.Response
@@ -18,7 +19,7 @@ interface ApiService {
     @GET("api/v1/me/routes/to-previous-class")
     suspend fun getToPreviousClass(
         @Header("Authorization") authorization: String, @Query("from") from: String
-    ): Response<NextClassDTO>
+    ): Response<PreviousClassDTO>
 
     @GET("api/v1/me/classes/previous")
     suspend fun getPreviousClass(
@@ -28,9 +29,9 @@ interface ApiService {
     @GET("api/v1/me/classes/next")
     suspend fun getNextClass(
         @Header("Authorization") authorization: String
-    ): Response<PreviousClassDTO>
+    ): Response<NextClassInfoDTO>
 
-    @GET("api/v1/routes/graph/path")
+    @GET("api/v1/routes/path")
     suspend fun getSearchClass(@Query("from") from: String, @Query("to") to: String): Response<SearchClassDTO>
 
 }

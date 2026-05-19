@@ -28,5 +28,10 @@ data class Path3(
     val label: String,
     val latitude: Double?,
     val longitude: Double?,
-    val place: String?,
+    val place: RoutePlace?,
+)
+
+data class RoutePlace(
+    val id: String?,
+    val name: String?,
 )

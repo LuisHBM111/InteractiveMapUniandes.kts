@@ -3,6 +3,7 @@ package interactivemapuniandes.model.data.mappers
 import interactivemapuniandes.model.data.dtos.NextClassDTO
 import interactivemapuniandes.model.data.dtos.Path3
 import interactivemapuniandes.model.data.dtos.PathSearch
+import interactivemapuniandes.model.data.dtos.PreviousClassDTO
 import interactivemapuniandes.model.data.dtos.SearchClassDTO
 import interactivemapuniandes.model.data.dtos.TraversedEdge
 
@@ -23,7 +24,7 @@ fun List<Path3>.toRouteStepUi(): List<RouteStepUi>{
             label = path3.label,
             latitude = path3.latitude,
             longitude = path3.longitude,
-            place = path3.place,
+            place = path3.place?.name,
             type = when(index){
                 0 -> RouteStepType.START
                 size - 1 -> RouteStepType.END
@@ -37,9 +38,19 @@ fun SearchClassDTO.toSearchRouteUiData(): RouteUiData{
     return RouteUiData(
         hasUpcomingClass = true,
         classTitle = "",
-        from = path.first().label,
-        to = path.last().label,
+        from = path.firstOrNull()?.label ?: from,
+        to = path.lastOrNull()?.label ?: to,
         steps = path.toSearchRouteStepUi(),
+    )
+}
+
+fun PreviousClassDTO.toRouteUiData(): RouteUiData{
+    return RouteUiData(
+        hasUpcomingClass = hasPreviousClass,
+        classTitle = previousClass?.title ?: "Class not found",
+        from = path?.path?.path?.firstOrNull()?.label ?: "ML",
+        to = path?.path?.path?.lastOrNull()?.label ?: "Destination not found",
+        steps = path?.path?.path?.toRouteStepUi() ?: emptyList(),
     )
 }
 
@@ -50,7 +61,7 @@ fun List<PathSearch>.toSearchRouteStepUi(): List<RouteStepUi>{
             label = path.label,
             latitude = path.latitude,
             longitude = path.longitude,
-            place = path.place,
+            place = path.place?.name,
             type = when(index){
                 0 -> RouteStepType.START
                 size - 1 -> RouteStepType.END

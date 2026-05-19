@@ -1,0 +1,53 @@
+{
+  "from": "ML entrada",
+  "to": "RGD entrada inferior",
+  "totalTimeSeconds": 105,
+  "totalTimeMinutes": 1.75,
+  "path": [
+    {
+      "id": "7ee1ec7b-3659-40a6-806f-109248fb2551",
+      "label": "ML entrada",
+      "latitude": null,
+      "longitude": null,
+      "place": null
+    },
+    {
+      "id": "f4ebd6b0-101a-4935-844b-a13b0ec30921",
+      "label": "Parque espinoza alto",
+      "latitude": null,
+      "longitude": null,
+      "place": null
+    },
+    {
+      "id": "3a6d3d31-2e26-4076-842c-5d2dcb2bf4e8",
+      "label": "Parque espinoza bajo",
+      "latitude": null,
+      "longitude": null,
+      "place": null
+    },
+    {
+      "id": "b51cb0ea-f9ae-4bbe-8c69-e425371c5aef",
+      "label": "RGD entrada inferior",
+      "latitude": null,
+      "longitude": null,
+      "place": null
+    }
+  ],
+  "traversedEdges": [
+    {
+      "from": "ML entrada",
+      "to": "Parque espinoza alto",
+      "travelTimeSeconds": 15
+    },
+    {
+      "from": "Parque espinoza alto",
+      "to": "Parque espinoza bajo",
+      "travelTimeSeconds": 60
+    },
+    {
+      "from": "Parque espinoza bajo",
+      "to": "RGD entrada inferior",
+      "travelTimeSeconds": 30
+    }
+  ]
+}

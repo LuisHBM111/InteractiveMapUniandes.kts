@@ -2,6 +2,7 @@ package com.uniandes.interactivemapuniandes.utils
 
 import android.app.Activity
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.view.AlertsActivity
@@ -17,6 +18,9 @@ import com.uniandes.interactivemapuniandes.view.VoiceTranslatorActivity
 import interactivemapuniandes.view.ScheduleActivity
 
 fun BottomNavigationView.setupNavigation(activity: Activity, current: String? = null) {
+    // Sprint 4 - banner global de "sin conexion" enganchado al lifecycle del activity
+    (activity as? AppCompatActivity)?.let { ConnectivityBanner.attach(it) }
+
     selectedItemId = activity.currentNavigationItemId()
         ?: current?.toNavigationItemId()
         ?: selectedItemId

@@ -4,20 +4,26 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import interactivemapuniandes.model.entity.NoteEntity
 import interactivemapuniandes.model.entity.ScheduleClassEntity
 import interactivemapuniandes.model.entity.ScheduleEntity
+import interactivemapuniandes.model.entity.VisitEntity
 
 @Database(
     entities = [
         ScheduleEntity::class,
-        ScheduleClassEntity::class
+        ScheduleClassEntity::class,
+        NoteEntity::class,
+        VisitEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun scheduleDao(): ScheduleDAO
+    abstract fun noteDao(): NoteDAO
+    abstract fun visitDao(): VisitDAO
 
     companion object {
         //Sincronizacion entre threads
@@ -30,7 +36,10 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "interactive_map_uniandes.db"
-                ).build().also { INSTANCE = it }
+                )
+                    .fallbackToDestructiveMigration() // Tablas son solo cache, OK perderlas en upgrade
+                    .build()
+                    .also { INSTANCE = it }
             }
         }
     }

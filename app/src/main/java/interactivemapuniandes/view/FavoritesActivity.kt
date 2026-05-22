@@ -106,7 +106,7 @@ class FavAdapter(
         val f = items[position]
         holder.code.text = f.place?.code ?: "?"
         holder.name.text = f.place?.name ?: "—"
-        holder.sub.text = "❤️ tap to route · long-press to remove"
+        holder.sub.text = "❤️ toca para rutear · manten presionado para borrar"
         holder.itemView.setOnClickListener { onClick(f) }
         holder.itemView.setOnLongClickListener { onRemove(f); true }
     }

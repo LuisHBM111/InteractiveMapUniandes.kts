@@ -19,6 +19,7 @@ import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
 import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import interactivemapuniandes.view.ScheduleActivity
 import kotlinx.coroutines.launch
 
@@ -94,7 +95,7 @@ class RouteActivity : AppCompatActivity() {
 
         return RouteResponse(
             from = from,
-            to = destination ?: "Unknown",
+            to = destination ?: "Desconocido",
             path = path ?: arrayListOf(),
             totalTime = totalTime,
             pathLatitudes = pathLatitudes,
@@ -192,7 +193,7 @@ class RouteActivity : AppCompatActivity() {
 
     private fun loadNextClassRoute() {
         btnStartNavigation.isEnabled = false
-        btnStartNavigation.text = "Loading..."
+        btnStartNavigation.text = "Cargando..."
 
         lifecycleScope.launch {
             val result = routeRepository.getRouteToNextClass(defaultFromNode)
@@ -204,7 +205,7 @@ class RouteActivity : AppCompatActivity() {
                     renderInitialState()
                     Toast.makeText(
                         this@RouteActivity,
-                        error.message ?: "Could not load next class route",
+                        friendlyError(this@RouteActivity, error),
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -250,12 +251,12 @@ class RouteActivity : AppCompatActivity() {
                 }
 
                 positiveButton.isEnabled = false
-                positiveButton.text = "Loading..."
+                positiveButton.text = "Cargando..."
 
                 lifecycleScope.launch {
                     val result = routeRepository.getGraphPath(from, to)
                     positiveButton.isEnabled = true
-                    positiveButton.text = "Load route"
+                    positiveButton.text = "Cargar ruta"
 
                     result.fold(
                         onSuccess = { route ->
@@ -263,14 +264,14 @@ class RouteActivity : AppCompatActivity() {
                             dialog.dismiss()
                             Toast.makeText(
                                 this@RouteActivity,
-                                "Custom route loaded",
+                                "Ruta lista",
                                 Toast.LENGTH_SHORT
                             ).show()
                         },
                         onFailure = { error ->
                             Toast.makeText(
                                 this@RouteActivity,
-                                error.message ?: "Could not load route",
+                                friendlyError(this@RouteActivity, error),
                                 Toast.LENGTH_LONG
                             ).show()
                         }

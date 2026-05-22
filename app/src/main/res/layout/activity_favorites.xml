@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="24dp"
-                android:text="No favorites yet.\nTap the heart on any building to save it."
+                android:text="Todavia no tienes favoritos.\nToca el corazon en un edificio para guardarlo."
                 android:textAlignment="center"
                 android:textColor="#7C8594" />
         </androidx.cardview.widget.CardView>

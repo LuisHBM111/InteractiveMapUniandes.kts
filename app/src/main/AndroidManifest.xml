@@ -64,6 +64,14 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".view.NotesActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.InsightsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".view.RestaurantsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

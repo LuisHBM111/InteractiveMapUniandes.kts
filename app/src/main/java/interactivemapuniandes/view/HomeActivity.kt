@@ -188,12 +188,41 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         val rv = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvServices)
         val empty = findViewById<TextView>(R.id.tvServicesEmpty)
         rv.layoutManager = LinearLayoutManager(this)
-        val adapter = ServicesAdapter { item -> routeFromCurrentLocationTo(item.target) }
+        val adapter = ServicesAdapter { item ->
+            when (item.target) {
+                "__notes__" -> startActivity(Intent(this, NotesActivity::class.java))
+                "__insights__" -> startActivity(Intent(this, InsightsActivity::class.java))
+                else -> routeFromCurrentLocationTo(item.target)
+            }
+        }
         rv.adapter = adapter
+
+        // Sprint 4 - personal screens, always visibles aunque no haya red
+        val sprint4Rows = listOf(
+            ServiceItem(
+                name = "Mis notas",
+                subtitle = "Tus notas por edificio",
+                emoji = "N",
+                target = "__notes__"
+            ),
+            ServiceItem(
+                name = "Mis insights",
+                subtitle = "Edificios mas visitados, hora pico",
+                emoji = "I",
+                target = "__insights__"
+            )
+        )
+
+        // Pinta los rows de sprint 4 inmediatamente para que se vean aunque la red falle
+        adapter.submit(sprint4Rows)
+        rv.visibility = View.VISIBLE
+        empty.visibility = View.GONE
 
         lifecycleScope.launch {
             try {
                 val rows = mutableListOf<ServiceItem>()
+                rows.addAll(sprint4Rows) // Sprint 4 entries siempre al inicio
+                var restaurantsLoaded = 0
                 val restaurantResponse = RetrofitInstance.restaurantsApi.list()
                 if (restaurantResponse.isSuccessful) {
                     restaurantResponse.body()?.forEach { restaurant ->
@@ -206,10 +235,11 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                                 photoUrl = restaurant.photoUrl
                             )
                         )
+                        restaurantsLoaded++
                     }
                 }
 
-                if (rows.isEmpty()) {
+                if (restaurantsLoaded == 0) {
                     val buildingResponse = RetrofitInstance.placesApi.listBuildings(null)
                     if (buildingResponse.isSuccessful) {
                         buildingResponse.body()?.take(10)?.forEach { building ->
@@ -227,12 +257,10 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                 adapter.submit(rows)
-                empty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
-                rv.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
+                rv.visibility = View.VISIBLE
+                empty.visibility = View.GONE
             } catch (_: Exception) {
-                rv.visibility = View.GONE
-                empty.text = "Couldn't load services"
-                empty.visibility = View.VISIBLE
+                // Si falla la red, dejamos los sprint 4 rows visibles (ya se pintaron arriba)
             }
         }
     }

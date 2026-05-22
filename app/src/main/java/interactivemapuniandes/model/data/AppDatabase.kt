@@ -37,7 +37,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "interactive_map_uniandes.db"
                 )
-                    .fallbackToDestructiveMigration() // Tablas son solo cache, OK perderlas en upgrade
+                    .fallbackToDestructiveMigration(dropAllTables = true) // Tablas son solo cache, OK perderlas en upgrade
                     .build()
                     .also { INSTANCE = it }
             }

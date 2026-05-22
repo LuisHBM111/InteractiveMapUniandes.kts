@@ -22,6 +22,7 @@ import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.Restaurant
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.launch
 
@@ -92,7 +93,7 @@ class RestaurantsActivity : AppCompatActivity() {
                 adapter.submit(list)
                 empty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             } catch (e: Exception) {
-                Toast.makeText(this@RestaurantsActivity, e.message ?: "Network error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@RestaurantsActivity, friendlyError(this@RestaurantsActivity, e), Toast.LENGTH_SHORT).show()
             }
         }
     }

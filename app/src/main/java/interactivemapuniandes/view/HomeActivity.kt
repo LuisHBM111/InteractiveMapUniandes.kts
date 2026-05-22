@@ -48,6 +48,7 @@ import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
 import com.uniandes.interactivemapuniandes.utils.NetworkMonitor
 import com.uniandes.interactivemapuniandes.utils.NextClassNotifier
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import com.uniandes.interactivemapuniandes.viewmodel.HomeViewModel
 import java.text.SimpleDateFormat
@@ -485,11 +486,11 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     findViewById<TextView>(R.id.tvCurrentLocationChip).text =
                         "(${String.format("%.4f", location.latitude)}, ${String.format("%.4f", location.longitude)})"
                 } else {
-                    Toast.makeText(this, "Could not get current location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "No pudimos obtener tu ubicacion", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Error getting current location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No pudimos obtener tu ubicacion", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -627,7 +628,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 resolveNearestNodeAndRoute(location.latitude, location.longitude, destination)
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Could not get location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No pudimos obtener tu ubicacion", Toast.LENGTH_SHORT).show()
                 fetchRouteFromBackend("ML 2", destination)
             }
     }
@@ -707,7 +708,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 onFailure = { error ->
                     Toast.makeText(
                         this@HomeActivity,
-                        error.message ?: "Could not load route",
+                        friendlyError(this@HomeActivity, error),
                         Toast.LENGTH_LONG
                     ).show()
                 }

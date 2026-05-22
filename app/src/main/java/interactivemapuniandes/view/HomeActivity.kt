@@ -565,7 +565,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             if (location != null && ::mMap.isInitialized) {
                 val here = LatLng(location.latitude, location.longitude)
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(here, 18f))
-                Telemetry.lunchPing(this, location.latitude, location.longitude, location.accuracy)
+                Telemetry.lunchPing(location.latitude, location.longitude, location.accuracy)
             } else {
                 Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show()
             }
@@ -595,7 +595,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     return@addOnSuccessListener
                 }
 
-                Telemetry.lunchPing(this, location.latitude, location.longitude, location.accuracy)
+                Telemetry.lunchPing(location.latitude, location.longitude, location.accuracy)
                 resolveNearestNodeAndRoute(location.latitude, location.longitude, destination)
             }
             .addOnFailureListener {

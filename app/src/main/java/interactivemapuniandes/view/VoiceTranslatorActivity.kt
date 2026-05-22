@@ -18,8 +18,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
+import interactivemapuniandes.model.data.AppDatabase
+import interactivemapuniandes.model.entity.TranslationEntity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // Standalone translator screen. User picks direction (es↔en), taps mic, sees
 // the result, optionally sends it to Search.
@@ -85,6 +90,21 @@ class VoiceTranslatorActivity : AppCompatActivity() {
         }
     }
 
+    // Sprint 4 - Guarda la traduccion en Room para que el historial la pueda mostrar
+    private fun saveTranslation(original: String, translated: String) {
+        if (original.isBlank() || translated.isBlank()) return
+        val entry = TranslationEntity(
+            original = original,
+            translated = translated,
+            createdAt = System.currentTimeMillis()
+        )
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                AppDatabase.getInstance(this@VoiceTranslatorActivity).translationDao().insert(entry)
+            }
+        }
+    }
+
     private fun handleHeard(text: String) {
         findViewById<TextView>(R.id.tvHeard).text = text
         val src = sourceLang.substringBefore('-') // "es-ES" -> "es"
@@ -95,8 +115,9 @@ class VoiceTranslatorActivity : AppCompatActivity() {
                 val translated = if (resp.isSuccessful) resp.body()?.translated ?: text else text
                 findViewById<TextView>(R.id.tvTranslated).text = translated
                 findViewById<MaterialButton>(R.id.btnUseInSearch).isEnabled = true
+                if (resp.isSuccessful) saveTranslation(text, translated) // Sprint 4 - guarda en historial
             } catch (e: Exception) {
-                Toast.makeText(this@VoiceTranslatorActivity, "Translate error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@VoiceTranslatorActivity, friendlyError(this@VoiceTranslatorActivity, e), Toast.LENGTH_SHORT).show()
             }
         }
     }

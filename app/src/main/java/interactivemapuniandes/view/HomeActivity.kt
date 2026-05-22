@@ -193,6 +193,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             when (item.target) {
                 "__notes__" -> startActivity(Intent(this, NotesActivity::class.java))
                 "__insights__" -> startActivity(Intent(this, InsightsActivity::class.java))
+                "__history__" -> startActivity(Intent(this, TranslatorHistoryActivity::class.java))
                 else -> routeFromCurrentLocationTo(item.target)
             }
         }
@@ -211,6 +212,12 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 subtitle = "Edificios mas visitados, hora pico",
                 emoji = "I",
                 target = "__insights__"
+            ),
+            ServiceItem(
+                name = "Historial de traducciones",
+                subtitle = "Lo que has traducido con el traductor de voz",
+                emoji = "T",
+                target = "__history__"
             )
         )
 

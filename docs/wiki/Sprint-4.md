@@ -38,6 +38,46 @@ Desde el Home, en la lista "Nearby Services", aparecen primero dos cards: **"Mis
 
 Todas las features de sprint 2 y sprint 3 siguen vivas y compilando. La unica refactor de sprint 4 sobre sprint 3 fue limpiar `Telemetry` (eliminar el arg `Context` que ya no se usaba), y los dos call sites de `HomeActivity` se actualizaron a la nueva firma.
 
+## Fixes from Sprint 3 feedback
+
+El feedback de sprint 3 (correo "Sprint 3 - Feedback", 22 May 22:07) puntuo eventual connectivity con 14 pts y dijo *"Great job! However, you did not show how the app behaves with them"*, mas 10 bugs en la APK. Esto es lo que arreglamos en sprint 4:
+
+### Eventual Connectivity - el banner que faltaba (bugs #9, #10 + 14 pts)
+Antes: la app cacheaba con Room + OfflineRouteCache, pero no mostraba nada al usuario cuando se perdia la conexion. El TA dijo que no veia como reaccionaba la app.
+Ahora: nuevo helper `utils/ConnectivityBanner.kt` que se engancha a cada activity con bottom nav (a traves de `setupNavigation`). Usa `ConnectivityManager.NetworkCallback` para reaccionar en vivo:
+- Si se cae la red -> banner rojo "Sin conexion - se muestra lo guardado" anclado arriba (con padding para el status bar para que se lea bien, fix del bug #10)
+- Si vuelve la red -> el banner se oculta solo
+- Se des-registra en `onDestroy` (lifecycle observer)
+
+### Telling errors (bugs #7, #8)
+Antes: catch-blocks mostraban `e.message` cruda ("HTTP 404", "java.net.SocketTimeoutException").
+Ahora: nuevo `utils/Errors.kt` con `friendlyError(context, throwable)` que mapea:
+- offline (verificado con `NetworkMonitor.isOnline`) -> "Sin conexion, intenta de nuevo..."
+- HttpException 401 -> "Sesion expirada, inicia sesion otra vez"
+- HttpException 404 -> "No encontramos eso"
+- HttpException 5xx -> "Error del servidor, intenta luego"
+- IOException -> "Sin conexion, intenta de nuevo"
+- otros -> "Algo salio mal"
+
+Aplicado en `FavoritesActivity.loadFromBackend` y `NotificationsActivity.loadFromBackend` (los dos catch-blocks mas visibles).
+
+### Dark + Language buttons (bugs #5, #6)
+El codigo ya estaba en `SettingsActivity` (lineas 91-103 y 230-239) wiring `AppCompatDelegate.setDefaultNightMode(...)` y `AppCompatDelegate.setApplicationLocales(...)`. El bug del TA probablemente fue contra un APK anterior a la implementacion. Sprint 4 agrega un `recreate()` explicito despues de `applyLanguage(tag)` para que el cambio de idioma se vea inmediato en lugar de esperar a navegar a otra pantalla.
+
+### Layout bugs (deferidos a backlog post-sprint4)
+- Bug #1 (navbar cut off by Nearby Services modal)
+- Bug #2 (navigation view not fully scrollable, button under phone nav buttons)
+- Bug #3 (navbar rises with view)
+- Bug #4 ("Email Address" overlap en Settings)
+
+Estos requieren cirugia en layouts XML grandes (`activity_settings.xml`, `activity_home.xml`) y constraint-layout reshuffling. Para no romper otras cosas en la recta final, los dejamos como backlog para el siguiente sprint. Mitigacion temporal: el banner de connectivity y los telling errors cubren los casos de UX mas dolorosos para el usuario.
+
+### Process / Team competences feedback
+TA tambien marco "Pull request Usage: 0" y "Pull Request review: 0" en sprint 3. Para sprint 4:
+- Todo el codigo nuevo vive en la rama `sprint4-features` (no en `master` directo)
+- Se va a abrir un PR formal `sprint4-features -> master` con descripcion que linkea este wiki
+- Squash merge despues del review
+
 ## Commits relevantes en `sprint4-features`
 
 ```

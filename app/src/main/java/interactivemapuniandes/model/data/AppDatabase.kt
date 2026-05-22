@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import interactivemapuniandes.model.entity.NoteEntity
 import interactivemapuniandes.model.entity.ScheduleClassEntity
 import interactivemapuniandes.model.entity.ScheduleEntity
+import interactivemapuniandes.model.entity.TranslationEntity
 import interactivemapuniandes.model.entity.VisitEntity
 
 @Database(
@@ -14,9 +15,10 @@ import interactivemapuniandes.model.entity.VisitEntity
         ScheduleEntity::class,
         ScheduleClassEntity::class,
         NoteEntity::class,
-        VisitEntity::class
+        VisitEntity::class,
+        TranslationEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -24,6 +26,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun scheduleDao(): ScheduleDAO
     abstract fun noteDao(): NoteDAO
     abstract fun visitDao(): VisitDAO
+    abstract fun translationDao(): TranslationDAO
 
     companion object {
         //Sincronizacion entre threads

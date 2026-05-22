@@ -14,6 +14,7 @@ import com.uniandes.interactivemapuniandes.view.NotificationsActivity
 import com.uniandes.interactivemapuniandes.view.RestaurantsActivity
 import com.uniandes.interactivemapuniandes.view.SearchActivity
 import com.uniandes.interactivemapuniandes.view.SettingsActivity
+import com.uniandes.interactivemapuniandes.view.TranslatorHistoryActivity
 import com.uniandes.interactivemapuniandes.view.VoiceTranslatorActivity
 import interactivemapuniandes.view.ScheduleActivity
 
@@ -53,6 +54,7 @@ private fun Activity.currentNavigationItemId(): Int? {
         is FavoritesActivity,
         is RestaurantsActivity,
         is VoiceTranslatorActivity,
+        is TranslatorHistoryActivity,
         is NotesActivity,
         is InsightsActivity -> R.id.nav_explore
 

@@ -60,6 +60,10 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".view.TranslatorHistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".view.FavoritesActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

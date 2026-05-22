@@ -21,6 +21,8 @@ import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.Room
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
+import com.uniandes.interactivemapuniandes.utils.logVisit
 import kotlinx.coroutines.launch
 
 class BuildingDetailActivity : AppCompatActivity() {
@@ -51,6 +53,7 @@ class BuildingDetailActivity : AppCompatActivity() {
                     return@launch
                 }
                 val b = resp.body() ?: return@launch
+                logVisit(this@BuildingDetailActivity, b.code, "building") // Sprint 4 - alimenta InsightsActivity
                 findViewById<TextView>(R.id.tvCode).text = b.code
                 findViewById<TextView>(R.id.tvName).text = b.name
                 findViewById<TextView>(R.id.tvSubtitle).text = b.gridReference?.let { "Grid $it" } ?: ""
@@ -69,7 +72,7 @@ class BuildingDetailActivity : AppCompatActivity() {
                 }
                 wireFavorite(id)
             } catch (e: Exception) {
-                Toast.makeText(this@BuildingDetailActivity, e.message ?: "Network error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@BuildingDetailActivity, friendlyError(this@BuildingDetailActivity, e), Toast.LENGTH_SHORT).show()
             }
         }
     }

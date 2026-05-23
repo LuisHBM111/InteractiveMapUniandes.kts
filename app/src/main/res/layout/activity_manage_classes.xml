@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background"
+    android:background="@color/white"
     tools:context="interactivemapuniandes.view.ManageClassesActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -95,6 +95,16 @@
                         android:layout_marginBottom="16dp"
                         app:dividerColor="@color/app_outline" />
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Class name *"
+                        android:textColor="@color/app_text_primary"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"
+                        android:textSize="20dp"
+                        />
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/class_name_layout"
                         style="@style/Widget.App.TextInput"
@@ -110,6 +120,16 @@
                             android:singleLine="true"
                             tools:text="Móviles" />
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Course Code *"
+                        android:textColor="@color/app_text_primary"
+                        android:textStyle="bold"
+                        android:layout_marginTop="12dp"
+                        android:textSize="20dp"
+                        />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/course_code_layout"
@@ -135,42 +155,91 @@
                         android:baselineAligned="false"
                         android:orientation="horizontal">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/section_layout"
-                            style="@style/Widget.App.TextInput"
-                            android:layout_width="0dp"
+                        <LinearLayout
+                            android:layout_width="168dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:hint="Section">
+                            android:orientation="vertical"
+                            >
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/section_input"
+                            <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="text"
-                                android:singleLine="true"
-                                tools:text="4" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                android:text="Section"
+                                android:textColor="@color/app_text_primary"
+                                android:textStyle="bold"
+                                android:layout_marginTop="12dp"
+                                android:textSize="20dp"
+                                />
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/nrc_layout"
-                            style="@style/Widget.App.TextInput"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            android:hint="NRC">
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/section_layout"
+                                style="@style/Widget.App.TextInput"
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_weight="1"
+                                android:hint="Section">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/nrc_input"
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/section_input"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="text"
+                                    android:singleLine="true"
+                                    tools:text="4" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="168dp"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            >
+
+                            <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="number"
-                                android:singleLine="true"
-                                tools:text="41886" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                android:text="NRC"
+                                android:textColor="@color/app_text_primary"
+                                android:textStyle="bold"
+                                android:layout_marginTop="12dp"
+                                android:textSize="20dp"
+                                />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/nrc_layout"
+                                style="@style/Widget.App.TextInput"
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:layout_marginTop="12dp"
+                                android:hint="NRC">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/nrc_input"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="number"
+                                    android:singleLine="true"
+                                    tools:text="41886" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
+
                     </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Instructor"
+                        android:textColor="@color/app_text_primary"
+                        android:textStyle="bold"
+                        android:layout_marginTop="12dp"
+                        android:textSize="20dp"
+                        />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/instructor_layout"
@@ -399,41 +468,80 @@
                         android:baselineAligned="false"
                         android:orientation="horizontal">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/building_code_layout"
-                            style="@style/Widget.App.TextInput"
-                            android:layout_width="0dp"
+                        <LinearLayout
+                            android:layout_width="168dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:hint="Building Code *">
+                            android:orientation="vertical"
+                            >
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/building_code_input"
+                            <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="textCapCharacters"
-                                android:singleLine="true"
-                                tools:text="ML" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                android:text="Building Code *"
+                                android:textColor="@color/app_text_primary"
+                                android:textStyle="bold"
+                                android:layout_marginTop="12dp"
+                                android:textSize="20dp"
+                                />
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/room_code_layout"
-                            style="@style/Widget.App.TextInput"
-                            android:layout_width="0dp"
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/building_code_layout"
+                                style="@style/Widget.App.TextInput"
+                                android:layout_width="160dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:layout_weight="1"
+                                android:hint="Building Code *">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/building_code_input"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="textCapCharacters"
+                                    android:singleLine="true"
+                                    tools:text="ML" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="168dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            android:hint="Room Code">
+                            android:orientation="vertical"
+                            >
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/room_code_input"
+                            <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="textCapCharacters"
-                                android:singleLine="true"
-                                tools:text="ML 511" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                android:text="Room code"
+                                android:textColor="@color/app_text_primary"
+                                android:textStyle="bold"
+                                android:layout_marginTop="12dp"
+                                android:textSize="20dp"
+                                />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/room_code_layout"
+                                style="@style/Widget.App.TextInput"
+                                android:layout_marginTop="12dp"
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:hint="Room Code">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/room_code_input"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="textCapCharacters"
+                                    android:singleLine="true"
+                                    tools:text="ML 511" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
+
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

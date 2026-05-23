@@ -50,10 +50,7 @@ class RouteActivity : AppCompatActivity() {
     private lateinit var outlinedTextField_from: TextInputLayout
 
     private lateinit var outlinedTextField_to: TextInputLayout
-
-
-
-
+    
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -32,6 +32,9 @@ interface ScheduleDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertClasses(classes: List<ScheduleClassEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertClass(scheduleClass: ScheduleClassEntity)
+
     @Query("UPDATE schedules SET isCurrent = 0")
     suspend fun clearCurrentScheduleFlag()
 

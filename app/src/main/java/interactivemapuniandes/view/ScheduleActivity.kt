@@ -1,5 +1,6 @@
 package interactivemapuniandes.view
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -19,6 +20,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.carousel.CarouselLayoutManager
 import com.google.android.material.carousel.CarouselSnapHelper
 import com.google.android.material.carousel.UncontainedCarouselStrategy
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -51,6 +53,8 @@ class ScheduleActivity : AppCompatActivity() {
     private lateinit var btnImportSchedule: MaterialButton
     private lateinit var btnClearScheduleCache: MaterialButton
     private var lastScheduleSnackbarMessage: String? = null
+
+    private lateinit var add_class_fab: FloatingActionButton
 
     private val importScheduleLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -89,10 +93,12 @@ class ScheduleActivity : AppCompatActivity() {
         btnRefreshSchedule = findViewById(R.id.btnRefreshSchedule)
         btnImportSchedule = findViewById(R.id.btnImportSchedule)
         btnClearScheduleCache = findViewById(R.id.btnClearScheduleCache)
+        add_class_fab = findViewById(R.id.add_class_fab)
         val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
         nav.setupNavigation(this, "schedules")
 
         configureCarousel()
+        setupAddClassFab()
         setupCarouselAdapter()
         setupScheduleClassAdapter()
         setupDebugActions()
@@ -123,6 +129,13 @@ class ScheduleActivity : AppCompatActivity() {
         }
         CarouselSnapHelper().attachToRecyclerView(carousel)
         carousel.setHasFixedSize(true)
+    }
+
+    private fun setupAddClassFab() {
+        add_class_fab.setOnClickListener {
+            val intent = Intent(this, ManageClassesActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupCarouselAdapter() {

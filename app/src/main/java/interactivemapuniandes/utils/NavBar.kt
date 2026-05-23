@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uniandes.interactivemapuniandes.R
+import com.uniandes.interactivemapuniandes.view.AlertsActivity
 import com.uniandes.interactivemapuniandes.view.HomeActivity
 import com.uniandes.interactivemapuniandes.view.SettingsActivity
 import interactivemapuniandes.view.ScheduleActivity
@@ -34,7 +35,7 @@ fun BottomNavigationView.setupNavigation(activity: Activity, current: String) {
             }
 
             R.id.nav_alerts -> {
-                val intent = Intent(activity, HomeActivity::class.java)
+                val intent = Intent(activity, AlertsActivity::class.java)
                 activity.startActivity(intent)
                 true
             }

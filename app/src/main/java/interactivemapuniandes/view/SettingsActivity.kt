@@ -236,6 +236,7 @@ class SettingsActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.w("SettingsActivity", "lang sync failed: ${e.message}")
             }
+            recreate() // Sprint 4 fix - aplicar el idioma a la UI ya mismo
         }
     }
 

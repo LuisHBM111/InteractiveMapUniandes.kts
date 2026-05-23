@@ -48,6 +48,7 @@ import com.uniandes.interactivemapuniandes.model.repository.RouteRepository
 import com.uniandes.interactivemapuniandes.utils.NetworkMonitor
 import com.uniandes.interactivemapuniandes.utils.NextClassNotifier
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import com.uniandes.interactivemapuniandes.viewmodel.HomeViewModel
 import java.text.SimpleDateFormat
@@ -188,12 +189,48 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         val rv = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvServices)
         val empty = findViewById<TextView>(R.id.tvServicesEmpty)
         rv.layoutManager = LinearLayoutManager(this)
-        val adapter = ServicesAdapter { item -> routeFromCurrentLocationTo(item.target) }
+        val adapter = ServicesAdapter { item ->
+            when (item.target) {
+                "__notes__" -> startActivity(Intent(this, NotesActivity::class.java))
+                "__insights__" -> startActivity(Intent(this, InsightsActivity::class.java))
+                "__history__" -> startActivity(Intent(this, TranslatorHistoryActivity::class.java))
+                else -> routeFromCurrentLocationTo(item.target)
+            }
+        }
         rv.adapter = adapter
+
+        // Sprint 4 - personal screens, always visibles aunque no haya red
+        val sprint4Rows = listOf(
+            ServiceItem(
+                name = "Mis notas",
+                subtitle = "Tus notas por edificio",
+                emoji = "N",
+                target = "__notes__"
+            ),
+            ServiceItem(
+                name = "Mis insights",
+                subtitle = "Edificios mas visitados, hora pico",
+                emoji = "I",
+                target = "__insights__"
+            ),
+            ServiceItem(
+                name = "Historial de traducciones",
+                subtitle = "Lo que has traducido con el traductor de voz",
+                emoji = "T",
+                target = "__history__"
+            )
+        )
+
+        // Pinta los rows de sprint 4 inmediatamente para que se vean aunque la red falle
+        adapter.submit(sprint4Rows)
+        rv.visibility = View.VISIBLE
+        empty.visibility = View.GONE
 
         lifecycleScope.launch {
             try {
                 val rows = mutableListOf<ServiceItem>()
+                rows.addAll(sprint4Rows) // Sprint 4 entries siempre al inicio
+                var restaurantsLoaded = 0
                 val restaurantResponse = RetrofitInstance.restaurantsApi.list()
                 if (restaurantResponse.isSuccessful) {
                     restaurantResponse.body()?.forEach { restaurant ->
@@ -206,10 +243,11 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                                 photoUrl = restaurant.photoUrl
                             )
                         )
+                        restaurantsLoaded++
                     }
                 }
 
-                if (rows.isEmpty()) {
+                if (restaurantsLoaded == 0) {
                     val buildingResponse = RetrofitInstance.placesApi.listBuildings(null)
                     if (buildingResponse.isSuccessful) {
                         buildingResponse.body()?.take(10)?.forEach { building ->
@@ -227,12 +265,10 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                 adapter.submit(rows)
-                empty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
-                rv.visibility = if (rows.isEmpty()) View.GONE else View.VISIBLE
+                rv.visibility = View.VISIBLE
+                empty.visibility = View.GONE
             } catch (_: Exception) {
-                rv.visibility = View.GONE
-                empty.text = "Couldn't load services"
-                empty.visibility = View.VISIBLE
+                // Si falla la red, dejamos los sprint 4 rows visibles (ya se pintaron arriba)
             }
         }
     }
@@ -457,11 +493,11 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     findViewById<TextView>(R.id.tvCurrentLocationChip).text =
                         "(${String.format("%.4f", location.latitude)}, ${String.format("%.4f", location.longitude)})"
                 } else {
-                    Toast.makeText(this, "Could not get current location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "No pudimos obtener tu ubicacion", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Error getting current location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No pudimos obtener tu ubicacion", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -565,7 +601,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             if (location != null && ::mMap.isInitialized) {
                 val here = LatLng(location.latitude, location.longitude)
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(here, 18f))
-                Telemetry.lunchPing(this, location.latitude, location.longitude, location.accuracy)
+                Telemetry.lunchPing(location.latitude, location.longitude, location.accuracy)
             } else {
                 Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show()
             }
@@ -595,11 +631,11 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     return@addOnSuccessListener
                 }
 
-                Telemetry.lunchPing(this, location.latitude, location.longitude, location.accuracy)
+                Telemetry.lunchPing(location.latitude, location.longitude, location.accuracy)
                 resolveNearestNodeAndRoute(location.latitude, location.longitude, destination)
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Could not get location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No pudimos obtener tu ubicacion", Toast.LENGTH_SHORT).show()
                 fetchRouteFromBackend("ML 2", destination)
             }
     }
@@ -679,7 +715,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 onFailure = { error ->
                     Toast.makeText(
                         this@HomeActivity,
-                        error.message ?: "Could not load route",
+                        friendlyError(this@HomeActivity, error),
                         Toast.LENGTH_LONG
                     ).show()
                 }

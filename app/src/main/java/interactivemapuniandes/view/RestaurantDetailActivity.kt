@@ -23,6 +23,8 @@ import com.uniandes.interactivemapuniandes.model.data.CreateReviewBody
 import com.uniandes.interactivemapuniandes.model.data.Review
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
+import com.uniandes.interactivemapuniandes.utils.logVisit
 import kotlinx.coroutines.launch
 
 class RestaurantDetailActivity : AppCompatActivity() {
@@ -42,10 +44,12 @@ class RestaurantDetailActivity : AppCompatActivity() {
         }
 
         val id = intent.getStringExtra("id") ?: return
-        findViewById<TextView>(R.id.tvName).text = intent.getStringExtra("name") ?: "—"
+        val restaurantName = intent.getStringExtra("name") ?: "—"
+        logVisit(this, restaurantName, "restaurant") // Sprint 4 - alimenta InsightsActivity
+        findViewById<TextView>(R.id.tvName).text = restaurantName
         findViewById<TextView>(R.id.tvCategory).text = intent.getStringExtra("category") ?: ""
         val rating = intent.getDoubleExtra("rating", 0.0)
-        findViewById<TextView>(R.id.tvRating).text = if (rating > 0) "⭐ %.1f".format(rating) else "No ratings yet"
+        findViewById<TextView>(R.id.tvRating).text = if (rating > 0) "⭐ %.1f".format(rating) else "Sin calificaciones todavia"
         intent.getStringExtra("photoUrl")?.takeIf { it.isNotBlank() }?.let { url ->
             findViewById<ImageView>(R.id.ivPhoto).load(url) // Coil 3 view extension
         }
@@ -112,16 +116,16 @@ class RestaurantDetailActivity : AppCompatActivity() {
             try {
                 val resp = RetrofitInstance.restaurantsApi.createReview(id, CreateReviewBody(stars, comment))
                 if (resp.isSuccessful) {
-                    Toast.makeText(this@RestaurantDetailActivity, "Thanks!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RestaurantDetailActivity, "Gracias por tu reseña!", Toast.LENGTH_SHORT).show()
                     findViewById<EditText>(R.id.etComment).setText("")
                     loadReviews(id)
                 } else if (resp.code() == 401 || resp.code() == 503) {
-                    Toast.makeText(this@RestaurantDetailActivity, "Sign in to leave reviews", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RestaurantDetailActivity, "Inicia sesion para dejar reseñas", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@RestaurantDetailActivity, "Failed: ${resp.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RestaurantDetailActivity, "No se pudo enviar la reseña, intenta de nuevo", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@RestaurantDetailActivity, e.message ?: "Network error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@RestaurantDetailActivity, friendlyError(this@RestaurantDetailActivity, e), Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -22,6 +22,7 @@ import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.ScheduledClass
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -134,7 +135,7 @@ class SchedulesActivity : AppCompatActivity() {
             } catch (e: Exception) { // Offline → fall back to local-only
                 val local = com.uniandes.interactivemapuniandes.model.repository.LocalScheduleStore(this@SchedulesActivity).all()
                 if (local.isEmpty()) {
-                    empty.text = "Network error: ${e.message}"
+                    empty.text = friendlyError(this@SchedulesActivity, e)
                     empty.visibility = View.VISIBLE
                 } else {
                     val rows = local.map { lc ->
@@ -213,7 +214,7 @@ class SchedulesActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Toast.makeText(
                     this@SchedulesActivity,
-                    "Error: ${e.message}",
+                    friendlyError(this@SchedulesActivity, e),
                     Toast.LENGTH_LONG
                 ).show()
             } finally {

@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.launch
 
@@ -60,7 +61,7 @@ class AlertsActivity : AppCompatActivity() {
                 adapter.submit(rows)
                 empty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
             } catch (e: Exception) {
-                empty.text = "Couldn't load alerts"
+                empty.text = friendlyError(this@AlertsActivity, e)
                 empty.visibility = View.VISIBLE
             }
         }

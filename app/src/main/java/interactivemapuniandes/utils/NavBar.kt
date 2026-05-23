@@ -2,19 +2,26 @@ package com.uniandes.interactivemapuniandes.utils
 
 import android.app.Activity
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.view.AlertsActivity
 import com.uniandes.interactivemapuniandes.view.FavoritesActivity
 import com.uniandes.interactivemapuniandes.view.HomeActivity
+import com.uniandes.interactivemapuniandes.view.InsightsActivity
+import com.uniandes.interactivemapuniandes.view.NotesActivity
 import com.uniandes.interactivemapuniandes.view.NotificationsActivity
 import com.uniandes.interactivemapuniandes.view.RestaurantsActivity
 import com.uniandes.interactivemapuniandes.view.SearchActivity
 import com.uniandes.interactivemapuniandes.view.SettingsActivity
+import com.uniandes.interactivemapuniandes.view.TranslatorHistoryActivity
 import com.uniandes.interactivemapuniandes.view.VoiceTranslatorActivity
 import interactivemapuniandes.view.ScheduleActivity
 
 fun BottomNavigationView.setupNavigation(activity: Activity, current: String? = null) {
+    // Sprint 4 - banner global de "sin conexion" enganchado al lifecycle del activity
+    (activity as? AppCompatActivity)?.let { ConnectivityBanner.attach(it) }
+
     selectedItemId = activity.currentNavigationItemId()
         ?: current?.toNavigationItemId()
         ?: selectedItemId
@@ -46,7 +53,10 @@ private fun Activity.currentNavigationItemId(): Int? {
         is SearchActivity,
         is FavoritesActivity,
         is RestaurantsActivity,
-        is VoiceTranslatorActivity -> R.id.nav_explore
+        is VoiceTranslatorActivity,
+        is TranslatorHistoryActivity,
+        is NotesActivity,
+        is InsightsActivity -> R.id.nav_explore
 
         is ScheduleActivity -> R.id.nav_schedules
 

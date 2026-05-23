@@ -18,6 +18,7 @@ import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.model.data.FavoriteDto
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.launch
 
@@ -67,7 +68,7 @@ class FavoritesActivity : AppCompatActivity() {
                 adapter.submit(list)
                 empty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             } catch (e: Exception) {
-                empty.text = "Couldn't load favorites"
+                empty.text = friendlyError(this@FavoritesActivity, e)
                 empty.visibility = View.VISIBLE
             }
         }
@@ -105,7 +106,7 @@ class FavAdapter(
         val f = items[position]
         holder.code.text = f.place?.code ?: "?"
         holder.name.text = f.place?.name ?: "—"
-        holder.sub.text = "❤️ tap to route · long-press to remove"
+        holder.sub.text = "❤️ toca para rutear · manten presionado para borrar"
         holder.itemView.setOnClickListener { onClick(f) }
         holder.itemView.setOnLongClickListener { onRemove(f); true }
     }

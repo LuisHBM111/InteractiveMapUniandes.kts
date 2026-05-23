@@ -25,6 +25,7 @@ import com.uniandes.interactivemapuniandes.model.data.Building
 import com.uniandes.interactivemapuniandes.model.data.Room
 import com.uniandes.interactivemapuniandes.model.remote.RetrofitInstance
 import com.uniandes.interactivemapuniandes.utils.Telemetry
+import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -119,11 +120,11 @@ class SearchActivity : AppCompatActivity() {
                 }
                 adapter.submit(rows)
                 if (rows.isEmpty()) {
-                    empty.text = "No results"
+                    empty.text = "Sin resultados"
                     empty.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
-                empty.text = "Error: ${e.message}"
+                empty.text = friendlyError(this@SearchActivity, e)
                 empty.visibility = View.VISIBLE
             } finally {
                 progress.visibility = View.GONE

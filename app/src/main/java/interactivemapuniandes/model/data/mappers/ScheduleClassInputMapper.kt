@@ -30,7 +30,8 @@ fun ScheduleClassInput.toScheduleClassEntity(scheduleId: String): ScheduleClassE
         buildingCode = buildingCode.trim().ifBlank { null },
         instructorName = instructor.trim().ifBlank { null },
         recurrenceDays = days.joinToString(","),
-        recurrenceUntilDate = toEndOfDayInstantString(untilDate, timezone)
+        recurrenceUntilDate = toEndOfDayInstantString(untilDate, timezone),
+        isUserCreated = true
     )
 }
 

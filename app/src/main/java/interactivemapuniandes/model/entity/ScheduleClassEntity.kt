@@ -25,5 +25,7 @@ data class ScheduleClassEntity(
     val recurrenceDays: String?,
     val recurrenceUntilDate: String?,
     @ColumnInfo(defaultValue = "0")
+    val isUserCreated: Boolean = false,
+    @ColumnInfo(defaultValue = "0")
     val syncVersion: Long = 0L
 )

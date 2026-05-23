@@ -36,6 +36,15 @@ class ScheduleRepository (
         return scheduleDao.observeAllClasses()
     }
 
+    suspend fun deleteClass(classId: String): Result<Unit> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            scheduleDao.deleteClassById(classId)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun refreshCurrentSchedule(): Result<Unit> = withContext(Dispatchers.IO) {
         return@withContext executeAuthorizedRequest { authorization ->
             api.getCurrentSchedule(authorization)

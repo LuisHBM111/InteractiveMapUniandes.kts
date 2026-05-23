@@ -155,6 +155,10 @@ class ScheduleViewModel(
         )
     }
 
+    suspend fun deleteClass(classId: String): Result<Unit> {
+        return scheduleRepository.deleteClass(classId)
+    }
+
     private fun List<ScheduleClassEntity>.filterByDate(date: LocalDate): List<ScheduleClassEntity> {
         return filter { scheduleClass ->
             scheduleClass.occursOn(date)

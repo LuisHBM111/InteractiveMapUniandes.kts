@@ -26,6 +26,9 @@ interface ScheduleDAO {
     @Query("SELECT * FROM schedule_classes WHERE id = :id")
     suspend fun getScheduleClass(id: String): ScheduleClassEntity?
 
+    @Query("DELETE FROM schedule_classes WHERE id = :id")
+    suspend fun deleteClassById(id: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertSchedule(schedule: ScheduleEntity)
 
@@ -38,8 +41,8 @@ interface ScheduleDAO {
     @Query("UPDATE schedules SET isCurrent = 0")
     suspend fun clearCurrentScheduleFlag()
 
-    @Query("DELETE FROM schedule_classes WHERE scheduleId = :scheduleId")
-    suspend fun deleteClassesForSchedule(scheduleId: String)
+    @Query("DELETE FROM schedule_classes WHERE scheduleId = :scheduleId AND isUserCreated = 0")
+    suspend fun deleteBackendClassesForSchedule(scheduleId: String)
 
     @Query("DELETE FROM schedule_classes")
     suspend fun clearAllClasses()
@@ -60,7 +63,7 @@ interface ScheduleDAO {
     ) {
         clearCurrentScheduleFlag()
         upsertSchedule(schedule.copy(isCurrent = true))
-        deleteClassesForSchedule(schedule.id)
+        deleteBackendClassesForSchedule(schedule.id)
         upsertClasses(classes)
     }
 }

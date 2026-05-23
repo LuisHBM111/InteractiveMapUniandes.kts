@@ -21,6 +21,7 @@ import com.google.android.material.carousel.CarouselLayoutManager
 import com.google.android.material.carousel.CarouselSnapHelper
 import com.google.android.material.carousel.UncontainedCarouselStrategy
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -146,9 +147,27 @@ class ScheduleActivity : AppCompatActivity() {
     }
 
     private fun setupScheduleClassAdapter() {
-        scheduleClassAdapter = ScheduleClassAdapter()
+        scheduleClassAdapter = ScheduleClassAdapter { scheduleClass ->
+            showDeleteClassDialog(scheduleClass)
+        }
         scheduleRecyclerView.layoutManager = LinearLayoutManager(this)
         scheduleRecyclerView.adapter = scheduleClassAdapter
+    }
+
+    private fun showDeleteClassDialog(scheduleClass: ScheduleClassEntity) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Delete class?")
+            .setMessage("Delete ${scheduleClass.title} from this device?")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Delete") { _, _ ->
+                lifecycleScope.launch {
+                    val result = scheduleViewModel.deleteClass(scheduleClass.id)
+                    if (result.isFailure) {
+                        showScheduleMessage("We couldn't delete this class.")
+                    }
+                }
+            }
+            .show()
     }
 
     private fun setupDebugActions() {

@@ -1,0 +1,88 @@
+{
+  "hasPreviousClass": true,
+  "class": {
+    "id": "b2e4a594-b357-4f3b-80b9-ce6381b76aa1",
+    "createdAt": "2026-04-19T09:24:24.076Z",
+    "updatedAt": "2026-04-19T09:24:24.076Z",
+    "title": "CIBERSEGURIDAD",
+    "courseCode": "ISIS 3311",
+    "section": "4",
+    "nrc": "78166",
+    "startsAt": "2026-01-26T17:30:00.000Z",
+    "endsAt": "2026-01-26T18:50:00.000Z",
+    "timezone": "America/Bogota",
+    "externalUid": "20260419T072911Z-Ellucian",
+    "rawLocation": "Campus: CAMPUS PRINCIPAL Edificio: Edif. Aulas Salón: AU_101",
+    "rawDescription": "NRC: 78166\nHoras crédito: 3.0\nNivel: PREGRADO\nInstructor: LEGRO PASTRANA, JONATAN (Principal)",
+    "room": {
+      "id": "814cebdc-3853-4542-9bb4-56c64d557f37",
+      "createdAt": "2026-04-19T09:24:24.076Z",
+      "updatedAt": "2026-04-19T09:24:24.076Z",
+      "name": "AU 101",
+      "latitude": null,
+      "longitude": null,
+      "gridReference": null,
+      "category": "room",
+      "roomCode": "AU_101",
+      "floor": null,
+      "building": {
+        "id": "74439723-24c2-4da1-a1a6-f01ccbcf7595",
+        "createdAt": "2026-04-19T09:13:50.155Z",
+        "updatedAt": "2026-04-19T09:13:50.155Z",
+        "name": "Edificio Aulas",
+        "latitude": null,
+        "longitude": null,
+        "gridReference": "E-8",
+        "category": "building",
+        "code": "AU",
+        "aliases": [
+          "AU"
+        ],
+        "description": null
+      }
+    },
+    "instructors": [
+      {
+        "id": "f9dfce09-e676-43ca-9e5c-90c90f19a5a6",
+        "createdAt": "2026-04-19T09:24:24.076Z",
+        "updatedAt": "2026-04-19T09:24:24.076Z",
+        "fullName": "LEGRO PASTRANA, JONATAN",
+        "email": null,
+        "department": null
+      }
+    ],
+    "recurrenceRule": {
+      "id": "d0fe42ac-d739-4648-8826-4fce62994df9",
+      "createdAt": "2026-04-19T09:24:24.076Z",
+      "updatedAt": "2026-04-19T09:24:24.076Z",
+      "frequency": "weekly",
+      "interval": 1,
+      "byDay": [
+        "MO",
+        "WE"
+      ],
+      "untilDate": "2026-05-24T03:59:00.000Z",
+      "timezone": "America/Bogota"
+    },
+    "occurrence": {
+      "startsAt": "2026-05-11T17:30:00.000Z",
+      "endsAt": "2026-05-11T18:50:00.000Z",
+      "isRecurring": true
+    },
+    "destination": {
+      "room": {
+        "id": "814cebdc-3853-4542-9bb4-56c64d557f37",
+        "name": "AU 101",
+        "roomCode": "AU_101"
+      },
+      "building": {
+        "id": "74439723-24c2-4da1-a1a6-f01ccbcf7595",
+        "code": "AU",
+        "name": "Edificio Aulas"
+      },
+      "routeTarget": "AU",
+      "routeTargetType": "building",
+      "isResolved": true
+    }
+  }
+}

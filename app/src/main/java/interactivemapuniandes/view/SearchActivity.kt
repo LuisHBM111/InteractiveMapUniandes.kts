@@ -49,7 +49,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        nav.setupNavigation(this)
+        nav.setupNavigation(this, "explore")
 
         val rv = findViewById<RecyclerView>(R.id.rvResults)
         adapter = PlacesAdapter(

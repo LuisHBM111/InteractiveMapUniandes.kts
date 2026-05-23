@@ -15,45 +15,30 @@ data class RouteGraphResponseDto(
     val from: String,
     val to: String,
     val totalTimeSeconds: Int,
-    val totalTimeMinutes: Double? = null,
-    val path: List<RoutePathNode>,
-    val traversedEdges: List<TraversedEdge>? = null
-) {
-    fun toRouteResponse(): RouteResponse {
-        val latitudes = path.mapNotNull { it.latitude }
-        val longitudes = path.mapNotNull { it.longitude }
+    val totalTimeMinutes: Double,
+    val path: List<RouteGraphNodeDto>,
+    val traversedEdges: List<RouteGraphEdgeDto> = emptyList()
+)
 
-        return RouteResponse(
-            from = from,
-            to = to,
-            path = path.map { it.label },
-            totalTime = totalTimeSeconds,
-            pathLatitudes = latitudes.takeIf { it.size == path.size }?.toDoubleArray(),
-            pathLongitudes = longitudes.takeIf { it.size == path.size }?.toDoubleArray()
-        )
-    }
-}
-
-data class RoutePathNode(
+data class RouteGraphNodeDto(
     val id: String,
     val label: String,
     val latitude: Double? = null,
     val longitude: Double? = null,
-    val place: RoutePlace? = null
+    val place: RouteGraphPlaceDto? = null
 )
 
-data class RoutePlace(
-    val id: String,
-    val name: String
+data class RouteGraphPlaceDto(
+    val id: String? = null,
+    val name: String? = null
 )
 
-data class TraversedEdge(
+data class RouteGraphEdgeDto(
     val from: String,
     val to: String,
     val travelTimeSeconds: Int
 )
 
 data class NearestNodeResponse(
-    val node: RoutePathNode,
-    val distanceMeters: Int
+    val node: RouteGraphNodeDto?
 )

@@ -1,397 +1,225 @@
 package com.uniandes.interactivemapuniandes.model.repository
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.uniandes.interactivemapuniandes.model.data.NextClassResponseDto
+import android.util.Log
 import com.uniandes.interactivemapuniandes.model.data.RouteResponse
-import com.uniandes.interactivemapuniandes.model.remote.RouteApiService
-import kotlinx.coroutines.CancellationException
-import java.net.SocketTimeoutException
-import retrofit2.Response
+import interactivemapuniandes.model.data.dtos.NextClassDTO
+import interactivemapuniandes.model.data.dtos.NextClassInfoDTO
+import interactivemapuniandes.model.data.dtos.PreviousClassDTO
+import interactivemapuniandes.model.data.dtos.SearchClassDTO
+import interactivemapuniandes.model.remote.ApiService
 
 class RouteRepository(
-    private val api: RouteApiService,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val apiService: ApiService,
 ) {
+
+    suspend fun getToNextClass(): Result<NextClassDTO?> {
+        Log.d("RouteDebug", "Repo getToNextClass start")
+
+        val token = authRepository.getIdToken(forceRefresh = false) ?: return Result.failure(
+            IllegalStateException("No authenticated Firebase user")
+        )
+        Log.d("RouteDebug", "Repo getToNextClass token received length=${token.length}")
+
+        if (token.isEmpty()) {
+            return Result.failure(IllegalStateException("No authenticated Firebase user"))
+        }
+
+        val header = "Bearer $token"
+
+        val previousClass = getPreviousClass()
+        Log.d("RouteDebug", "Repo getToNextClass previous success=${previousClass.isSuccess}")
+
+        val from = previousClass.getOrNull()?.previousClass?.destination?.building?.code ?: "ML"
+        Log.d("RouteDebug", "Repo getToNextClass request from=$from")
+
+        val call = apiService.getToNextClass(header, from)
+        Log.d("RouteDebug", "Repo getToNextClass response code=${call.code()} successful=${call.isSuccessful}")
+
+        if (call.isSuccessful){
+            val body = call.body()
+            Log.d("RouteDebug", "Repo getToNextClass body hasBody=${body != null} pathNodes=${body?.path?.path?.path?.size}")
+            return Result.success(body)
+        }else{
+            val error = call.errorBody()
+            val errorText = error?.string()
+            Log.e("RouteDebug", "Repo getToNextClass error code=${call.code()} body=$errorText")
+            return Result.failure(IllegalStateException(errorText))
+        }
+
+    }
+
+    suspend fun getPreviousClass(): Result<PreviousClassDTO?> {
+        Log.d("RouteDebug", "Repo getPreviousClass start")
+        val token = authRepository.getIdToken(forceRefresh = false) ?: return Result.failure(
+            IllegalStateException("No authenticated Firebase user")
+        )
+        Log.d("RouteDebug", "Repo getPreviousClass token received length=${token.length}")
+        val header = "Bearer $token"
+        val call = apiService.getPreviousClass(header)
+        Log.d("RouteDebug", "Repo getPreviousClass response code=${call.code()} successful=${call.isSuccessful}")
+
+        if (call.isSuccessful) {
+            val body = call.body()
+            Log.d("RouteDebug", "Repo getPreviousClass body hasBody=${body != null} hasPrevious=${body?.hasPreviousClass} building=${body?.previousClass?.destination?.building?.code}")
+            return Result.success(body)
+        }
+        else {
+            val error = call.errorBody()
+            val errorText = error?.string()
+            Log.e("RouteDebug", "Repo getPreviousClass error code=${call.code()} body=$errorText")
+            return Result.failure(IllegalStateException(errorText))
+        }
+
+    }
+
+    suspend fun getSearchClass(from: String, to: String): Result<SearchClassDTO?> {
+        Log.d("RouteDebug", "Repo getSearchClass start rawFrom=$from rawTo=$to")
+        val safeFrom = from.ifBlank { "" }
+        val safeTo = to.ifBlank { "" }
+        Log.d("RouteDebug", "Repo getSearchClass request from=$safeFrom to=$safeTo")
+        val call = apiService.getSearchClass(safeFrom, safeTo)
+        Log.d("RouteDebug", "Repo getSearchClass response code=${call.code()} successful=${call.isSuccessful}")
+        if (call.isSuccessful){
+            val body = call.body()
+            Log.d("RouteDebug", "Repo getSearchClass body hasBody=${body != null} pathNodes=${body?.path?.size}")
+            return Result.success(body)
+        }
+        else{
+            val error = call.errorBody()
+            val errorText = error?.string()
+            Log.e("RouteDebug", "Repo getSearchClass error code=${call.code()} body=$errorText")
+            return Result.failure(IllegalStateException(errorText))
+        }
+    }
+
     suspend fun getGraphPath(from: String, to: String): Result<RouteResponse> {
-        return executePublicRequest {
-            api.getGraphPath(from, to)
-        }.map { body ->
-            parseRouteResponse(body, fallbackFrom = from, fallbackTo = to)
+        return getSearchClass(from, to).mapCatching { dto ->
+            dto?.toRouteResponse() ?: throw IllegalStateException("Route not found")
         }
     }
 
     suspend fun getRouteToNextClass(from: String): Result<RouteResponse> {
-        val directResult = executeAuthorizedRequest { token ->
-            api.getRouteToNextClass(token.asBearerHeader(), from)
-        }.map { body ->
-            parseRouteResponse(body, fallbackFrom = from)
-        }
+        val token = authRepository.getIdToken(forceRefresh = false)
+            ?: return Result.failure(IllegalStateException("No authenticated Firebase user"))
+        val call = apiService.getToNextClass("Bearer $token", from)
 
-        return directResult.fold(
-            onSuccess = { route ->
-                if (route.path.isNotEmpty() || route.from.equals(route.to, ignoreCase = true)) {
-                    Result.success(route)
-                } else {
-                    buildRouteFromNextClassFallback(from)
-                }
-            },
-            onFailure = {
-                buildRouteFromNextClassFallback(from)
+        return if (call.isSuccessful) {
+            val body = call.body()
+            if (body != null) {
+                Result.success(body.toRouteResponse())
+            } else {
+                Result.failure(IllegalStateException("Route not found"))
             }
-        )
+        } else {
+            val errorText = call.errorBody()?.string()
+            Result.failure(IllegalStateException(errorText ?: "Could not load route"))
+        }
     }
 
     suspend fun getRouteToClass(classId: String, from: String): Result<RouteResponse> {
-        return executeAuthorizedRequest { token ->
-            api.getRouteToClass(token.asBearerHeader(), classId, from)
-        }.map { body ->
-            parseRouteResponse(body, fallbackFrom = from, fallbackClassId = classId)
-        }
-    }
+        val token = authRepository.getIdToken(forceRefresh = false)
+            ?: return Result.failure(IllegalStateException("No authenticated Firebase user"))
+        val call = apiService.getToClass("Bearer $token", classId, from)
 
-    suspend fun importDefaultSchedule(): Result<Unit> {
-        return executeAuthorizedRequest { token ->
-            api.importDefaultSchedule(token.asBearerHeader())
-        }.map { Unit }
-    }
-
-    suspend fun getNextClass(): Result<NextClassResponseDto> {
-        try {
-            val token = authRepository.getIdToken(forceRefresh = false)
-                ?: return Result.failure(IllegalStateException("No authenticated Firebase user"))
-
-            val firstAttempt = api.getNextClass(token.asBearerHeader())
-            if (firstAttempt.isSuccessful) {
-                val body = firstAttempt.body()
-                    ?: return Result.failure(IllegalStateException("Backend returned an empty body"))
-                return Result.success(body)
-            }
-
-            if (firstAttempt.code() == 401) {
-                val refreshedToken = authRepository.getIdToken(forceRefresh = true)
-                    ?: return Result.failure(IllegalStateException("Could not refresh Firebase ID token"))
-
-                val retryAttempt = api.getNextClass(refreshedToken.asBearerHeader())
-                if (retryAttempt.isSuccessful) {
-                    val body = retryAttempt.body()
-                        ?: return Result.failure(IllegalStateException("Backend returned an empty body"))
-                    return Result.success(body)
-                }
-
-                return Result.failure(IllegalStateException(extractErrorMessage(retryAttempt)))
-            }
-
-            return Result.failure(IllegalStateException(extractErrorMessage(firstAttempt)))
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            return Result.failure(error.toRepositoryException())
-        }
-    }
-
-    private suspend fun executeAuthorizedRequest(
-        request: suspend (String) -> Response<JsonObject>
-    ): Result<JsonObject> {
-        try {
-            val token = authRepository.getIdToken(forceRefresh = false)
-                ?: return Result.failure(IllegalStateException("No authenticated Firebase user"))
-
-            val firstAttempt = request(token)
-            if (firstAttempt.isSuccessful) {
-                val body = firstAttempt.body()
-                    ?: return Result.failure(IllegalStateException("Backend returned an empty body"))
-                return Result.success(body)
-            }
-
-            if (firstAttempt.code() == 401) {
-                val refreshedToken = authRepository.getIdToken(forceRefresh = true)
-                    ?: return Result.failure(IllegalStateException("Could not refresh Firebase ID token"))
-
-                val retryAttempt = request(refreshedToken)
-                if (retryAttempt.isSuccessful) {
-                    val body = retryAttempt.body()
-                        ?: return Result.failure(IllegalStateException("Backend returned an empty body"))
-                    return Result.success(body)
-                }
-
-                return Result.failure(IllegalStateException(extractErrorMessage(retryAttempt)))
-            }
-
-            return Result.failure(IllegalStateException(extractErrorMessage(firstAttempt)))
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            return Result.failure(error.toRepositoryException())
-        }
-    }
-
-    private suspend fun executePublicRequest(
-        request: suspend () -> Response<JsonObject>
-    ): Result<JsonObject> {
-        return try {
-            val response = request()
-            if (response.isSuccessful) {
-                val body = response.body()
-                    ?: return Result.failure(IllegalStateException("Backend returned an empty body"))
-                Result.success(body)
+        return if (call.isSuccessful) {
+            val body = call.body()
+            if (body != null) {
+                Result.success(body.toRouteResponse())
             } else {
-                Result.failure(IllegalStateException(extractErrorMessage(response)))
+                Result.failure(IllegalStateException("Route not found"))
             }
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Exception) {
-            Result.failure(error.toRepositoryException())
+        } else {
+            val errorText = call.errorBody()?.string()
+            Result.failure(IllegalStateException(errorText ?: "Could not load route"))
         }
     }
 
-    private suspend fun buildRouteFromNextClassFallback(from: String): Result<RouteResponse> {
-        val nextClassResult = getNextClass()
-        return nextClassResult.fold(
-            onSuccess = { nextClassResponse ->
-                if (!nextClassResponse.hasUpcomingClass || nextClassResponse.nextClass == null) {
-                    return Result.failure(IllegalStateException("No upcoming class found"))
-                }
-
-                val nextClass = nextClassResponse.nextClass
-                val routeTarget = nextClass.destination?.routeTarget
-                    ?: nextClass.destination?.building?.code
-                    ?: nextClass.room?.building?.code
-                    ?: return Result.failure(
-                        IllegalStateException("The next class does not have a routable destination")
-                    )
-
-                getGraphPath(from, routeTarget).map { graphRoute ->
-                    graphRoute.copy(
-                        classId = nextClass.id,
-                        classTitle = nextClass.title
-                    )
-                }
-            },
-            onFailure = { error ->
-                Result.failure(error)
-            }
+    suspend fun getNextClass(): Result<NextClassInfoDTO?> {
+        Log.d("RouteDebug", "Repo getNextClass start")
+        val token = authRepository.getIdToken(forceRefresh = false) ?: return Result.failure(
+            IllegalStateException("No authenticated Firebase user")
         )
-    }
+        Log.d("RouteDebug", "Repo getNextClass token received length=${token.length}")
+        val header = "Bearer $token"
+        val call = apiService.getNextClass(header)
+        Log.d("RouteDebug", "Repo getNextClass response code=${call.code()} successful=${call.isSuccessful}")
 
-    private fun extractErrorMessage(response: Response<*>): String {
-        val rawError = runCatching { response.errorBody()?.string() }.getOrNull()
-        if (!rawError.isNullOrBlank()) {
-            return "Backend ${response.code()}: $rawError"
+        if (call.isSuccessful) {
+            val body = call.body()
+            Log.d("RouteDebug", "Repo getNextClass body hasBody=${body != null} hasUpcoming=${body?.hasUpcomingClass} building=${body?.nextClass?.destination?.building?.code}")
+            return Result.success(body)
         }
-        return "Backend ${response.code()} error"
+        else {
+            val error = call.errorBody()
+            val errorText = error?.string()
+            Log.e("RouteDebug", "Repo getNextClass error code=${call.code()} body=$errorText")
+            return Result.failure(IllegalStateException(errorText))
+        }
+
     }
 
-    private fun parseRouteResponse(
-        root: JsonObject,
-        fallbackFrom: String,
-        fallbackTo: String? = null,
-        fallbackClassId: String? = null
-    ): RouteResponse {
-        val routeObject = root.getObject("route") ?: root
-        val nextClassObject = root.getObject("nextClass") ?: root.getObject("class")
-        val destinationObject = routeObject.getObject("destination")
-            ?: nextClassObject?.getObject("destination")
-        val destinationBuildingObject = destinationObject?.getObject("building")
-        val destinationRoomObject = destinationObject?.getObject("room")
+    suspend fun getToPreviousClass(): Result<PreviousClassDTO?> {
+        Log.d("RouteDebug", "Repo getToPreviousClass start")
 
-        val from = routeObject.getString(
-            "from",
-            "origin",
-            "fromNode",
-            "fromNodeCode"
-        ) ?: fallbackFrom
+        val token = authRepository.getIdToken(forceRefresh = false) ?: return Result.failure(
+            IllegalStateException("No authenticated Firebase user")
+        )
+        Log.d("RouteDebug", "Repo getToPreviousClass token received length=${token.length}")
 
-        val path = routeObject.getStringList("path", "route", "nodes", "nodePath")
-            ?: routeObject.getStringListFromObjects(
-                arrayKey = "path",
-                fieldCandidates = listOf("label", "name", "code", "node", "nodeCode")
-            )
-            ?: routeObject.getStringListFromObjects(
-                arrayKey = "steps",
-                fieldCandidates = listOf("node", "nodeCode", "label", "name")
-            )
-            ?: emptyList()
+        if (token.isEmpty()) {
+            return Result.failure(IllegalStateException("No authenticated Firebase user"))
+        }
 
-        val pathLatitudes = routeObject.getDoubleListFromObjects("path", "latitude", "lat")
-        val pathLongitudes = routeObject.getDoubleListFromObjects("path", "longitude", "lng", "lon")
+        val header = "Bearer $token"
 
-        val destination = routeObject.getString(
-            "to",
-            "destination",
-            "destinationNode",
-            "toNode",
-            "destinationLabel"
-        ) ?: destinationObject?.getString(
-            "routeTarget"
-        ) ?: destinationRoomObject?.getString(
-            "roomCode",
-            "name"
-        ) ?: destinationBuildingObject?.getString(
-            "code",
-            "name"
-        ) ?: nextClassObject?.getString(
-            "roomCode",
-            "roomName",
-            "title",
-            "courseName",
-            "buildingCode"
-        ) ?: fallbackTo ?: "Next class"
+        val nextClass = getNextClass()
+        Log.d("RouteDebug", "Repo getToPreviousClass next success=${nextClass.isSuccess}")
 
-        val classId = nextClassObject?.getString("id", "classId") ?: fallbackClassId
-        val classTitle = nextClassObject?.getString("title", "courseName", "name")
+        val from = nextClass.getOrNull()?.nextClass?.destination?.building?.code ?: "ML"
+        Log.d("RouteDebug", "Repo getToPreviousClass request from=$from")
 
-        val totalTime = routeObject.getInt(
-            "totalTime",
-            "total_time",
-            "totalTimeSeconds",
-            "estimatedDurationSeconds",
-            "durationSeconds",
-            "travelTimeSeconds",
-            "weight"
-        ) ?: routeObject.getDouble("totalTimeMinutes")?.times(60)?.toInt() ?: 0
+        val call = apiService.getToPreviousClass(header, from)
+        Log.d("RouteDebug", "Repo getToPreviousClass response code=${call.code()} successful=${call.isSuccessful}")
 
+        if (call.isSuccessful){
+            val body = call.body()
+            Log.d("RouteDebug", "Repo getToPreviousClass body hasBody=${body != null} hasPrevious=${body?.hasPreviousClass} pathNodes=${body?.path?.path?.path?.size}")
+            return Result.success(body)
+        }else{
+            val error = call.errorBody()
+            val errorText = error?.string()
+            Log.e("RouteDebug", "Repo getToPreviousClass error code=${call.code()} body=$errorText")
+            return Result.failure(IllegalStateException(errorText))
+        }
+
+    }
+
+    private fun SearchClassDTO.toRouteResponse(): RouteResponse {
         return RouteResponse(
             from = from,
-            to = destination,
-            path = path,
-            totalTime = totalTime,
-            classId = classId,
-            classTitle = classTitle,
-            pathLatitudes = pathLatitudes?.toDoubleArray(),
-            pathLongitudes = pathLongitudes?.toDoubleArray()
+            to = to,
+            path = path.map { it.label },
+            totalTime = totalTimeSeconds,
+            pathLatitudes = path.map { it.latitude ?: Double.NaN }.toDoubleArray(),
+            pathLongitudes = path.map { it.longitude ?: Double.NaN }.toDoubleArray()
         )
     }
 
-    private fun String.asBearerHeader(): String = "Bearer $this"
-
-    private fun JsonObject.getObject(key: String): JsonObject? {
-        val element = get(key)
-        return if (element != null && element.isJsonObject) element.asJsonObject else null
+    private fun NextClassDTO.toRouteResponse(): RouteResponse {
+        val nodes = path?.path?.path.orEmpty()
+        val routePath = path?.path
+        return RouteResponse(
+            from = routePath?.from ?: nodes.firstOrNull()?.label ?: "ML",
+            to = routePath?.to ?: nodes.lastOrNull()?.label ?: nextClass?.title ?: "Destination",
+            path = nodes.map { it.label },
+            totalTime = routePath?.totalTimeSeconds ?: 0,
+            classId = nextClass?.id,
+            classTitle = nextClass?.title,
+            pathLatitudes = nodes.map { it.latitude ?: Double.NaN }.toDoubleArray(),
+            pathLongitudes = nodes.map { it.longitude ?: Double.NaN }.toDoubleArray()
+        )
     }
 
-    private fun JsonObject.getString(vararg candidates: String): String? {
-        for (candidate in candidates) {
-            val element = get(candidate)
-            if (element != null && !element.isJsonNull && element.isJsonPrimitive) {
-                return element.asString
-            }
-        }
-        return null
-    }
 
-    private fun JsonObject.getInt(vararg candidates: String): Int? {
-        for (candidate in candidates) {
-            val element = get(candidate)
-            if (element != null && !element.isJsonNull && element.isJsonPrimitive) {
-                val asString = runCatching { element.asString }.getOrNull()
-                val asInt = asString?.toIntOrNull()
-                if (asInt != null) {
-                    return asInt
-                }
-            }
-        }
-        return null
-    }
-
-    private fun JsonObject.getDouble(vararg candidates: String): Double? {
-        for (candidate in candidates) {
-            val element = get(candidate)
-            if (element != null && !element.isJsonNull && element.isJsonPrimitive) {
-                val asString = runCatching { element.asString }.getOrNull()
-                val asDouble = asString?.toDoubleOrNull()
-                if (asDouble != null) {
-                    return asDouble
-                }
-            }
-        }
-        return null
-    }
-
-    private fun JsonObject.getStringList(vararg candidates: String): List<String>? {
-        for (candidate in candidates) {
-            val element = get(candidate)
-            if (element != null && element.isJsonArray) {
-                val values = element.asJsonArray.toStringList()
-                if (values.isNotEmpty()) {
-                    return values
-                }
-            }
-        }
-        return null
-    }
-
-    private fun JsonObject.getStringListFromObjects(
-        arrayKey: String,
-        fieldCandidates: List<String>
-    ): List<String>? {
-        val arrayElement = get(arrayKey)
-        if (arrayElement == null || !arrayElement.isJsonArray) {
-            return null
-        }
-
-        val values = arrayElement.asJsonArray.mapNotNull { item ->
-            if (!item.isJsonObject) {
-                return@mapNotNull null
-            }
-
-            fieldCandidates.firstNotNullOfOrNull { field ->
-                val fieldElement = item.asJsonObject.get(field)
-                if (fieldElement != null && !fieldElement.isJsonNull && fieldElement.isJsonPrimitive) {
-                    fieldElement.asString
-                } else {
-                    null
-                }
-            }
-        }
-
-        return values.ifEmpty { null }
-    }
-
-    private fun JsonObject.getDoubleListFromObjects(
-        arrayKey: String,
-        vararg fieldCandidates: String
-    ): List<Double>? {
-        val arrayElement = get(arrayKey)
-        if (arrayElement == null || !arrayElement.isJsonArray) {
-            return null
-        }
-
-        val values = arrayElement.asJsonArray.mapNotNull { item ->
-            if (!item.isJsonObject) {
-                return@mapNotNull null
-            }
-
-            fieldCandidates.firstNotNullOfOrNull { field ->
-                val fieldElement = item.asJsonObject.get(field)
-                if (fieldElement != null && !fieldElement.isJsonNull && fieldElement.isJsonPrimitive) {
-                    runCatching { fieldElement.asDouble }.getOrNull()
-                } else {
-                    null
-                }
-            }
-        }
-
-        return values.ifEmpty { null }
-    }
-
-    private fun JsonArray.toStringList(): List<String> {
-        return mapNotNull { item ->
-            if (item is JsonElement && item.isJsonPrimitive) {
-                item.asString
-            } else {
-                null
-            }
-        }
-    }
-
-    private fun Exception.toRepositoryException(): IllegalStateException {
-        val userMessage = when (this) {
-            is SocketTimeoutException -> "The backend took too long to respond. Please try again."
-            else -> message ?: "Unexpected network error"
-        }
-
-        return IllegalStateException(userMessage, this)
-    }
 }

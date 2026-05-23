@@ -2,79 +2,51 @@ package com.uniandes.interactivemapuniandes.utils
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uniandes.interactivemapuniandes.R
 import com.uniandes.interactivemapuniandes.view.AlertsActivity
-import com.uniandes.interactivemapuniandes.view.FavoritesActivity
 import com.uniandes.interactivemapuniandes.view.HomeActivity
-import com.uniandes.interactivemapuniandes.view.InsightsActivity
-import com.uniandes.interactivemapuniandes.view.NotesActivity
-import com.uniandes.interactivemapuniandes.view.NotificationsActivity
-import com.uniandes.interactivemapuniandes.view.RestaurantsActivity
-import com.uniandes.interactivemapuniandes.view.SearchActivity
 import com.uniandes.interactivemapuniandes.view.SettingsActivity
-import com.uniandes.interactivemapuniandes.view.TranslatorHistoryActivity
-import com.uniandes.interactivemapuniandes.view.VoiceTranslatorActivity
 import interactivemapuniandes.view.ScheduleActivity
+import kotlin.jvm.java
 
-fun BottomNavigationView.setupNavigation(activity: Activity, current: String? = null) {
-    // Sprint 4 - banner global de "sin conexion" enganchado al lifecycle del activity
-    (activity as? AppCompatActivity)?.let { ConnectivityBanner.attach(it) }
+fun BottomNavigationView.setupNavigation(activity: Activity, current: String) {
 
-    selectedItemId = activity.currentNavigationItemId()
-        ?: current?.toNavigationItemId()
-        ?: selectedItemId
+    val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
-    setOnItemSelectedListener { item ->
-        val target = when (item.itemId) {
-            R.id.nav_explore -> HomeActivity::class.java
-            R.id.nav_schedules -> ScheduleActivity::class.java
-            R.id.nav_alerts -> AlertsActivity::class.java
-            R.id.nav_settings -> SettingsActivity::class.java
-            else -> return@setOnItemSelectedListener false
-        }
-
-        if (activity.javaClass == target) {
-            return@setOnItemSelectedListener true
-        }
-
-        val intent = Intent(activity, target).apply {
-            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        }
-        activity.startActivity(intent)
-        true
+    when (current) {
+        "explore" -> bottomNav.selectedItemId = R.id.nav_explore
+        "schedules" -> bottomNav.selectedItemId = R.id.nav_schedules
+        "alerts" -> bottomNav.selectedItemId = R.id.nav_alerts
+        "settings" -> bottomNav.selectedItemId = R.id.nav_settings
     }
-}
 
-private fun Activity.currentNavigationItemId(): Int? {
-    return when (this) {
-        is HomeActivity,
-        is SearchActivity,
-        is FavoritesActivity,
-        is RestaurantsActivity,
-        is VoiceTranslatorActivity,
-        is TranslatorHistoryActivity,
-        is NotesActivity,
-        is InsightsActivity -> R.id.nav_explore
+    bottomNav.setOnItemSelectedListener { item ->
+        when (item.itemId) {
+            R.id.nav_explore -> {
+                val intent = Intent(activity, HomeActivity::class.java)
+                activity.startActivity(intent)
+                true
+            }
+            R.id.nav_schedules -> {
+                val intent = Intent(activity, ScheduleActivity::class.java)
+                activity.startActivity(intent)
+                true
+            }
 
-        is ScheduleActivity -> R.id.nav_schedules
+            R.id.nav_alerts -> {
+                val intent = Intent(activity, AlertsActivity::class.java)
+                activity.startActivity(intent)
+                true
+            }
 
-        is AlertsActivity,
-        is NotificationsActivity -> R.id.nav_alerts
+            R.id.nav_settings -> {
+                val intent = Intent(activity, SettingsActivity::class.java)
+                activity.startActivity(intent)
+                true
+            }
 
-        is SettingsActivity -> R.id.nav_settings
-
-        else -> null
-    }
-}
-
-private fun String.toNavigationItemId(): Int? {
-    return when (this) {
-        "explore" -> R.id.nav_explore
-        "schedules" -> R.id.nav_schedules
-        "alerts" -> R.id.nav_alerts
-        "settings" -> R.id.nav_settings
-        else -> null
+            else -> false
+        }
     }
 }

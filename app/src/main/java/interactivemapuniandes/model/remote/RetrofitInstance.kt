@@ -3,15 +3,22 @@ package com.uniandes.interactivemapuniandes.model.remote
 import android.content.Context
 import com.uniandes.interactivemapuniandes.BuildConfig
 import java.io.File
-import java.util.concurrent.TimeUnit
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     private const val CACHE_SIZE_BYTES = 10L * 1024 * 1024
     private val baseUrl: String = BuildConfig.BACKEND_BASE_URL
+
+    fun getInstance(): Retrofit{
+        return Retrofit.Builder()
+            .baseUrl(BackendConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
     private var appContext: Context? = null
 

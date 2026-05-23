@@ -1,71 +1,64 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.InteractiveMapUniandes" parent="Theme.Material3.DayNight.NoActionBar">
-
-        <item name="materialSwitchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
-
+    <style name="Theme.InteractiveMapUniandes" parent="Theme.Material3Expressive.DayNight.NoActionBar">
+        <!-- Keep dark-mode devices on the same light campus palette. -->
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
         <item name="colorPrimaryVariant">@color/md_theme_dark_primary_variant</item>
-        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
-        <item name="android:colorBackground">@color/md_theme_dark_background</item>
-        <item name="colorError">@color/md_theme_error</item>
-
-        <item name="colorPrimaryDark">@color/md_theme_dark_primary_variant</item>
-        <item name="colorSecondaryVariant">@color/md_theme_dark_secondary_variant</item>
-        <item name="colorSurface">@color/md_theme_dark_surface</item>
         <item name="colorOnPrimary">@color/md_theme_dark_on_primary</item>
-        <item name="colorOnSecondary">@color/md_theme_dark_on_secondary</item>
-        <item name="colorOnBackground">@color/md_theme_dark_on_background</item>
-        <item name="colorOnSurface">@color/md_theme_dark_on_surface</item>
-        <item name="colorOnError">@color/md_theme_on_error</item>
-
-        <item name="colorPrimaryInverse">@color/md_theme_light_primary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_primary_container</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_dark_on_primary_container</item>
+
+        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
+        <item name="colorSecondaryVariant">@color/md_theme_dark_secondary_variant</item>
+        <item name="colorOnSecondary">@color/md_theme_dark_on_secondary</item>
         <item name="colorSecondaryContainer">@color/md_theme_dark_secondary_container</item>
         <item name="colorOnSecondaryContainer">@color/md_theme_dark_on_secondary_container</item>
-        <item name="colorTertiary">@color/md_theme_dark_secondary</item>
-        <item name="colorOnTertiary">@color/md_theme_dark_on_secondary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_dark_secondary_container</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_dark_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/md_theme_dark_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_dark_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_dark_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_dark_on_tertiary_container</item>
+
+        <item name="android:colorBackground">@color/md_theme_dark_background</item>
+        <item name="colorOnBackground">@color/md_theme_dark_on_background</item>
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="colorOnSurface">@color/md_theme_dark_on_surface</item>
         <item name="colorSurfaceVariant">@color/md_theme_dark_surface_variant</item>
         <item name="colorOnSurfaceVariant">@color/md_theme_dark_on_surface_variant</item>
         <item name="colorSurfaceInverse">@color/md_theme_dark_inverse_surface</item>
         <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverse_on_surface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_primary</item>
         <item name="colorOutline">@color/md_theme_dark_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_dark_outline_variant</item>
+
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="colorOnError">@color/md_theme_on_error</item>
         <item name="colorErrorContainer">@color/md_theme_error_container</item>
         <item name="colorOnErrorContainer">@color/md_theme_on_error_container</item>
 
         <item name="android:statusBarColor">@color/md_theme_dark_background</item>
         <item name="android:navigationBarColor">@color/md_theme_dark_background</item>
         <item name="android:windowBackground">@color/md_theme_dark_background</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
 
-        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
-
+        <item name="materialSwitchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
         <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
-
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+        <item name="textInputStyle">@style/Widget.App.TextInput</item>
         <item name="extendedFloatingActionButtonStyle">@style/Widget.App.ExtendedFloatingActionButton</item>
         <item name="floatingActionButtonStyle">@style/Widget.App.FloatingActionButton</item>
-    </style>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="snackbarStyle">@style/Widget.App.Snackbar</item>
+        <item name="snackbarTextViewStyle">@style/Widget.App.Snackbar.TextView</item>
+        <item name="snackbarButtonStyle">@style/Widget.App.Snackbar.Action</item>
 
-    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/ModalBottomSheetDialog</item>
-    </style>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.App.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.App.TitleMedium</item>
 
-    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="buttonTint">@color/button_tint</item>
-        <item name="buttonIconTint">@color/button_icon_tint</item>
-    </style>
-
-    <style name="Widget.App.ExtendedFloatingActionButton" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
-    </style>
-
-    <style name="Widget.App.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
-    </style>
-
-    <style name="ThemeOverlay.App.FloatingActionButton" parent="">
-        <item name="colorContainer">@color/md_theme_light_surface</item>
-        <item name="colorOnContainer">@color/md_theme_light_on_surface</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeCloseDrawable">@drawable/arrow_back_25dp_e3e3e3_fill0_wght400_grad0_opsz24</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.App.Toolbar</item>
     </style>
 </resources>

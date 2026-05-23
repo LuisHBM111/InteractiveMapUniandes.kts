@@ -1,0 +1,42 @@
+<com.google.android.material.listitem.ListItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.listitem.ListItemCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/transparent"
+        android:checkable="true">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="8dp"
+            >
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginEnd="16dp"
+                app:tint="@color/black"
+
+                />
+
+            <TextView
+                android:id="@+id/list_item_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:duplicateParentState="true"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                />
+
+        </LinearLayout>
+    </com.google.android.material.listitem.ListItemCardView>
+</com.google.android.material.listitem.ListItemLayout>

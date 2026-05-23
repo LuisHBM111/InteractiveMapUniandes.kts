@@ -1,0 +1,42 @@
+package interactivemapuniandes.utils
+
+data class AllBuildings(
+    val buildings: List<String> = listOf(
+        "A",
+        "AU",
+        "B",
+        "C",
+        "Ca",
+        "Ch",
+        "Ci",
+        "Cj",
+        "E",
+        "Es",
+        "F",
+        "G/Gb",
+        "Ga",
+        "H",
+        "J",
+        "K",
+        "L",
+        "La",
+        "LL",
+        "M",
+        "ML",
+        "N",
+        "Ña",
+        "Ñf",
+        "Ño",
+        "O",
+        "P",
+        "Pu",
+        "Q",
+        "Rga",
+        "RGD",
+        "Sd",
+        "T",
+        "V",
+        "W",
+        "Z"
+    )
+)

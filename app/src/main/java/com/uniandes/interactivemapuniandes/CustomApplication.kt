@@ -15,12 +15,12 @@ import com.uniandes.interactivemapuniandes.model.repository.PreferencesRepositor
 import com.uniandes.interactivemapuniandes.utils.CrashReporter
 import com.uniandes.interactivemapuniandes.utils.Telemetry
 import java.io.File
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 import okio.Path.Companion.toPath
 
 class CustomApplication : Application(), SingletonImageLoader.Factory {

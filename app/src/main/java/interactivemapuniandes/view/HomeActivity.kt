@@ -51,12 +51,15 @@ import com.uniandes.interactivemapuniandes.utils.Telemetry
 import com.uniandes.interactivemapuniandes.utils.friendlyError
 import com.uniandes.interactivemapuniandes.utils.setupNavigation
 import com.uniandes.interactivemapuniandes.viewmodel.HomeViewModel
+import interactivemapuniandes.model.remote.ApiService
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
+
     private lateinit var scanner: GmsBarcodeScanner
+    private val locationPermissionRequest = 1001
     private lateinit var mMap: GoogleMap
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
     private lateinit var textToSpeech: TextToSpeech
@@ -64,7 +67,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var btnDirections: View
 
-    private val locationPermissionRequest = 1001
     private var pendingRouteDestination: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +76,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_home)
 
         val authRepository = AuthRepository(FirebaseAuth.getInstance())
-        routeRepository = RouteRepository(RetrofitInstance.api, authRepository)
+        val apiService = RetrofitInstance.getInstance().create(ApiService::class.java)
+        routeRepository = RouteRepository(authRepository, apiService)
         homeViewModel = HomeViewModel(routeRepository)
         observeUiState()
 
@@ -91,7 +94,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         loadNextClass()
         loadNearbyServices()
         setupServiceChips()
-        requestLocationIfNeeded()
+        //requestLocationIfNeeded()
         showOfflineBannerIfNeeded()
         renderRecents()
         renderOfflineRouteCard()

@@ -1,41 +1,187 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="ModalBottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
-        <item name="backgroundTint">@color/md_theme_light_surface_variant</item>
-        <item name="shapeAppearance">@style/ShapeAppearance.App.LargeComponent</item>
+    <!-- Text appearances -->
+    <style name="TextAppearance.App.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/app_text_primary</item>
     </style>
 
+    <style name="TextAppearance.App.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/app_text_secondary</item>
+    </style>
+
+    <!-- Shape appearances -->
     <style name="ShapeAppearance.App.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
-        <item name="cornerFamily">cut</item>
+        <item name="cornerFamily">rounded</item>
         <item name="cornerSize">24dp</item>
     </style>
 
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Snackbar" parent="ShapeAppearance.Material3.Corner.Large">
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <!-- Toolbar -->
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
+        <item name="titleTextAppearance">@style/TextAppearance.App.TitleLarge</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.App.TitleMedium</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Toolbar" parent="">
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_on_surface_variant</item>
+    </style>
+
+    <!-- Inputs -->
+    <style name="Widget.App.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/md_theme_light_surface</item>
+        <item name="boxStrokeColor">@color/md_theme_light_outline</item>
+        <item name="hintTextColor">@color/md_theme_light_on_surface_variant</item>
+        <item name="android:textColorHint">@color/md_theme_light_on_surface_variant</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
+    </style>
+
+    <!-- Buttons -->
+    <style name="Widget.App.Button" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/app_text_primary</item>
+    </style>
+
+    <style name="Widget.App.Button.TextButton" parent="Widget.Material3.Button.TextButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Button.TextButton</item>
+        <item name="android:textAppearance">@style/TextAppearance.App.Button</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Button</item>
+    </style>
+
+
+    <style name="TextAppearance.App.Button" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily"></item>
+        <item name="android:fontFamily"></item>
+    </style>
+
+    <style name="ThemeOverlay.App.Button.TextButton" parent="ThemeOverlay.Material3.Button.TextButton">
+        <item name="colorOnContainer">@color/black</item>
+        <item name="colorContainer">@color/white</item>
+        <item name="shapeCornerFamily">rounded</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Button" parent="ThemeOverlay.Material3.Button">
+        <item name="colorContainer">@color/md_theme_light_primary</item>
+        <item name="colorOnContainer">@color/md_theme_light_primary_container</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Button" parent="">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">4dp</item>
+    </style>
+
+    <style name="Widget.App.Button.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/md_theme_light_primary</item>
+        <item name="android:textColor">@color/md_theme_light_on_primary</item>
+        <item name="iconTint">@color/md_theme_light_on_primary</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
+    </style>
+
+    <style name="Widget.App.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">@color/md_theme_light_outline</item>
+        <item name="android:textColor">@color/app_text_primary</item>
+        <item name="iconTint">@color/app_text_primary</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
+    </style>
+
+    <style name="Widget.App.Button.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Button.TextButton</item>
+        <item name="android:textAppearance">@style/TextAppearance.App.Button</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Button</item>
+    </style>
+
+    <!-- Cards and chips -->
+    <style name="Widget.App.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/md_theme_light_surface</item>
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="strokeColor">@color/md_theme_light_outline_variant</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="Widget.App.Chip.Assist" parent="Widget.Material3.Chip.Assist">
+        <item name="chipBackgroundColor">@color/md_theme_light_surface</item>
+        <item name="chipStrokeColor">@color/md_theme_light_outline</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/app_text_primary</item>
+        <item name="chipIconTint">@color/app_text_primary</item>
+    </style>
+
+    <!-- Bottom sheet -->
+    <style name="ModalBottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/md_theme_light_surface</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.LargeComponent</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalBottomSheetDialog</item>
+    </style>
+
+    <!-- Checkboxes -->
+    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/button_tint</item>
+        <item name="buttonIconTint">@color/button_icon_tint</item>
+    </style>
+
+    <!-- FABs -->
+    <style name="Widget.App.ExtendedFloatingActionButton" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
+    </style>
+
+    <style name="Widget.App.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.FloatingActionButton</item>
+    </style>
+
+    <style name="ThemeOverlay.App.FloatingActionButton" parent="">
+        <item name="colorContainer">@color/md_theme_light_primary_container</item>
+        <item name="colorOnContainer">@color/md_theme_light_on_primary_container</item>
+    </style>
+
+    <!-- Dialogs -->
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_on_primary</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_on_surface</item>
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
+    </style>
+
     <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.Material3">
-        <item name="backgroundTint">@color/route_dialog_background</item>
+        <item name="backgroundTint">@color/md_theme_light_surface</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
         <item name="shapeAppearanceOverlay">@null</item>
     </style>
 
     <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
-        <item name="android:textColor">@color/route_dialog_title</item>
+        <item name="android:textColor">@color/app_text_primary</item>
     </style>
 
-    <style name="Widget.App.Button" parent="Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/route_dialog_title</item>
-    </style>
-
-    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
-        <item name="cornerFamily">cut</item>
-        <item name="cornerSize">8dp</item>
-    </style>
-
+    <!-- Snackbars -->
     <style name="Widget.App.Snackbar" parent="Widget.Material3.Snackbar">
-        <item name="backgroundTint">@color/dark_blue</item>
+        <item name="backgroundTint">@color/md_theme_light_inverse_surface</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.Snackbar</item>
     </style>
 
     <style name="Widget.App.Snackbar.TextView" parent="Widget.Material3.Snackbar.TextView">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/md_theme_light_inverse_on_surface</item>
     </style>
 
     <style name="Widget.App.Snackbar.Action" parent="Widget.Material3Expressive.Button.TextButton.Snackbar">
@@ -43,12 +189,8 @@
     </style>
 
     <style name="ThemeOverlay.App.Snackbar.Action" parent="ThemeOverlay.Material3Expressive.Button.TextButton.Snackbar">
-        <item name="colorOnContainer">@color/primary_yellow</item>
-        <item name="colorOnContainerChecked">@color/primary_yellow</item>
-        <item name="colorOnContainerUnchecked">@color/primary_yellow</item>
-    </style>
-
-    <style name="ShapeAppearance.App.Snackbar" parent="ShapeAppearance.Material3.Corner.Large">
-        <item name="cornerSize">16dp</item>
+        <item name="colorOnContainer">@color/md_theme_light_primary</item>
+        <item name="colorOnContainerChecked">@color/md_theme_light_primary</item>
+        <item name="colorOnContainerUnchecked">@color/md_theme_light_primary</item>
     </style>
 </resources>

@@ -18,7 +18,7 @@ import interactivemapuniandes.model.entity.VisitEntity
         VisitEntity::class,
         TranslationEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -40,7 +40,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "interactive_map_uniandes.db"
                 )
-                    .fallbackToDestructiveMigration(dropAllTables = true) // Tablas son solo cache, OK perderlas en upgrade
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
                     .also { INSTANCE = it }
             }

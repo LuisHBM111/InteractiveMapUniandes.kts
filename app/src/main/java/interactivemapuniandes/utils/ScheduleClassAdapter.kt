@@ -13,7 +13,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class ScheduleClassAdapter(
-    private var items: List<ScheduleClassEntity> = emptyList()
+    private var items: List<ScheduleClassEntity> = emptyList(),
+    private val onClassClick: (ScheduleClassEntity) -> Unit = {}
 ) : RecyclerView.Adapter<ScheduleClassAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -39,6 +40,9 @@ class ScheduleClassAdapter(
         holder.tvClassCode.text = buildClassCode(scheduleClass)
         holder.tvClassLocation.text = buildLocation(scheduleClass)
         holder.tvClassInstructor.text = scheduleClass.instructorName ?: "Instructor not available"
+        holder.itemView.setOnClickListener {
+            onClassClick(scheduleClass)
+        }
     }
 
     override fun getItemCount(): Int = items.size

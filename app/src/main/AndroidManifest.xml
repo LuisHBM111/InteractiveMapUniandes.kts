@@ -18,7 +18,9 @@
         android:theme="@style/Theme.InteractiveMapUniandes"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name="interactivemapuniandes.view.ManageClassesActivity"
+            android:exported="false" />
         <activity
             android:name="interactivemapuniandes.view.ScheduleActivity"
             android:exported="false"
@@ -110,7 +112,6 @@
                     android:scheme="interactivemap" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.LoginActivity"
             android:exported="true"
@@ -124,7 +125,7 @@
         </activity>
 
         <receiver
-            android:name="com.uniandes.interactivemapuniandes.utils.NextClassReceiver"
+            android:name=".utils.NextClassReceiver"
             android:exported="false" />
     </application>
 

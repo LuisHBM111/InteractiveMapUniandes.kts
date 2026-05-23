@@ -30,6 +30,7 @@ class RouteViewModel(
             routeData = null
         )
 
+
         viewModelScope.launch {
             try {
                 val result = routeRepository.getToNextClass()

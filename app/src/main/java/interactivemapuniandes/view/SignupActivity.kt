@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.uniandes.interactivemapuniandes.R
+import com.uniandes.interactivemapuniandes.utils.Telemetry
 
 class SignupActivity : AppCompatActivity() {
 
@@ -26,6 +27,7 @@ class SignupActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Telemetry.screen("signup")
         enableEdgeToEdge()
         setContentView(R.layout.activity_signup)
 

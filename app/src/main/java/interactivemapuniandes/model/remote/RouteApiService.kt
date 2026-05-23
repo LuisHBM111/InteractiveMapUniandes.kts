@@ -1,8 +1,10 @@
 package com.uniandes.interactivemapuniandes.model.remote
 
 import com.google.gson.JsonObject
+import com.uniandes.interactivemapuniandes.model.data.NearestNodeResponse
 import com.uniandes.interactivemapuniandes.model.data.NextClassResponseDto
 import interactivemapuniandes.model.data.RouteDTO
+import com.uniandes.interactivemapuniandes.model.data.RouteGraphResponseDto
 import interactivemapuniandes.model.data.ScheduleDTO
 import interactivemapuniandes.model.data.dtos.NextClassDTO
 import okhttp3.MultipartBody
@@ -17,11 +19,24 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RouteApiService {
-    @GET("api/v1/routes/path")
+
+    @GET("api/v1/routes/graph/path")
+    suspend fun getRoute(
+        @Query("from") from: String,
+        @Query("to") to: String
+    ): Response<RouteGraphResponseDto>
+
+    @GET("api/v1/routes/graph/path")
     suspend fun getGraphPath(
         @Query("from") from: String,
         @Query("to") to: String
     ): Response<JsonObject>
+
+    @GET("api/v1/routes/graph/nearest")
+    suspend fun findNearest(
+        @Query("lat") lat: Double,
+        @Query("lng") lng: Double
+    ): Response<NearestNodeResponse>
 
     @GET("api/v1/me/routes/to-next-class")
     suspend fun getRouteToNextClass(
@@ -35,6 +50,11 @@ interface RouteApiService {
         @Path("classId") classId: String,
         @Query("from") from: String
     ): Response<RouteDTO>
+
+    @GET("api/v1/me/classes/next")
+    suspend fun getNextClass(
+        @Header("Authorization") authorization: String
+    ): Response<NextClassResponseDto>
 
     @POST("api/v1/me/schedules/import/default")
     suspend fun importDefaultSchedule(

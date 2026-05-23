@@ -6,13 +6,13 @@ import com.google.gson.annotations.SerializedName
 data class NextClassDTO(
     val hasUpcomingClass: Boolean,
     @SerializedName("class")
-    val nextClass: Class?,
+    val nextClass: NextRouteClass?,
     val path: Path?,
     )
 
-data class Class(
-    val id: String,
-    val title: String,
+data class NextRouteClass(
+    val id: String?,
+    val title: String?,
 )
 
 data class Path(
@@ -20,7 +20,11 @@ data class Path(
 )
 
 data class Path2(
-    val path: List<Path3>,
+    val from: String? = null,
+    val to: String? = null,
+    val totalTimeSeconds: Int? = null,
+    val totalTimeMinutes: Double? = null,
+    val path: List<Path3> = emptyList(),
 )
 
 data class Path3(

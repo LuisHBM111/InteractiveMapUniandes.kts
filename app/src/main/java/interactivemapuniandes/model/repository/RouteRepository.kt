@@ -1,6 +1,7 @@
 package com.uniandes.interactivemapuniandes.model.repository
 
 import android.util.Log
+import com.uniandes.interactivemapuniandes.model.data.RouteResponse
 import interactivemapuniandes.model.data.dtos.NextClassDTO
 import interactivemapuniandes.model.data.dtos.NextClassInfoDTO
 import interactivemapuniandes.model.data.dtos.PreviousClassDTO
@@ -92,6 +93,48 @@ class RouteRepository(
         }
     }
 
+    suspend fun getGraphPath(from: String, to: String): Result<RouteResponse> {
+        return getSearchClass(from, to).mapCatching { dto ->
+            dto?.toRouteResponse() ?: throw IllegalStateException("Route not found")
+        }
+    }
+
+    suspend fun getRouteToNextClass(from: String): Result<RouteResponse> {
+        val token = authRepository.getIdToken(forceRefresh = false)
+            ?: return Result.failure(IllegalStateException("No authenticated Firebase user"))
+        val call = apiService.getToNextClass("Bearer $token", from)
+
+        return if (call.isSuccessful) {
+            val body = call.body()
+            if (body != null) {
+                Result.success(body.toRouteResponse())
+            } else {
+                Result.failure(IllegalStateException("Route not found"))
+            }
+        } else {
+            val errorText = call.errorBody()?.string()
+            Result.failure(IllegalStateException(errorText ?: "Could not load route"))
+        }
+    }
+
+    suspend fun getRouteToClass(classId: String, from: String): Result<RouteResponse> {
+        val token = authRepository.getIdToken(forceRefresh = false)
+            ?: return Result.failure(IllegalStateException("No authenticated Firebase user"))
+        val call = apiService.getToClass("Bearer $token", classId, from)
+
+        return if (call.isSuccessful) {
+            val body = call.body()
+            if (body != null) {
+                Result.success(body.toRouteResponse())
+            } else {
+                Result.failure(IllegalStateException("Route not found"))
+            }
+        } else {
+            val errorText = call.errorBody()?.string()
+            Result.failure(IllegalStateException(errorText ?: "Could not load route"))
+        }
+    }
+
     suspend fun getNextClass(): Result<NextClassInfoDTO?> {
         Log.d("RouteDebug", "Repo getNextClass start")
         val token = authRepository.getIdToken(forceRefresh = false) ?: return Result.failure(
@@ -150,6 +193,32 @@ class RouteRepository(
             return Result.failure(IllegalStateException(errorText))
         }
 
+    }
+
+    private fun SearchClassDTO.toRouteResponse(): RouteResponse {
+        return RouteResponse(
+            from = from,
+            to = to,
+            path = path.map { it.label },
+            totalTime = totalTimeSeconds,
+            pathLatitudes = path.map { it.latitude ?: Double.NaN }.toDoubleArray(),
+            pathLongitudes = path.map { it.longitude ?: Double.NaN }.toDoubleArray()
+        )
+    }
+
+    private fun NextClassDTO.toRouteResponse(): RouteResponse {
+        val nodes = path?.path?.path.orEmpty()
+        val routePath = path?.path
+        return RouteResponse(
+            from = routePath?.from ?: nodes.firstOrNull()?.label ?: "ML",
+            to = routePath?.to ?: nodes.lastOrNull()?.label ?: nextClass?.title ?: "Destination",
+            path = nodes.map { it.label },
+            totalTime = routePath?.totalTimeSeconds ?: 0,
+            classId = nextClass?.id,
+            classTitle = nextClass?.title,
+            pathLatitudes = nodes.map { it.latitude ?: Double.NaN }.toDoubleArray(),
+            pathLongitudes = nodes.map { it.longitude ?: Double.NaN }.toDoubleArray()
+        )
     }
 
 

@@ -31,6 +31,13 @@ interface ApiService {
         @Header("Authorization") authorization: String
     ): Response<NextClassInfoDTO>
 
+    @GET("api/v1/me/routes/to-class/{classId}")
+    suspend fun getToClass(
+        @Header("Authorization") authorization: String,
+        @retrofit2.http.Path("classId") classId: String,
+        @Query("from") from: String
+    ): Response<NextClassDTO>
+
     @GET("api/v1/routes/path")
     suspend fun getSearchClass(@Query("from") from: String, @Query("to") to: String): Response<SearchClassDTO>
 

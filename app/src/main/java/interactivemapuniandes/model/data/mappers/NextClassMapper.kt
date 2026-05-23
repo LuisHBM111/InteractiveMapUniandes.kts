@@ -8,12 +8,15 @@ import interactivemapuniandes.model.data.dtos.SearchClassDTO
 import interactivemapuniandes.model.data.dtos.TraversedEdge
 
 fun NextClassDTO.toRouteUiData(): RouteUiData{
+    val routePath = path?.path
+    val nodes = routePath?.path.orEmpty()
+
     return RouteUiData(
         hasUpcomingClass = hasUpcomingClass,
         classTitle = nextClass?.title ?: "Class not found",
-        from = path?.path?.path?.firstOrNull()?.label ?: "ML",
-        to = path?.path?.path?.lastOrNull()?.label ?: "Destination not found",
-        steps = path?.path?.path?.toRouteStepUi() ?: emptyList(),
+        from = routePath?.from ?: nodes.firstOrNull()?.label ?: "ML",
+        to = routePath?.to ?: nodes.lastOrNull()?.label ?: "Destination not found",
+        steps = nodes.toRouteStepUi(),
     )
 }
 

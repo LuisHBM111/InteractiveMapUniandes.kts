@@ -1,9 +1,28 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
 }
+
+val localProps: Properties = Properties().apply {
+    val propsFile = rootProject.file("local.properties")
+    if (propsFile.exists()) {
+        propsFile.inputStream().use { load(it) }
+    }
+}
+
+fun localPropOrDefault(key: String, default: String): String =
+    localProps.getProperty(key)?.takeIf { it.isNotBlank() } ?: default
+
+val backendBaseUrl: String = localPropOrDefault(
+    "BACKEND_BASE_URL",
+    "https://interactive-map-uniandes-backend-76ze3v274a-uc.a.run.app/",
+)
+val translateSourceLang: String = localPropOrDefault("TRANSLATE_SOURCE_LANG", "es-ES")
+val translateTargetLang: String = localPropOrDefault("TRANSLATE_TARGET_LANG", "en-US")
 
 android {
     namespace = "com.uniandes.interactivemapuniandes"
@@ -17,6 +36,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BACKEND_BASE_URL", "\"$backendBaseUrl\"")
+        buildConfigField("String", "TRANSLATE_SOURCE_LANG", "\"$translateSourceLang\"")
+        buildConfigField("String", "TRANSLATE_TARGET_LANG", "\"$translateTargetLang\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -50,7 +77,11 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.material)
     implementation(libs.androidx.activity)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1") // Task<T>.await()
+    implementation("androidx.datastore:datastore-preferences:1.1.3") // Local prefs
+    implementation("androidx.core:core-splashscreen:1.0.1") // Splash screen API 31 compat
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")

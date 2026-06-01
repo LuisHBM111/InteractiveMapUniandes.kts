@@ -1,5 +1,6 @@
 package interactivemapuniandes.model.analytics
 
+import android.util.LruCache
 import interactivemapuniandes.model.entity.ScheduleClassEntity
 import interactivemapuniandes.model.state.RecommendedClassDayUi
 import java.time.DayOfWeek
@@ -12,7 +13,15 @@ class ScheduleDensityAnalyzer {
 
     fun recommendDayToAddClass(classes: List<ScheduleClassEntity>): RecommendedClassDayUi? {
         if (classes.isEmpty()) {
-            return null
+            return RecommendationCache.get(LAST_RECOMMENDATION_KEY)?.copy(
+                isFromCache = true,
+                reason = "Cached recommendation from the last saved schedule."
+            )
+        }
+
+        val cacheKey = classes.toDensityCacheKey()
+        RecommendationCache.get(cacheKey)?.let { cachedRecommendation ->
+            return cachedRecommendation
         }
 
         val classCountByDay = Weekdays.associateWith { 0 }.toMutableMap()
@@ -26,11 +35,25 @@ class ScheduleDensityAnalyzer {
         val recommendedDay = classCountByDay.minByOrNull { it.value } ?: return null
         val dayLabel = recommendedDay.key.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
 
-        return RecommendedClassDayUi(
+        val recommendation = RecommendedClassDayUi(
             dayLabel = dayLabel,
             classCount = recommendedDay.value,
             reason = "$dayLabel has ${recommendedDay.value} scheduled classes."
         )
+        RecommendationCache.put(cacheKey, recommendation)
+        RecommendationCache.put(LAST_RECOMMENDATION_KEY, recommendation)
+        return recommendation
+    }
+
+    private fun List<ScheduleClassEntity>.toDensityCacheKey(): String {
+        return sortedBy { it.id }.joinToString(separator = "|") { scheduleClass ->
+            listOf(
+                scheduleClass.id,
+                scheduleClass.startsAt,
+                scheduleClass.recurrenceDays.orEmpty(),
+                scheduleClass.recurrenceUntilDate.orEmpty()
+            ).joinToString(separator = "#")
+        }
     }
 
     private fun ScheduleClassEntity.weekdays(): List<DayOfWeek> {
@@ -72,6 +95,10 @@ class ScheduleDensityAnalyzer {
     }
 
     private companion object {
+        private const val MAX_CACHE_ENTRIES = 16
+        private const val LAST_RECOMMENDATION_KEY = "last_density_recommendation"
+        private val RecommendationCache = LruCache<String, RecommendedClassDayUi>(MAX_CACHE_ENTRIES)
+
         val Weekdays = listOf(
             DayOfWeek.MONDAY,
             DayOfWeek.TUESDAY,

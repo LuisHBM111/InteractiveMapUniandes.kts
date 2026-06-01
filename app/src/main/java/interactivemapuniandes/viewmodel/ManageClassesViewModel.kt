@@ -51,17 +51,22 @@ class ManageClassesViewModel(
                 } else {
                     _uiState.value = _uiState.value.copy(
                         isSaving = false,
-                        errorMessage = result.exceptionOrNull()?.message
+                        errorMessage = result.exceptionOrNull()?.message.toSaveClassUserMessage()
                     )
                 }
             } catch (error: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
-                    errorMessage = error.message
+                    errorMessage = error.message.toSaveClassUserMessage()
                 )
             }
         }
 
+    }
+
+    private fun String?.toSaveClassUserMessage(): String {
+        return this?.takeIf { it.isNotBlank() }
+            ?: "We couldn't save this class. Please check the form and try again."
     }
 
 }

@@ -8,6 +8,7 @@ import interactivemapuniandes.model.data.mappers.toRouteUiData
 import interactivemapuniandes.model.data.mappers.toSearchRouteUiData
 import interactivemapuniandes.model.state.RouteUiState
 import interactivemapuniandes.utils.AllBuildings
+import java.io.IOException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,7 +47,7 @@ class RouteViewModel(
                         Log.e("RouteDebug", "VM getNextClass empty route")
                         _uiState.value = _uiState.value.copy(
                             isRouteLoading = false,
-                            errorMessage = "No upcoming class route found"
+                            errorMessage = ROUTE_NOT_FOUND_MESSAGE
                         )
                     } else {
                         val uiData = route.toRouteUiData()
@@ -60,14 +61,14 @@ class RouteViewModel(
                     Log.e("RouteDebug", "VM getNextClass failed", result.exceptionOrNull())
                     _uiState.value = _uiState.value.copy(
                         isRouteLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message
+                        errorMessage = result.exceptionOrNull().toRouteUserMessage()
                     )
                 }
             } catch (error: Exception) {
                 Log.e("RouteDebug", "VM getNextClass crashed", error)
                 _uiState.value = _uiState.value.copy(
                     isRouteLoading = false,
-                    errorMessage = error.message
+                    errorMessage = error.toRouteUserMessage()
                 )
             }
         }
@@ -98,7 +99,7 @@ class RouteViewModel(
                         Log.e("RouteDebug", "VM getPreviousClass empty route")
                         _uiState.value = _uiState.value.copy(
                             isRouteLoading = false,
-                            errorMessage = "No previous class route found"
+                            errorMessage = ROUTE_NOT_FOUND_MESSAGE
                         )
                     } else {
                         val uiData = route.toRouteUiData()
@@ -112,14 +113,14 @@ class RouteViewModel(
                     Log.e("RouteDebug", "VM getPreviousClass failed", result.exceptionOrNull())
                     _uiState.value = _uiState.value.copy(
                         isRouteLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message
+                        errorMessage = result.exceptionOrNull().toRouteUserMessage()
                     )
                 }
             } catch (error: Exception) {
                 Log.e("RouteDebug", "VM getPreviousClass crashed", error)
                 _uiState.value = _uiState.value.copy(
                     isRouteLoading = false,
-                    errorMessage = error.message
+                    errorMessage = error.toRouteUserMessage()
                 )
             }
         }
@@ -152,7 +153,7 @@ class RouteViewModel(
                         Log.e("RouteDebug", "VM getRandomClass empty route")
                         _uiState.value = _uiState.value.copy(
                             isRouteLoading = false,
-                            errorMessage = "Route not found"
+                            errorMessage = ROUTE_NOT_FOUND_MESSAGE
                         )
                     } else {
                         val uiData = route.toSearchRouteUiData()
@@ -166,14 +167,14 @@ class RouteViewModel(
                     Log.e("RouteDebug", "VM getRandomClass failed", result.exceptionOrNull())
                     _uiState.value = _uiState.value.copy(
                         isRouteLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message
+                        errorMessage = result.exceptionOrNull().toRouteUserMessage()
                     )
                 }
             } catch (error: Exception) {
                 Log.e("RouteDebug", "VM getRandomClass crashed", error)
                 _uiState.value = _uiState.value.copy(
                     isRouteLoading = false,
-                    errorMessage = error.message
+                    errorMessage = error.toRouteUserMessage()
                 )
             }
         }
@@ -201,7 +202,7 @@ class RouteViewModel(
                         Log.e("RouteDebug", "VM getSearchClass empty route")
                         _uiState.value = _uiState.value.copy(
                             isRouteLoading = false,
-                            errorMessage = "Route not found"
+                            errorMessage = ROUTE_NOT_FOUND_MESSAGE
                         )
                     } else {
                         val uiData = route.toSearchRouteUiData()
@@ -215,17 +216,29 @@ class RouteViewModel(
                     Log.e("RouteDebug", "VM getSearchClass failed", result.exceptionOrNull())
                     _uiState.value = _uiState.value.copy(
                         isRouteLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message
+                        errorMessage = result.exceptionOrNull().toRouteUserMessage()
                     )
                 }
             } catch (error: Exception) {
                 Log.e("RouteDebug", "VM getSearchClass crashed", error)
                 _uiState.value = _uiState.value.copy(
                     isRouteLoading = false,
-                    errorMessage = error.message
+                    errorMessage = error.toRouteUserMessage()
                 )
             }
         }
 
+    }
+
+    private fun Throwable?.toRouteUserMessage(): String {
+        return when (this) {
+            is IOException -> NO_INTERNET_MESSAGE
+            else -> ROUTE_NOT_FOUND_MESSAGE
+        }
+    }
+
+    private companion object {
+        const val ROUTE_NOT_FOUND_MESSAGE = "Route not found"
+        const val NO_INTERNET_MESSAGE = "No internet connection"
     }
 }

@@ -173,7 +173,7 @@ class RouteActivity : AppCompatActivity() {
                 }
                 if (!state.isRouteLoading && state.errorMessage != null) {
                     Log.e("RouteActivity", "Error: ${state.errorMessage}")
-                    Toast.makeText(this@RouteActivity, "Route not found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RouteActivity, state.errorMessage, Toast.LENGTH_SHORT).show()
                 }
 
                 scheduleLoadingIndicator.visibility = if (state.isRouteLoading) View.VISIBLE else View.GONE

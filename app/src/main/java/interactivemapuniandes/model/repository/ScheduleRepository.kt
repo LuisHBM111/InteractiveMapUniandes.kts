@@ -2,13 +2,16 @@ package interactivemapuniandes.model.repository
 
 import com.uniandes.interactivemapuniandes.model.remote.RouteApiService
 import com.uniandes.interactivemapuniandes.model.repository.AuthRepository
+import interactivemapuniandes.model.analytics.ScheduleDensityAnalyzer
 import interactivemapuniandes.model.data.ScheduleDAO
 import interactivemapuniandes.model.data.ScheduleDTO
 import interactivemapuniandes.model.data.toEntity
 import interactivemapuniandes.model.entity.ScheduleClassEntity
+import interactivemapuniandes.model.state.RecommendedClassDayUi
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -21,11 +24,12 @@ class ScheduleRepository (
     private val api: RouteApiService,
     private val authRepository: AuthRepository,
     private val scheduleDao: ScheduleDAO,
+    private val scheduleDensityAnalyzer: ScheduleDensityAnalyzer = ScheduleDensityAnalyzer(),
 ) {
 
-    suspend fun clearLocalCache(): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun clearLocalStorage(): Result<Unit> = withContext(Dispatchers.IO) {
         return@withContext try {
-            scheduleDao.clearScheduleCache()
+            scheduleDao.clearLocalScheduleStorage()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -34,6 +38,19 @@ class ScheduleRepository (
 
     fun observeAllClasses(): Flow<List<ScheduleClassEntity>> {
         return scheduleDao.observeAllClasses()
+    }
+
+    suspend fun observeClassesWithRecommendation(): Flow<ScheduleClassesRecommendation> {
+        return scheduleDao.observeAllClasses().map { classes ->
+            val recommendedClassDay = withContext(Dispatchers.Default) {
+                scheduleDensityAnalyzer.recommendDayToAddClass(classes)
+            }
+
+            ScheduleClassesRecommendation(
+                classes = classes,
+                recommendedClassDay = recommendedClassDay
+            )
+        }
     }
 
     suspend fun deleteClass(classId: String): Result<Unit> = withContext(Dispatchers.IO) {
@@ -198,3 +215,8 @@ class ScheduleRepository (
 
 
 }
+
+data class ScheduleClassesRecommendation(
+    val classes: List<ScheduleClassEntity>,
+    val recommendedClassDay: RecommendedClassDayUi?
+)

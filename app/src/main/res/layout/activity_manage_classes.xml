@@ -98,7 +98,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Class name *"
+                        android:text="Class name"
                         android:textColor="@color/app_text_primary"
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp"
@@ -110,7 +110,7 @@
                         style="@style/Widget.App.TextInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Class Name *">
+                        android:hint="e.g. Móviles">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/class_name_input"
@@ -124,7 +124,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Course Code *"
+                        android:text="Course Code"
                         android:textColor="@color/app_text_primary"
                         android:textStyle="bold"
                         android:layout_marginTop="12dp"
@@ -137,7 +137,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:hint="Course Code *">
+                        android:hint="e.g. ISIS 3510">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/course_code_input"
@@ -179,7 +179,7 @@
                                 android:layout_marginEnd="8dp"
                                 android:layout_marginTop="12dp"
                                 android:layout_weight="1"
-                                android:hint="Section">
+                                android:hint="e.g. 4">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/section_input"
@@ -216,7 +216,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:layout_marginTop="12dp"
-                                android:hint="NRC">
+                                android:hint="e.g. 41886">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/nrc_input"
@@ -247,7 +247,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:hint="Instructor Name">
+                        android:hint="e.g. Mario">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/instructor_input"
@@ -277,7 +277,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Days *"
+                        android:text="Days"
                         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                         android:textColor="@color/app_text_primary" />
 
@@ -477,7 +477,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Building Code *"
+                                android:text="Building Code"
                                 android:textColor="@color/app_text_primary"
                                 android:textStyle="bold"
                                 android:layout_marginTop="12dp"
@@ -492,7 +492,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:layout_weight="1"
-                                android:hint="Building Code *">
+                                android:hint="e.g. ML">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/building_code_input"
@@ -529,7 +529,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
                                 android:layout_weight="1"
-                                android:hint="Room Code">
+                                android:hint="e.g. ML 511">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/room_code_input"

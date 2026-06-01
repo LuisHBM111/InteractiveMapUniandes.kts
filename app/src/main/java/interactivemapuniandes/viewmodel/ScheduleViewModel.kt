@@ -1,5 +1,6 @@
 package interactivemapuniandes.viewmodel
 
+import interactivemapuniandes.model.analytics.ScheduleDensityAnalyzer
 import interactivemapuniandes.model.repository.ScheduleRepository
 import interactivemapuniandes.model.entity.ScheduleClassEntity
 import interactivemapuniandes.model.state.ScheduleDayUi
@@ -20,6 +21,7 @@ class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository
 ) {
 
+    private val scheduleDensityAnalyzer = ScheduleDensityAnalyzer()
     private val _uiState = MutableStateFlow(ScheduleUiState())
     val uiState: StateFlow<ScheduleUiState> = _uiState.asStateFlow()
 
@@ -32,7 +34,8 @@ class ScheduleViewModel(
             val selectedDate = _uiState.value.selectedDate
             _uiState.value = _uiState.value.copy(
                 scheduleClasses = classes,
-                classesForSelectedDay = classes.filterByDate(selectedDate)
+                classesForSelectedDay = classes.filterByDate(selectedDate),
+                recommendedClassDay = scheduleDensityAnalyzer.recommendDayToAddClass(classes)
             )
         }
     }

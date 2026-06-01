@@ -212,10 +212,10 @@ class ManageClassesActivity : AppCompatActivity() {
         lifecycleScope.launch {
             manageClassesViewModel.uiState.collect { state ->
                 saveClassButton.isEnabled = !state.isSaving
+                saveClassButton.text = if (state.isSaving) "Saving..." else "Save Class"
 
                 if (state.errorMessage != null) {
                     Toast.makeText(this@ManageClassesActivity, state.errorMessage, Toast.LENGTH_SHORT).show()
-                    finish()
                 }
 
                 if (state.isSavedSuccessfully) {

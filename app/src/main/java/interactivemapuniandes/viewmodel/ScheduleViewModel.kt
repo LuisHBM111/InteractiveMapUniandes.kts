@@ -28,11 +28,13 @@ class ScheduleViewModel(
     }
 
     suspend fun observeScheduleClasses() {
-        scheduleRepository.observeAllClasses().collect { classes ->
+        scheduleRepository.observeClassesWithRecommendation().collect { scheduleData ->
+            val classes = scheduleData.classes
             val selectedDate = _uiState.value.selectedDate
             _uiState.value = _uiState.value.copy(
                 scheduleClasses = classes,
-                classesForSelectedDay = classes.filterByDate(selectedDate)
+                classesForSelectedDay = classes.filterByDate(selectedDate),
+                recommendedClassDay = scheduleData.recommendedClassDay
             )
         }
     }
@@ -45,7 +47,7 @@ class ScheduleViewModel(
             scheduleImportSuccess = false,
             scheduleError = null,
             canRetryScheduleRefresh = false,
-            isShowingCachedData = false
+            isShowingSavedData = false
         )
 
         val result = scheduleRepository.refreshCurrentSchedule()
@@ -59,7 +61,7 @@ class ScheduleViewModel(
                     scheduleImportSuccess = false,
                     scheduleError = null,
                     canRetryScheduleRefresh = false,
-                    isShowingCachedData = false
+                    isShowingSavedData = false
                 )
             },
             onFailure = { error ->
@@ -70,7 +72,7 @@ class ScheduleViewModel(
                     scheduleImportSuccess = false,
                     scheduleError = error.toScheduleUserMessage(),
                     canRetryScheduleRefresh = true,
-                    isShowingCachedData = _uiState.value.scheduleClasses.isNotEmpty()
+                    isShowingSavedData = _uiState.value.scheduleClasses.isNotEmpty()
                 )
             }
         )
@@ -88,7 +90,7 @@ class ScheduleViewModel(
             scheduleImportSuccess = false,
             scheduleError = null,
             canRetryScheduleRefresh = false,
-            isShowingCachedData = false
+            isShowingSavedData = false
         )
 
         val result = scheduleRepository.importScheduleFile(
@@ -106,7 +108,7 @@ class ScheduleViewModel(
                     scheduleImportSuccess = true,
                     scheduleError = null,
                     canRetryScheduleRefresh = false,
-                    isShowingCachedData = false
+                    isShowingSavedData = false
                 )
             },
             onFailure = { error ->
@@ -117,7 +119,7 @@ class ScheduleViewModel(
                     scheduleImportSuccess = false,
                     scheduleError = error.toScheduleUserMessage(),
                     canRetryScheduleRefresh = false,
-                    isShowingCachedData = _uiState.value.scheduleClasses.isNotEmpty()
+                    isShowingSavedData = _uiState.value.scheduleClasses.isNotEmpty()
                 )
             }
         )
@@ -238,7 +240,7 @@ class ScheduleViewModel(
         )
     }
 
-    suspend fun clearLocalCache(){
+    suspend fun clearLocalStorage(){
         _uiState.value = _uiState.value.copy(
             isRefreshing = true,
             scheduleError = null,
@@ -246,7 +248,7 @@ class ScheduleViewModel(
             canRetryScheduleRefresh = false
         )
 
-        val result = scheduleRepository.clearLocalCache()
+        val result = scheduleRepository.clearLocalStorage()
 
         _uiState.value = result.fold(
             onSuccess = {
@@ -257,7 +259,7 @@ class ScheduleViewModel(
                     scheduleImportSuccess = false,
                     scheduleError = null,
                     canRetryScheduleRefresh = false,
-                    isShowingCachedData = false
+                    isShowingSavedData = false
                 )
             },
             onFailure = { error ->
@@ -268,7 +270,7 @@ class ScheduleViewModel(
                     scheduleImportSuccess = false,
                     scheduleError = "We couldn't clear the saved schedule. Please try again.",
                     canRetryScheduleRefresh = false,
-                    isShowingCachedData = false
+                    isShowingSavedData = false
                 )
             }
         )

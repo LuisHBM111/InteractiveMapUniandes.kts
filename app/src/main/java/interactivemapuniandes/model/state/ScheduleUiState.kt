@@ -12,9 +12,10 @@ data class ScheduleUiState(
     val scheduleImportSuccess: Boolean = false,
     val scheduleClasses: List<ScheduleClassEntity> = emptyList(),
     val scheduleError: String? = null,
-    val isShowingCachedData: Boolean = false,
+    val isShowingSavedData: Boolean = false,
     val canRetryScheduleRefresh: Boolean = false,
-    val classesForSelectedDay: List<ScheduleClassEntity> = emptyList()
+    val classesForSelectedDay: List<ScheduleClassEntity> = emptyList(),
+    val recommendedClassDay: RecommendedClassDayUi? = null
 )
 
 data class ScheduleDayUi(
@@ -22,4 +23,11 @@ data class ScheduleDayUi(
     val dayLabel: String,
     val dayNumber: String,
     val isSelected: Boolean = false
+)
+
+data class RecommendedClassDayUi(
+    val dayLabel: String,
+    val classCount: Int,
+    val reason: String,
+    val isFromCache: Boolean = false
 )

@@ -52,7 +52,10 @@ class ScheduleActivity : AppCompatActivity() {
     private lateinit var scheduleStateText: TextView
     private lateinit var btnRefreshSchedule: MaterialButton
     private lateinit var btnImportSchedule: MaterialButton
-    private lateinit var btnClearScheduleCache: MaterialButton
+    private lateinit var btnClearScheduleStorage: MaterialButton
+    private lateinit var recommendedClassDayCard: View
+    private lateinit var recommendedClassDayText: TextView
+    private lateinit var recommendedClassDayReasonText: TextView
     private var lastScheduleSnackbarMessage: String? = null
 
     private lateinit var add_class_fab: FloatingActionButton
@@ -93,7 +96,10 @@ class ScheduleActivity : AppCompatActivity() {
         scheduleStateText = findViewById(R.id.tvScheduleState)
         btnRefreshSchedule = findViewById(R.id.btnRefreshSchedule)
         btnImportSchedule = findViewById(R.id.btnImportSchedule)
-        btnClearScheduleCache = findViewById(R.id.btnClearScheduleCache)
+        btnClearScheduleStorage = findViewById(R.id.btnClearScheduleStorage)
+        recommendedClassDayCard = findViewById(R.id.recommendedClassDayCard)
+        recommendedClassDayText = findViewById(R.id.tvRecommendedClassDay)
+        recommendedClassDayReasonText = findViewById(R.id.tvRecommendedClassDayReason)
         add_class_fab = findViewById(R.id.add_class_fab)
         val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
         nav.setupNavigation(this, "schedules")
@@ -181,9 +187,9 @@ class ScheduleActivity : AppCompatActivity() {
             openScheduleFilePicker()
         }
 
-        btnClearScheduleCache.setOnClickListener {
+        btnClearScheduleStorage.setOnClickListener {
             lifecycleScope.launch {
-                scheduleViewModel.clearLocalCache()
+                scheduleViewModel.clearLocalStorage()
             }
         }
     }
@@ -195,9 +201,23 @@ class ScheduleActivity : AppCompatActivity() {
                 carouselAdapter.updateItems(state.dayItems)
                 renderScheduleClasses(state.selectedDate, state.classesForSelectedDay)
                 scheduleClassAdapter.updateItems(state.classesForSelectedDay)
+                renderRecommendedClassDay(state)
                 renderScheduleState(state)
                 renderScheduleActions(state)
             }
+        }
+    }
+
+    private fun renderRecommendedClassDay(state: ScheduleUiState) {
+        val recommendation = state.recommendedClassDay
+
+        recommendedClassDayCard.visibility = if (recommendation == null) {
+            View.GONE
+        } else {
+            val source = if (recommendation.isFromCache) "Cached recommended day" else "Recommended day"
+            recommendedClassDayText.text = "$source: ${recommendation.dayLabel}"
+            recommendedClassDayReasonText.text = recommendation.reason
+            View.VISIBLE
         }
     }
 
@@ -230,7 +250,7 @@ class ScheduleActivity : AppCompatActivity() {
 
         btnRefreshSchedule.isEnabled = !isBusy
         btnImportSchedule.isEnabled = !isBusy
-        btnClearScheduleCache.isEnabled = !isBusy
+        btnClearScheduleStorage.isEnabled = !isBusy
 
         btnRefreshSchedule.text = if (state.isRefreshing && !state.isImportingSchedule) {
             "Refreshing..."
@@ -243,7 +263,7 @@ class ScheduleActivity : AppCompatActivity() {
     private fun showScheduleSnackbarIfNeeded(state: ScheduleUiState) {
         val snackbarMessage = when {
             state.scheduleImportSuccess -> "Schedule imported."
-            state.isShowingCachedData && state.scheduleError != null ->
+            state.isShowingSavedData && state.scheduleError != null ->
                 "Showing saved schedule. We couldn't refresh it."
             state.scheduleError != null -> state.scheduleError
             else -> null

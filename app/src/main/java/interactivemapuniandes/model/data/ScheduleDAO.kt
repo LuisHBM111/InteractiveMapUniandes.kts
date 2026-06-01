@@ -51,7 +51,7 @@ interface ScheduleDAO {
     suspend fun clearAllSchedules()
 
     @Transaction
-    suspend fun clearScheduleCache() {
+    suspend fun clearLocalScheduleStorage() {
         clearAllClasses()
         clearAllSchedules()
     }
